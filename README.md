@@ -6,6 +6,6 @@
 | GitHub Username | QMID |
 | --- | --- |
 | `Shuo Liu` | `231226532` |
-| `<member-username-1>` | `<member-qmid-1>` |
+| `ffelaine` | `231226347` |
 | `<member-username-2>` | `<member-qmid-2>` |
 
