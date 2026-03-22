@@ -10,5 +10,6 @@
 | `deer-ice` | `231226406` |
 | `ShaoyangZhu` | `231226370` |
 | `skywalker11111` | `231226439` |
+| `NoveAmberic` | `231226495` |
 | `<member-username-2>` | `<member-qmid-2>` |
 
