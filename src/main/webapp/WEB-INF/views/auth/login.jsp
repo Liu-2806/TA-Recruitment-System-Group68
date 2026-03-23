@@ -93,12 +93,12 @@
             </div>
 
             <button class="auth-button auth-button--primary" type="submit">Login to Dashboard</button>
-            <a class="auth-button auth-button--secondary" href="#">Register as TA</a>
+            <a class="auth-button auth-button--secondary" href="<%= contextPath %>/register-preview.jsp">Register as TA</a>
           </form>
 
           <div class="auth-card__footer">
             <span class="auth-card__footer-text">New applicant?</span>
-            <a class="auth-card__footer-link" href="#">Click here to Sign Up</a>
+            <a class="auth-card__footer-link" href="<%= contextPath %>/register-preview.jsp">Click here to Sign Up</a>
           </div>
         </div>
       </section>
