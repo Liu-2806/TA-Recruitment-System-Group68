@@ -1,0 +1,14 @@
+Alex Chen
+alex.chen@example.com
++44 7123 456789
+
+Education
+MSc Computer Science, Queen Mary University of London
+
+Skills
+Java, Python, Git, Testing, Communication, Teaching, Data Analysis
+
+Experience
+Teaching Assistant for introductory programming labs, supporting weekly Java exercises and answering student questions.
+Research project on machine learning-based skill classification for student profiles.
+Internship project building internal dashboards and data analysis scripts in Python.

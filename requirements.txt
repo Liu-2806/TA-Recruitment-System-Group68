@@ -1,0 +1,87 @@
+TA Recruitment System Group 68
+Environment Requirements
+
+This file is used to keep the team on the same environment.
+
+1. Required Environment
+
+- Operating System: Windows 10 or Windows 11
+- Java: JDK 21
+- Shell: PowerShell
+- Encoding: UTF-8
+
+2. Direct Download Links
+
+JDK 21:
+- Oracle JDK 21 download page:
+  https://www.oracle.com/java/technologies/downloads/#java21
+- Adoptium Temurin 21 download page:
+  https://adoptium.net/temurin/releases/?version=21
+
+PowerShell:
+- PowerShell download page:
+  https://github.com/PowerShell/PowerShell/releases
+
+PDFBox:
+- Current project dependency file:
+  lib/pdfbox-app-3.0.2.jar
+- Official download source:
+  https://repo1.maven.org/maven2/org/apache/pdfbox/pdfbox-app/3.0.2/pdfbox-app-3.0.2.jar
+
+3. Runtime Requirements
+
+To run the current demo, the machine must have:
+- Java 21 installed
+- PowerShell available
+- lib/pdfbox-app-3.0.2.jar present in the repository
+
+Run command:
+powershell -ExecutionPolicy Bypass -File scripts/run-demo.ps1
+
+4. Optional API Environment Variables
+
+If the team wants to enable API-based matching, set:
+- LLM_API_URL
+- LLM_API_KEY
+- LLM_MODEL
+
+If these variables are not set, the project uses the local keyword matcher by default.
+
+Recommended private setup:
+- copy .env.example to .env.local
+- fill in your own API values in .env.local
+- do not commit .env.local
+- scripts/run-demo.ps1 loads .env.local automatically
+- quoted values in .env.local are also supported
+- for DeepSeek, LLM_API_URL can be https://api.deepseek.com or https://api.deepseek.com/v1
+
+5. Coursework Constraint Reminder
+
+According to the handout, the project must:
+- use Java or Java Servlet/JSP
+- use text-based files only
+- not use a database
+
+Allowed data file types include:
+- .txt
+- .csv
+- .json
+- .xml
+
+6. Collaboration Update Rule
+
+After each code change, update these files together:
+- README.md
+- requirements.txt
+- the code structure tree document under docs/
+- the related Chinese manual for the module
+
+7. New Member Setup Steps
+
+1. Pull the latest repository.
+2. Install JDK 21 from one of the links above.
+3. Confirm lib/pdfbox-app-3.0.2.jar exists.
+4. Copy .env.example to .env.local if API mode is needed.
+5. Run:
+   powershell -ExecutionPolicy Bypass -File scripts/run-demo.ps1
+6. Check whether output/candidate-profile.json and output/job-match-results.json are generated.
