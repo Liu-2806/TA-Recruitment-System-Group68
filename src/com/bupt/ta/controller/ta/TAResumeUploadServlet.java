@@ -1,5 +1,6 @@
 package com.bupt.ta.controller.ta;
 
+import com.bupt.ta.config.ServiceRegistry;
 import com.bupt.ta.controller.common.BaseServlet;
 import com.bupt.ta.model.User;
 import com.bupt.ta.service.ResumeService;
@@ -12,20 +13,18 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import java.io.IOException;
 
-/**
- * TA 简历上传/替换 Servlet。
- */
 @WebServlet("/ta/profile/resume")
 @MultipartConfig
 public class TAResumeUploadServlet extends BaseServlet {
-    private ResumeService resumeService;
+    private final ResumeService resumeService = ServiceRegistry.resumeService();
 
-    /**
-     * 处理简历上传请求。
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User user = currentUser(request);
+        if (user == null) {
+            response.sendRedirect(request.getContextPath() + "/auth/login");
+            return;
+        }
         Part resumeFile = request.getPart("resumeFile");
         try {
             resumeService.saveOrReplaceTAResume(user.getId(), resumeFile.getSubmittedFileName(), resumeFile.getInputStream());

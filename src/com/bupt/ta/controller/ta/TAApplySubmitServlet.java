@@ -1,5 +1,6 @@
 package com.bupt.ta.controller.ta;
 
+import com.bupt.ta.config.ServiceRegistry;
 import com.bupt.ta.controller.common.BaseServlet;
 import com.bupt.ta.model.User;
 import com.bupt.ta.service.ApplicationService;
@@ -10,19 +11,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-/**
- * TA 提交申请 Servlet。
- */
 @WebServlet("/ta/applications")
 public class TAApplySubmitServlet extends BaseServlet {
-    private ApplicationService applicationService;
+    private final ApplicationService applicationService = ServiceRegistry.applicationService();
 
-    /**
-     * 提交岗位申请。
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User user = currentUser(request);
+        if (user == null) {
+            response.sendRedirect(request.getContextPath() + "/auth/login");
+            return;
+        }
         String jobId = request.getParameter("jobId");
         String statement = request.getParameter("statement");
         try {

@@ -1,87 +1,102 @@
 TA Recruitment System Group 68
-Environment Requirements
-
-This file is used to keep the team on the same environment.
+Shared Environment Requirements
 
 1. Required Environment
 
 - Operating System: Windows 10 or Windows 11
 - Java: JDK 21
+- Servlet API: javax.servlet 4.x compatible container
 - Shell: PowerShell
 - Encoding: UTF-8
 
-2. Direct Download Links
+2. Required Local Dependency JARs
 
-JDK 21:
-- Oracle JDK 21 download page:
+- lib/pdfbox-app-3.0.2.jar
+- lib/gson-2.11.0.jar
+- lib/javax.servlet-api-4.0.1.jar
+
+3. Direct Download Links
+
+JDK 21
+- Oracle:
   https://www.oracle.com/java/technologies/downloads/#java21
-- Adoptium Temurin 21 download page:
+- Adoptium:
   https://adoptium.net/temurin/releases/?version=21
 
-PowerShell:
-- PowerShell download page:
-  https://github.com/PowerShell/PowerShell/releases
+PowerShell
+- https://github.com/PowerShell/PowerShell/releases
 
-PDFBox:
-- Current project dependency file:
-  lib/pdfbox-app-3.0.2.jar
-- Official download source:
-  https://repo1.maven.org/maven2/org/apache/pdfbox/pdfbox-app/3.0.2/pdfbox-app-3.0.2.jar
+PDFBox 3.0.2
+- https://repo1.maven.org/maven2/org/apache/pdfbox/pdfbox-app/3.0.2/pdfbox-app-3.0.2.jar
 
-3. Runtime Requirements
+Gson 2.11.0
+- https://repo1.maven.org/maven2/com/google/code/gson/gson/2.11.0/gson-2.11.0.jar
 
-To run the current demo, the machine must have:
-- Java 21 installed
-- PowerShell available
-- lib/pdfbox-app-3.0.2.jar present in the repository
+Servlet API 4.0.1
+- https://repo1.maven.org/maven2/javax/servlet/javax.servlet-api/4.0.1/javax.servlet-api-4.0.1.jar
 
-Run command:
-powershell -ExecutionPolicy Bypass -File scripts/run-demo.ps1
+4. Current Module Scope
 
-4. Optional API Environment Variables
+The currently completed owned modules are:
+- PDF resume input module
+- structured resume extraction module
+- LLM / local-rule job matching module
 
-If the team wants to enable API-based matching, set:
+These modules are implemented in:
+- src/com/bupt/ta/
+- web/WEB-INF/views/
+- data/
+
+5. Compile Check Command
+
+Run this command in the project root to verify the current module compiles:
+
+powershell -ExecutionPolicy Bypass -Command "javac -encoding UTF-8 -cp 'lib/pdfbox-app-3.0.2.jar;lib/gson-2.11.0.jar;lib/javax.servlet-api-4.0.1.jar' -d build/module-check (Get-ChildItem -Recurse -Filter *.java src/com/bupt/ta | ForEach-Object { $_.FullName })"
+
+6. Optional LLM Configuration
+
+If API-based matching is needed, configure:
 - LLM_API_URL
 - LLM_API_KEY
 - LLM_MODEL
 
-If these variables are not set, the project uses the local keyword matcher by default.
-
 Recommended private setup:
 - copy .env.example to .env.local
-- fill in your own API values in .env.local
+- edit .env.local locally
 - do not commit .env.local
-- scripts/run-demo.ps1 loads .env.local automatically
-- quoted values in .env.local are also supported
-- for DeepSeek, LLM_API_URL can be https://api.deepseek.com or https://api.deepseek.com/v1
 
-5. Coursework Constraint Reminder
+The code supports both environment variables and .env.local loading.
 
-According to the handout, the project must:
+Supported DeepSeek base URL forms:
+- https://api.deepseek.com
+- https://api.deepseek.com/v1
+
+7. Data Constraint Reminder
+
+According to the handout:
 - use Java or Java Servlet/JSP
 - use text-based files only
-- not use a database
+- do not use a database
 
-Allowed data file types include:
+Allowed project data files include:
 - .txt
 - .csv
 - .json
 - .xml
 
-6. Collaboration Update Rule
+8. Collaboration Rule
 
 After each code change, update these files together:
 - README.md
 - requirements.txt
-- the code structure tree document under docs/
-- the related Chinese manual for the module
+- docs/简历输入模块中文说明手册.md
+- docs/代码结构树.md
 
-7. New Member Setup Steps
+9. New Member Setup Steps
 
 1. Pull the latest repository.
-2. Install JDK 21 from one of the links above.
-3. Confirm lib/pdfbox-app-3.0.2.jar exists.
-4. Copy .env.example to .env.local if API mode is needed.
-5. Run:
-   powershell -ExecutionPolicy Bypass -File scripts/run-demo.ps1
-6. Check whether output/candidate-profile.json and output/job-match-results.json are generated.
+2. Install JDK 21.
+3. Make sure the three JAR files in lib/ exist.
+4. Copy .env.example to .env.local if LLM mode is needed.
+5. Import the project into the team IDE setup or run the compile check command above.
+6. Do not commit local API secrets or local build output.
