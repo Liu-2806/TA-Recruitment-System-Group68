@@ -1,2 +1,5 @@
-/Page design
-work-log.md
+.env.local
+build/
+output/
+tmp/
+*.class

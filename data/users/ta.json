@@ -1,0 +1,42 @@
+[
+  {
+    "taId": "TA001",
+    "fullName": "Alex Chen",
+    "studentId": "2021001234",
+    "majorProgram": "Software Engineering",
+    "academicYear": "Year 3",
+    "email": "alex.chen@bupt.edu.cn",
+    "phone": "+44 7123 456789",
+    "intro": "Interested in teaching support and software engineering modules.",
+    "skills": [
+      "Java",
+      "Python",
+      "Git",
+      "Testing",
+      "Communication"
+    ],
+    "resumeFileName": "sample_resume.pdf",
+    "resumeUploadedAt": "2026-03-24 21:10:00",
+    "extractedResume": {
+      "name": "Alex Chen",
+      "email": "alex.chen@example.com",
+      "phone": "+44 7123 456789",
+      "education": "MSc Computer Science, Queen Mary University of London",
+      "skills": [
+        "Java",
+        "Python",
+        "Git",
+        "Testing",
+        "Communication",
+        "Teaching",
+        "Data Analysis"
+      ],
+      "experienceHighlights": [
+        "Teaching Assistant for introductory programming labs.",
+        "Research project on machine learning-based skill classification.",
+        "Internship project building internal dashboards in Python."
+      ],
+      "rawText": "Alex Chen resume sample"
+    }
+  }
+]

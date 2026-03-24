@@ -1,5 +1,6 @@
 package com.bupt.ta.controller.ta;
 
+import com.bupt.ta.config.ServiceRegistry;
 import com.bupt.ta.controller.common.BaseServlet;
 import com.bupt.ta.model.User;
 import com.bupt.ta.service.ApplicationService;
@@ -11,20 +12,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-/**
- * TA 申请确认页 Servlet。
- */
 @WebServlet("/ta/applications/confirm")
 public class TAApplyConfirmServlet extends BaseServlet {
-    private ApplicationService applicationService;
-    private JobService jobService;
+    private final ApplicationService applicationService = ServiceRegistry.applicationService();
+    private final JobService jobService = ServiceRegistry.jobService();
 
-    /**
-     * 展示申请确认页并进行资格检查。
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User user = currentUser(request);
+        if (user == null) {
+            response.sendRedirect(request.getContextPath() + "/auth/login");
+            return;
+        }
         String jobId = request.getParameter("jobId");
         request.setAttribute("job", jobService.getJobById(jobId));
         request.setAttribute("eligibilityResult", applicationService.checkEligibility(user.getId(), jobId));
