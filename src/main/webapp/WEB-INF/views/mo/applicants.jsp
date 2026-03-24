@@ -1,6 +1,15 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
   String contextPath = request.getContextPath();
+  request.setAttribute("headerBrandHref", contextPath + "/mo-dashboard-preview.jsp");
+  request.setAttribute("showHeaderBack", Boolean.TRUE);
+  request.setAttribute("headerBackHref", contextPath + "/mo-postings-preview.jsp");
+  request.setAttribute("headerBackLabel", "Back to List");
+  request.setAttribute("showHeaderUser", Boolean.TRUE);
+  request.setAttribute("currentUserName", "Prof. Wang");
+  request.setAttribute("currentUserRoleLabel", "Module Organizer");
+  request.setAttribute("currentUserInitial", "W");
+  request.setAttribute("notificationCount", Integer.valueOf(1));
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -15,26 +24,16 @@
 </head>
 <body>
   <div class="mo-applicants-shell">
-    <header class="mo-applicants-header">
-      <div class="mo-applicants-header__inner">
-        <div class="mo-applicants-header__left">
-          <a class="mo-applicants-back" href="<%= contextPath %>/mo-postings-preview.jsp" aria-label="Back to My Job Postings">
-            <svg viewBox="0 0 24 24" focusable="false">
-              <path d="M15.5 6.5 10 12l5.5 5.5M11 12h8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </a>
+    <jsp:include page="/WEB-INF/views/common/header.jsp" />
 
-          <a class="app-brand" href="<%= contextPath %>/mo-applicants-preview.jsp">
-            <span class="app-brand__mark">T</span>
-          </a>
-
-          <div class="mo-applicants-header__title-group">
-            <h1>Applicants: Software Engineering TA</h1>
-            <p>Course Code: SE3001</p>
-          </div>
+    <main class="mo-applicants-main">
+      <section class="mo-applicants-toolbar">
+        <div class="mo-applicants-header__title-group">
+          <h1>Applicants: Software Engineering TA</h1>
+          <p>Course Code: SE3001</p>
         </div>
 
-        <div class="mo-applicants-header__right">
+        <div class="mo-applicants-toolbar__actions">
           <div class="mo-applicants-search">
             <span class="mo-applicants-search__icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" focusable="false">
@@ -53,10 +52,8 @@
             <span>Broadcast Email</span>
           </button>
         </div>
-      </div>
-    </header>
+      </section>
 
-    <main class="mo-applicants-main">
       <section class="mo-applicants-summary">
         <div class="mo-applicants-summary__stats">
           <div class="mo-applicants-summary__item">

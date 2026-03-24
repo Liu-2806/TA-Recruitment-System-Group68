@@ -1,6 +1,15 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
   String contextPath = request.getContextPath();
+  request.setAttribute("headerBrandHref", contextPath + "/mo-dashboard-preview.jsp");
+  request.setAttribute("showHeaderBack", Boolean.TRUE);
+  request.setAttribute("headerBackHref", contextPath + "/mo-dashboard-preview.jsp");
+  request.setAttribute("headerBackLabel", "Back to Dashboard");
+  request.setAttribute("showHeaderUser", Boolean.TRUE);
+  request.setAttribute("currentUserName", "Prof. James Wang");
+  request.setAttribute("currentUserRoleLabel", "Module Organizer");
+  request.setAttribute("currentUserInitial", "J");
+  request.setAttribute("notificationCount", Integer.valueOf(1));
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -15,23 +24,7 @@
 </head>
 <body>
   <div class="mo-post-shell">
-    <header class="mo-post-header">
-      <div class="mo-post-header__inner">
-        <a class="app-brand" href="<%= contextPath %>/mo-post-position-preview.jsp">
-          <span class="app-brand__mark">T</span>
-          <span class="app-brand__text">Post New Position</span>
-        </a>
-
-        <a class="mo-post-header__back" href="<%= contextPath %>/mo-dashboard-preview.jsp">
-          <span class="mo-post-header__back-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" focusable="false">
-              <path d="M15.5 6.5 10 12l5.5 5.5M11 12h8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-          <span>Back to Dashboard</span>
-        </a>
-      </div>
-    </header>
+    <jsp:include page="/WEB-INF/views/common/header.jsp" />
 
     <main class="mo-post-main">
       <section class="mo-post-card">

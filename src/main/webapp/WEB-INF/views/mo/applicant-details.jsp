@@ -1,6 +1,15 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
   String contextPath = request.getContextPath();
+  request.setAttribute("headerBrandHref", contextPath + "/mo-dashboard-preview.jsp");
+  request.setAttribute("showHeaderBack", Boolean.TRUE);
+  request.setAttribute("headerBackHref", contextPath + "/mo-applicants-preview.jsp");
+  request.setAttribute("headerBackLabel", "Back to List");
+  request.setAttribute("showHeaderUser", Boolean.TRUE);
+  request.setAttribute("currentUserName", "Prof. Wang");
+  request.setAttribute("currentUserRoleLabel", "Module Organizer");
+  request.setAttribute("currentUserInitial", "W");
+  request.setAttribute("notificationCount", Integer.valueOf(1));
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -15,23 +24,7 @@
 </head>
 <body>
   <div class="mo-applicant-details-shell">
-    <header class="mo-applicant-details-header">
-      <div class="mo-applicant-details-header__inner">
-        <a class="app-brand" href="<%= contextPath %>/mo-applicant-details-preview.jsp">
-          <span class="app-brand__mark">T</span>
-          <span class="app-brand__text">Applicant Profile: Zhang San</span>
-        </a>
-
-        <a class="mo-applicant-details-header__back" href="<%= contextPath %>/mo-applicants-preview.jsp">
-          <span class="mo-applicant-details-header__back-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" focusable="false">
-              <path d="M15.5 6.5 10 12l5.5 5.5M11 12h8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-          <span>Back to List</span>
-        </a>
-      </div>
-    </header>
+    <jsp:include page="/WEB-INF/views/common/header.jsp" />
 
     <main class="mo-applicant-details-main">
       <section class="mo-applicant-panel">

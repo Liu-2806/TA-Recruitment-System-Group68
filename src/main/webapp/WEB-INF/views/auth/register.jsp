@@ -1,6 +1,11 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
   String contextPath = request.getContextPath();
+  request.setAttribute("headerBrandHref", contextPath + "/register-preview.jsp");
+  request.setAttribute("showHeaderBack", Boolean.TRUE);
+  request.setAttribute("headerBackHref", contextPath + "/login-preview.jsp");
+  request.setAttribute("headerBackLabel", "Back to Login");
+  request.setAttribute("showHeaderUser", Boolean.FALSE);
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -16,22 +21,7 @@
 </head>
 <body>
   <div class="auth-shell">
-    <header class="auth-topbar">
-      <div class="auth-topbar__inner">
-        <a class="app-brand" href="<%= contextPath %>/register-preview.jsp">
-          <span class="app-brand__mark">T</span>
-          <span class="app-brand__text">TA Account Registration</span>
-        </a>
-        <a class="register-topbar__back" href="<%= contextPath %>/login-preview.jsp">
-          <span class="register-topbar__back-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" focusable="false">
-              <path d="M15.5 6.5 10 12l5.5 5.5M11 12h8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-          <span>Back to Login</span>
-        </a>
-      </div>
-    </header>
+    <jsp:include page="/WEB-INF/views/common/header.jsp" />
 
     <main class="auth-stage register-stage">
       <section class="auth-card register-card" aria-labelledby="register-heading">
@@ -82,26 +72,6 @@
                       </svg>
                     </span>
                     <input id="majorProgram" name="majorProgram" type="text" placeholder="e.g. Computer Science" required>
-                  </div>
-                </div>
-
-                <div class="auth-form__group">
-                  <label class="auth-label" for="academicYear">Academic Year</label>
-                  <div class="auth-input auth-input--select">
-                    <span class="auth-input__icon" aria-hidden="true">
-                      <svg viewBox="0 0 24 24" focusable="false">
-                        <path d="M7 3.75v3.5M17 3.75v3.5M4.75 8.25h14.5m-13 1.25h11a1.75 1.75 0 0 1 1.75 1.75v6.5A1.75 1.75 0 0 1 17.25 19.5H6.75A1.75 1.75 0 0 1 5 17.75v-6.5A1.75 1.75 0 0 1 6.75 9.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                    </span>
-                    <select id="academicYear" name="academicYear" required>
-                      <option value="" selected disabled>Select Year</option>
-                      <option value="year-1">Year 1</option>
-                      <option value="year-2">Year 2</option>
-                      <option value="year-3">Year 3</option>
-                      <option value="year-4">Year 4</option>
-                      <option value="postgraduate">Postgraduate</option>
-                    </select>
-                    <span class="register-select__caret" aria-hidden="true">v</span>
                   </div>
                 </div>
 

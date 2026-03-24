@@ -1,6 +1,15 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
   String contextPath = request.getContextPath();
+  request.setAttribute("headerBrandHref", contextPath + "/mo-dashboard-preview.jsp");
+  request.setAttribute("showHeaderBack", Boolean.TRUE);
+  request.setAttribute("headerBackHref", contextPath + "/mo-dashboard-preview.jsp");
+  request.setAttribute("headerBackLabel", "Back to Dashboard");
+  request.setAttribute("showHeaderUser", Boolean.TRUE);
+  request.setAttribute("currentUserName", "Prof. Wang");
+  request.setAttribute("currentUserRoleLabel", "Module Organizer");
+  request.setAttribute("currentUserInitial", "W");
+  request.setAttribute("notificationCount", Integer.valueOf(1));
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -15,54 +24,10 @@
 </head>
 <body>
   <div class="mo-postings-shell">
-    <header class="mo-postings-header">
-      <div class="mo-postings-header__inner">
-        <a class="app-brand" href="<%= contextPath %>/mo-postings-preview.jsp">
-          <span class="app-brand__mark">T</span>
-          <span class="app-brand__text">TA Recruitment System</span>
-        </a>
-
-        <div class="mo-postings-search">
-          <span class="mo-postings-search__icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" focusable="false">
-              <path d="M10.75 17a6.25 6.25 0 1 0 0-12.5 6.25 6.25 0 0 0 0 12.5Zm8.75 2.5-4.25-4.25" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-          <input type="text" placeholder="Quick search...">
-        </div>
-
-        <div class="mo-postings-header__actions">
-          <button class="ui-icon-button" type="button" aria-label="Notifications">
-            <span class="mo-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" focusable="false">
-                <path d="M12 4.25a4 4 0 0 0-4 4v2.06c0 .7-.2 1.39-.58 1.98L6 14.5h12l-1.42-2.21a3.75 3.75 0 0 1-.58-1.98V8.25a4 4 0 0 0-4-4Zm0 15.5a2.38 2.38 0 0 0 2.27-1.75H9.73A2.38 2.38 0 0 0 12 19.75Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </span>
-            <span class="ui-notification-dot"></span>
-          </button>
-
-          <div class="ui-user-block">
-            <div class="ui-user-block__meta">
-              <p class="ui-user-block__name">Prof. Wang</p>
-              <p class="ui-user-block__role">Module Organizer</p>
-            </div>
-            <span class="ui-avatar" aria-hidden="true">W</span>
-            <span class="ui-chevron" aria-hidden="true">v</span>
-          </div>
-        </div>
-      </div>
-    </header>
+    <jsp:include page="/WEB-INF/views/common/header.jsp" />
 
     <main class="mo-postings-main">
       <div class="mo-postings-heading">
-        <a class="mo-postings-heading__back" href="<%= contextPath %>/mo-dashboard-preview.jsp">
-          <span class="mo-postings-heading__back-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" focusable="false">
-              <path d="M15.5 6.5 10 12l5.5 5.5M11 12h8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-          <span>Back to Dashboard</span>
-        </a>
         <h1>My Job Postings</h1>
       </div>
 

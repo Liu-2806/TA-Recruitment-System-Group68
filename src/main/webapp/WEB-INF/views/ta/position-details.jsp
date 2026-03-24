@@ -1,6 +1,15 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
   String contextPath = request.getContextPath();
+  request.setAttribute("headerBrandHref", contextPath + "/ta-dashboard-preview.jsp");
+  request.setAttribute("showHeaderBack", Boolean.TRUE);
+  request.setAttribute("headerBackHref", contextPath + "/ta-positions-preview.jsp");
+  request.setAttribute("headerBackLabel", "Back to Listings");
+  request.setAttribute("showHeaderUser", Boolean.TRUE);
+  request.setAttribute("currentUserName", "Zhang San");
+  request.setAttribute("currentUserRoleLabel", "TA Applicant");
+  request.setAttribute("currentUserInitial", "Z");
+  request.setAttribute("notificationCount", Integer.valueOf(1));
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -15,23 +24,7 @@
 </head>
 <body>
   <div class="ta-details-shell">
-    <header class="ta-details-header">
-      <div class="ta-details-header__inner">
-        <a class="app-brand" href="<%= contextPath %>/ta-position-details-preview.jsp">
-          <span class="app-brand__mark">T</span>
-          <span class="app-brand__text">Position Details</span>
-        </a>
-
-        <a class="ta-details-header__back" href="<%= contextPath %>/ta-positions-preview.jsp">
-          <span class="ta-details-header__back-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" focusable="false">
-              <path d="M15.5 6.5 10 12l5.5 5.5M11 12h8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-          <span>Back to Listings</span>
-        </a>
-      </div>
-    </header>
+    <jsp:include page="/WEB-INF/views/common/header.jsp" />
 
     <main class="ta-details-main">
       <section class="ta-details-card">

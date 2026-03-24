@@ -37,6 +37,18 @@
   padding: 12px 24px;
 }
 
+.app-header--shared {
+  min-height: 64px;
+}
+
+.app-header__inner--shared {
+  min-height: 64px;
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  padding: 0 24px;
+}
+
 .app-header__left,
 .app-header__right {
   display: flex;
@@ -72,6 +84,10 @@
   flex-shrink: 0;
 }
 
+.page-brand {
+  min-height: 64px;
+}
+
 .app-brand__mark {
   width: 36px;
   height: 36px;
@@ -90,6 +106,10 @@
   font-weight: 800;
   color: var(--color-text);
   letter-spacing: -0.02em;
+}
+
+.app-brand--header {
+  min-height: 64px;
 }
 
 .app-sidebar {
@@ -195,6 +215,50 @@
   padding-top: 18px;
 }
 
+.app-header__right--shared {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-left: auto;
+}
+
+.app-header__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-text-muted);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.app-header__back:hover {
+  color: var(--color-primary);
+}
+
+.app-header__back-icon {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-header__back-icon svg,
+.app-header__bell svg {
+  width: 16px;
+  height: 16px;
+}
+
+.app-header__bell {
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 @media (max-width: 960px) {
   .app-shell--with-sidebar {
     display: block;
@@ -213,8 +277,45 @@
     padding-right: 16px;
   }
 
+  .app-header__inner--shared {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
   .app-footer__inner {
     flex-direction: column;
     align-items: flex-start;
   }
+}
+
+.auth-topbar,
+.ta-dashboard-header,
+.ta-profile-header,
+.ta-positions-header,
+.ta-details-header,
+.ta-applications-header,
+.mo-dashboard-header,
+.mo-profile-header,
+.mo-post-header,
+.mo-postings-header,
+.mo-applicants-header,
+.mo-applicant-details-header {
+  min-height: 64px;
+}
+
+.auth-topbar__inner,
+.ta-dashboard-header__inner,
+.ta-profile-header__inner,
+.ta-positions-header__inner,
+.ta-details-header__inner,
+.ta-applications-header__inner,
+.mo-dashboard-header__inner,
+.mo-profile-header__inner,
+.mo-post-header__inner,
+.mo-postings-header__inner,
+.mo-applicants-header__inner,
+.mo-applicant-details-header__inner {
+  min-height: 64px;
+  padding-top: 0;
+  padding-bottom: 0;
 }

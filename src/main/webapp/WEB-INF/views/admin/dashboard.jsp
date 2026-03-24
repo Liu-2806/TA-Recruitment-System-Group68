@@ -1,6 +1,13 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
   String contextPath = request.getContextPath();
+  request.setAttribute("headerBrandHref", contextPath + "/admin-dashboard-preview.jsp");
+  request.setAttribute("showHeaderBack", Boolean.FALSE);
+  request.setAttribute("showHeaderUser", Boolean.TRUE);
+  request.setAttribute("currentUserName", "Super Admin");
+  request.setAttribute("currentUserRoleLabel", "System Control");
+  request.setAttribute("currentUserInitial", "A");
+  request.setAttribute("notificationCount", Integer.valueOf(1));
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -87,33 +94,7 @@
     </aside>
 
     <div class="admin-main">
-      <header class="admin-topbar">
-        <div class="admin-topbar__eyebrow">Overview Dashboard</div>
-
-        <div class="admin-topbar__actions">
-          <button class="ui-icon-button" type="button" aria-label="Notifications">
-            <span class="admin-topbar__icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" focusable="false">
-                <path d="M12 4.25a4 4 0 0 0-4 4v2.06c0 .7-.2 1.39-.58 1.98L6 14.5h12l-1.42-2.21a3.75 3.75 0 0 1-.58-1.98V8.25a4 4 0 0 0-4-4Zm0 15.5a2.38 2.38 0 0 0 2.27-1.75H9.73A2.38 2.38 0 0 0 12 19.75Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </span>
-            <span class="ui-notification-dot"></span>
-          </button>
-
-          <div class="ui-user-block">
-            <div class="ui-user-block__meta">
-              <p class="ui-user-block__name">Super Admin</p>
-              <p class="ui-user-block__role">System Control</p>
-            </div>
-            <span class="ui-avatar admin-topbar__avatar" aria-hidden="true">
-              <svg viewBox="0 0 24 24" focusable="false">
-                <path d="M12 12a3.75 3.75 0 1 0-3.75-3.75A3.75 3.75 0 0 0 12 12Zm0 1.5c-3.17 0-5.75 1.89-5.75 4.22V19h11.5v-.28c0-2.33-2.58-4.22-5.75-4.22ZM18.5 6V9m-1.5-1.5H20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </span>
-            <span class="ui-chevron" aria-hidden="true">v</span>
-          </div>
-        </div>
-      </header>
+      <jsp:include page="/WEB-INF/views/common/header.jsp" />
 
       <main class="admin-content">
         <section class="admin-welcome">

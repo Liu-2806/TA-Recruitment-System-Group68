@@ -1,6 +1,9 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
   String contextPath = request.getContextPath();
+  request.setAttribute("headerBrandHref", contextPath + "/login-preview.jsp");
+  request.setAttribute("showHeaderBack", Boolean.FALSE);
+  request.setAttribute("showHeaderUser", Boolean.FALSE);
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -15,15 +18,7 @@
 </head>
 <body>
   <div class="auth-shell">
-    <header class="auth-topbar">
-      <div class="auth-topbar__inner">
-        <a class="app-brand" href="#">
-          <span class="app-brand__mark">T</span>
-          <span class="app-brand__text">TA Recruitment System</span>
-        </a>
-        <span class="auth-topbar__portal">University Portal</span>
-      </div>
-    </header>
+    <jsp:include page="/WEB-INF/views/common/header.jsp" />
 
     <main class="auth-stage">
       <section class="auth-card" aria-labelledby="login-heading">
@@ -92,14 +87,10 @@
               </div>
             </div>
 
-            <button class="auth-button auth-button--primary" type="submit">Login to Dashboard</button>
-            <a class="auth-button auth-button--secondary" href="<%= contextPath %>/register-preview.jsp">Register as TA</a>
+            <button class="auth-button auth-button--primary" type="submit">Login</button>
+            <a class="auth-button auth-button--secondary" href="<%= contextPath %>/register-preview.jsp">Sign up as TA</a>
           </form>
 
-          <div class="auth-card__footer">
-            <span class="auth-card__footer-text">New applicant?</span>
-            <a class="auth-card__footer-link" href="<%= contextPath %>/register-preview.jsp">Click here to Sign Up</a>
-          </div>
         </div>
       </section>
     </main>

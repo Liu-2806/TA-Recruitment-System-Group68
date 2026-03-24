@@ -13,25 +13,24 @@
 | 预览入口 | 实际页面 |
 | --- | --- |
 | `index.jsp` | `login-preview.jsp` |
-| `login-preview.jsp` | `WEB-INF/views/auth/login.jsp` | 
-| `register-preview.jsp` | `WEB-INF/views/auth/register.jsp` |
-| `ta-dashboard-preview.jsp` | `WEB-INF/views/ta/dashboard.jsp` |
-| `ta-profile-preview.jsp` | `WEB-INF/views/ta/profile.jsp` |
-| `ta-positions-preview.jsp` | `WEB-INF/views/ta/positions.jsp` |
-| `ta-position-details-preview.jsp` | `WEB-INF/views/ta/position-details.jsp` |
-| `ta-applications-preview.jsp` | `WEB-INF/views/ta/applications.jsp` |
-| `mo-dashboard-preview.jsp` | `WEB-INF/views/mo/dashboard.jsp` |
-| `mo-profile-edit-preview.jsp` | `WEB-INF/views/mo/profile-edit.jsp` |
-| `mo-post-position-preview.jsp` | `WEB-INF/views/mo/post-position.jsp` |
-| `mo-postings-preview.jsp` | `WEB-INF/views/mo/postings.jsp` |
-| `mo-applicants-preview.jsp` | `WEB-INF/views/mo/applicants.jsp` |
-| `mo-applicant-details-preview.jsp` | `WEB-INF/views/mo/applicant-details.jsp` |
-| `admin-dashboard-preview.jsp` | `WEB-INF/views/admin/dashboard.jsp` |
-| `admin-create-mo-preview.jsp` | `WEB-INF/views/admin/create-mo.jsp` |
-| `admin-all-mos-preview.jsp` | `WEB-INF/views/admin/all-mos.jsp` |
-| `admin-all-jobs-preview.jsp` | `WEB-INF/views/admin/all-jobs.jsp` |
+| `login-preview.jsp` | `WEB-INF/views/auth/login.jsp` | http://localhost:8080/TA-Recruitment-System-Group68/login-preview.jsp
+| `register-preview.jsp` | `WEB-INF/views/auth/register.jsp` | http://localhost:8080/TA-Recruitment-System-Group68/register-preview.jsp
+| `ta-dashboard-preview.jsp` | `WEB-INF/views/ta/dashboard.jsp` | http://localhost:8080/TA-Recruitment-System-Group68/ta-dashboard-preview.jsp
+| `ta-profile-preview.jsp` | `WEB-INF/views/ta/profile.jsp` | http://localhost:8080/TA-Recruitment-System-Group68/ta-profile-preview.jsp
+| `ta-positions-preview.jsp` | `WEB-INF/views/ta/positions.jsp` | http://localhost:8080/TA-Recruitment-System-Group68/ta-positions-preview.jsp
+| `ta-position-details-preview.jsp` | `WEB-INF/views/ta/position-details.jsp` | http://localhost:8080/TA-Recruitment-System-Group68/ta-position-details-preview.jsp
+| `ta-applications-preview.jsp` | `WEB-INF/views/ta/applications.jsp` | http://localhost:8080/TA-Recruitment-System-Group68/ta-applications-preview.jsp
+| `mo-dashboard-preview.jsp` | `WEB-INF/views/mo/dashboard.jsp` | http://localhost:8080/TA-Recruitment-System-Group68/mo-dashboard-preview.jsp
+| `mo-profile-edit-preview.jsp` | `WEB-INF/views/mo/profile-edit.jsp` | http://localhost:8080/TA-Recruitment-System-Group68/mo-profile-edit-preview.jsp
+| `mo-post-position-preview.jsp` | `WEB-INF/views/mo/post-position.jsp` | http://localhost:8080/TA-Recruitment-System-Group68/mo-post-position-preview.jsp
+| `mo-postings-preview.jsp` | `WEB-INF/views/mo/postings.jsp` | http://localhost:8080/TA-Recruitment-System-Group68/mo-postings-preview.jsp
+| `mo-applicants-preview.jsp` | `WEB-INF/views/mo/applicants.jsp` | http://localhost:8080/TA-Recruitment-System-Group68/mo-applicants-preview.jsp
+| `mo-applicant-details-preview.jsp` | `WEB-INF/views/mo/applicant-details.jsp` | http://localhost:8080/TA-Recruitment-System-Group68/
+| `admin-dashboard-preview.jsp` | `WEB-INF/views/admin/dashboard.jsp` | http://localhost:8080/TA-Recruitment-System-Group68/mo-applicant-details-preview.jsp
+| `admin-create-mo-preview.jsp` | `WEB-INF/views/admin/create-mo.jsp` | http://localhost:8080/TA-Recruitment-System-Group68/admin-create-mo-preview.jsp
+| `admin-all-mos-preview.jsp` | `WEB-INF/views/admin/all-mos.jsp` | http://localhost:8080/TA-Recruitment-System-Group68/admin-all-mos-preview.jsp
+| `admin-all-jobs-preview.jsp` | `WEB-INF/views/admin/all-jobs.jsp` | http://localhost:8080/TA-Recruitment-System-Group68/admin-all-jobs-preview.jsp
 
-http://localhost:8080/TA-Recruitment-System-Group68/
 
 ## 2. 页面跳转关系图
 

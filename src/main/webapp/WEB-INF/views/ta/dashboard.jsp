@@ -1,6 +1,13 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
   String contextPath = request.getContextPath();
+  request.setAttribute("headerBrandHref", contextPath + "/ta-dashboard-preview.jsp");
+  request.setAttribute("showHeaderBack", Boolean.FALSE);
+  request.setAttribute("showHeaderUser", Boolean.TRUE);
+  request.setAttribute("currentUserName", "Zhang San");
+  request.setAttribute("currentUserRoleLabel", "TA Applicant");
+  request.setAttribute("currentUserInitial", "Z");
+  request.setAttribute("notificationCount", Integer.valueOf(1));
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -15,34 +22,7 @@
 </head>
 <body>
   <div class="ta-dashboard-shell">
-    <header class="ta-dashboard-header">
-      <div class="ta-dashboard-header__inner">
-        <a class="app-brand" href="<%= contextPath %>/ta-dashboard-preview.jsp">
-          <span class="app-brand__mark">T</span>
-          <span class="app-brand__text">TA Recruitment Portal</span>
-        </a>
-
-        <div class="ta-dashboard-header__actions">
-          <button class="ui-icon-button" type="button" aria-label="Notifications">
-            <span class="ta-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" focusable="false">
-                <path d="M12 4.25a4 4 0 0 0-4 4v2.06c0 .7-.2 1.39-.58 1.98L6 14.5h12l-1.42-2.21a3.75 3.75 0 0 1-.58-1.98V8.25a4 4 0 0 0-4-4Zm0 15.5a2.38 2.38 0 0 0 2.27-1.75H9.73A2.38 2.38 0 0 0 12 19.75Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </span>
-            <span class="ui-notification-dot"></span>
-          </button>
-
-          <div class="ui-user-block">
-            <div class="ui-user-block__meta">
-              <p class="ui-user-block__name">Zhang San</p>
-              <p class="ui-user-block__role">TA Applicant</p>
-            </div>
-            <span class="ui-avatar" aria-hidden="true">Z</span>
-            <span class="ui-chevron" aria-hidden="true">v</span>
-          </div>
-        </div>
-      </div>
-    </header>
+    <jsp:include page="/WEB-INF/views/common/header.jsp" />
 
     <main class="ta-dashboard-main">
       <div class="ta-dashboard-grid">
