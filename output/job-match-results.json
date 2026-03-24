@@ -1,0 +1,28 @@
+{
+  "matches": [
+    {
+      "jobId": "JOB-002",
+      "title": "Java Programming TA",
+      "module": "Object Oriented Programming",
+      "score": 85,
+      "matchingMethod": "api-llm",
+      "explanation": "The strongest signals are Alex's direct experience as a Teaching Assistant for Java programming labs, which aligns perfectly with the job's core responsibilities of supporting Java practical sessions and debugging student code, along with possessing all required technical skills (Java, testing, Git) and soft skills (communication, teaching). A clear gap is the lack of explicit mention of Object-Oriented Programming (OOP) concepts in the resume, which is a required skill for this specific module, though the Java teaching experience likely involves OOP principles."
+    },
+    {
+      "jobId": "JOB-003",
+      "title": "AI Skills Screening Assistant",
+      "module": "AI Fundamentals",
+      "score": 85,
+      "matchingMethod": "api-llm",
+      "explanation": "The strongest signals are Alex's direct experience with Python, machine learning, and data analysis from both research and internship projects, plus proven communication skills from TA work, which align perfectly with the required technical and soft skills. The main gap is the absence of Excel experience mentioned in the resume, which is explicitly required for the role, though Alex's data analysis background suggests potential adaptability."
+    },
+    {
+      "jobId": "JOB-001",
+      "title": "Database Systems TA",
+      "module": "Database Systems",
+      "score": 65,
+      "matchingMethod": "api-llm",
+      "explanation": "The strongest signals are Alex's direct teaching assistant experience with lab support and student questions, plus relevant skills in communication, teaching, and data analysis that match the job requirements. However, there is a clear gap in SQL expertise, which is explicitly required for this database-focused role, and while Alex has Python and Java skills, the posting emphasizes SQL proficiency for answering student questions and supporting database labs."
+    }
+  ]
+}
