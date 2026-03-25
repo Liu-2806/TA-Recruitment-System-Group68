@@ -1,0 +1,58 @@
+[
+  {
+    "postingId": "POST001",
+    "courseCode": "SE3001",
+    "courseName": "Software Engineering TA",
+    "moId": "MO001",
+    "moName": "Prof. Wang",
+    "vacancies": 3,
+    "applicationCount": 1,
+    "deadline": "2026-03-30",
+    "description": "Assist in lab session teaching, support assignment marking, and answer weekly software engineering questions.",
+    "requiredSkills": [
+      "Java",
+      "Testing",
+      "Communication",
+      "Object-Oriented Programming"
+    ],
+    "estimatedWorkloadHours": 6,
+    "status": "OPEN"
+  },
+  {
+    "postingId": "POST002",
+    "courseCode": "CS2202",
+    "courseName": "Database Systems TA",
+    "moId": "MO002",
+    "moName": "Prof. Li",
+    "vacancies": 2,
+    "applicationCount": 0,
+    "deadline": "2026-03-31",
+    "description": "Support SQL labs, help students debug database queries, and assist with coursework Q&A.",
+    "requiredSkills": [
+      "SQL",
+      "Data Analysis",
+      "Communication"
+    ],
+    "estimatedWorkloadHours": 5,
+    "status": "OPEN"
+  },
+  {
+    "postingId": "POST003",
+    "courseCode": "AI1101",
+    "courseName": "AI Foundations TA",
+    "moId": "MO003",
+    "moName": "Prof. Zhang",
+    "vacancies": 2,
+    "applicationCount": 0,
+    "deadline": "2026-04-02",
+    "description": "Support foundational AI classes, review student tasks, and help with model evaluation activities.",
+    "requiredSkills": [
+      "Python",
+      "Machine Learning",
+      "Data Analysis",
+      "Communication"
+    ],
+    "estimatedWorkloadHours": 6,
+    "status": "OPEN"
+  }
+]

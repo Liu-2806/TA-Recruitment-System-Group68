@@ -1,0 +1,110 @@
+.ui-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary-soft);
+  border: 1px solid #dbeafe;
+  color: var(--color-primary);
+  font-weight: 800;
+  box-shadow: var(--shadow-sm);
+}
+
+.ui-icon-button {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-text-muted);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.ui-icon-button:hover {
+  background: var(--color-surface-muted);
+  color: var(--color-primary);
+}
+
+.ui-notification-dot {
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-danger);
+  border: 2px solid #fff;
+}
+
+.ui-user-block {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-left: 16px;
+  border-left: 1px solid var(--color-border);
+}
+
+.ui-user-block__meta {
+  text-align: right;
+}
+
+.ui-user-block__name {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--color-text);
+}
+
+.ui-user-block__role {
+  margin: 2px 0 0;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--color-text-soft);
+  text-transform: uppercase;
+}
+
+.ui-chevron {
+  color: var(--color-text-soft);
+  font-size: 12px;
+}
+
+.ui-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.ui-chip--primary {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+
+.ui-chip--muted {
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border-soft);
+  color: var(--color-text-soft);
+}
+
+.ui-link-button {
+  border: 0;
+  background: none;
+  color: var(--color-primary);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ui-link-button:hover {
+  text-decoration: underline;
+}
