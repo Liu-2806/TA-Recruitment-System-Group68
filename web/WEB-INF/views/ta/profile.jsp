@@ -153,7 +153,7 @@
           </div>
         </div>
 
-        <div class="ta-upload-box">
+        <div class="ta-upload-box" id="resume-upload">
           <h3>
             <span class="ta-upload-box__icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" focusable="false">

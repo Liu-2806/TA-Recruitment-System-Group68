@@ -30,6 +30,7 @@ Examples:
 - `WEB-INF/views/admin/workload.jsp`
 - `assets/css/pages/login.css`
 - `assets/js/pages/login.js`
+- `assets/js/pages/ta-dashboard.js`
 
 ## Role entry structure
 
