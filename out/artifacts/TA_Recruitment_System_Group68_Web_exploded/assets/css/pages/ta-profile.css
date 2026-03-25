@@ -1,0 +1,463 @@
+.ta-profile-shell {
+  min-height: 100vh;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.ta-profile-header {
+  background: rgba(255, 255, 255, 0.96);
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 3px 12px rgba(15, 23, 42, 0.03);
+}
+
+.ta-profile-header__inner {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.ta-profile-header__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.ta-profile-header__back:hover {
+  color: #2563eb;
+}
+
+.ta-profile-header__back-icon {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ta-profile-header__back-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.ta-profile-main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 20px 24px 40px;
+}
+
+.ta-panel {
+  background: #ffffff;
+  border: 1px solid #e9eef5;
+  border-radius: 18px;
+  box-shadow: 0 12px 28px rgba(148, 163, 184, 0.08);
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+
+.ta-panel__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.ta-panel__header h2 {
+  margin: 0;
+  color: #334155;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.ta-panel__header-icon {
+  width: 16px;
+  height: 16px;
+  color: #2563eb;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ta-panel__header-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.ta-form-grid {
+  padding: 18px 20px 20px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 18px;
+}
+
+.ta-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ta-form-field--full {
+  grid-column: 1 / -1;
+}
+
+.ta-form-field label {
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.ta-form-input {
+  position: relative;
+}
+
+.ta-form-input__icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: #b0bccb;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ta-form-input__icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.ta-form-input__icon--text {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.ta-form-input input {
+  width: 100%;
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid #e7edf6;
+  background: #f8fafc;
+  padding: 0 14px 0 36px;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 600;
+  outline: none;
+}
+
+.ta-form-input input:focus {
+  border-color: #6b98f2;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
+}
+
+.ta-form-input input[readonly] {
+  color: #94a3b8;
+}
+
+.ta-skill-manager {
+  padding: 18px 20px 20px;
+}
+
+.ta-skill-manager__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.ta-skill-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 12px;
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.ta-skill-pill button {
+  border: 0;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 0;
+}
+
+.ta-skill-manager__controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ta-skill-manager__controls input {
+  flex: 1;
+  height: 38px;
+  border-radius: 12px;
+  border: 1px solid #e7edf6;
+  background: #f8fafc;
+  padding: 0 12px;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ta-skill-manager__add {
+  min-width: 82px;
+  height: 38px;
+  border: 0;
+  border-radius: 12px;
+  background: #2563eb;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 800;
+  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.22);
+}
+
+.ta-resume-card {
+  margin: 18px 20px 16px;
+  border: 1px dashed #e3eaf3;
+  background: #fbfdff;
+  border-radius: 16px;
+  padding: 18px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.ta-resume-card__file {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.ta-resume-card__file-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #eff6ff;
+  color: #2563eb;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ta-resume-card__file-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.ta-resume-card__file-meta p {
+  margin: 0 0 4px;
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.ta-resume-card__file-meta strong {
+  color: #334155;
+  font-size: 16px;
+  line-height: 1.2;
+  font-weight: 800;
+}
+
+.ta-resume-card__actions {
+  display: flex;
+  gap: 10px;
+}
+
+.ta-resume-card__actions button {
+  min-width: 98px;
+  height: 38px;
+  border-radius: 12px;
+  border: 1px solid #e7edf6;
+  background: #ffffff;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.ta-upload-box {
+  padding: 0 20px 20px;
+  scroll-margin-top: 92px;
+}
+
+.ta-upload-box h3 {
+  margin: 0 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #334155;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.ta-upload-box__icon {
+  width: 16px;
+  height: 16px;
+  color: #2563eb;
+  display: inline-flex;
+}
+
+.ta-upload-box__icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.ta-upload-box__controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 170px;
+  gap: 10px;
+  align-items: center;
+}
+
+.ta-upload-box__file-input {
+  min-height: 42px;
+  border-radius: 12px;
+  border: 1px solid #e7edf6;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 14px;
+}
+
+.ta-upload-box__file-input span {
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ta-upload-box__file-input button {
+  border: 0;
+  background: transparent;
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.ta-upload-box__upload {
+  min-height: 42px;
+  border: 0;
+  border-radius: 12px;
+  background: #2563eb;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 800;
+  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.22);
+}
+
+.ta-upload-box__upload-icon {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+}
+
+.ta-upload-box__upload-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.ta-upload-box__hint {
+  margin: 10px 0 0;
+  color: #c0c9d6;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.ta-profile-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 8px;
+}
+
+.ta-profile-save {
+  min-width: 200px;
+  min-height: 50px;
+  border: 0;
+  border-radius: 14px;
+  background: #059669;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 800;
+  box-shadow: 0 16px 30px rgba(5, 150, 105, 0.22);
+}
+
+.ta-profile-save__icon {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+}
+
+.ta-profile-save__icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+@media (max-width: 760px) {
+  .ta-profile-header__inner,
+  .ta-profile-main {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .ta-form-grid,
+  .ta-upload-box__controls {
+    grid-template-columns: 1fr;
+  }
+
+  .ta-resume-card,
+  .ta-skill-manager__controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ta-resume-card__actions {
+    width: 100%;
+  }
+
+  .ta-resume-card__actions button,
+  .ta-profile-save {
+    width: 100%;
+  }
+
+  .ta-profile-actions {
+    justify-content: stretch;
+  }
+
+  .ta-profile-header__inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

@@ -1,0 +1,13 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="TA-Recruitment-System-Group68:Web exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/TA_Recruitment_System_Group68_Web_exploded</output-path>
+    <root id="root">
+      <element id="javaee-facet-resources" facet="TA-Recruitment-System-Group68/web/Web" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="TA-Recruitment-System-Group68" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>
