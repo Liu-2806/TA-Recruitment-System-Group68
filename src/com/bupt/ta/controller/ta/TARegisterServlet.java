@@ -23,7 +23,7 @@ public class TARegisterServlet extends BaseServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.getRequestDispatcher("/WEB-INF/views/ta/register.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/auth/register.jsp").forward(request, response);
     }
 
     /**
@@ -45,7 +45,7 @@ public class TARegisterServlet extends BaseServlet {
         } catch (Exception ex) {
             request.setAttribute("errorMessage", ex.getMessage());
             request.setAttribute("formData", params);
-            request.getRequestDispatcher("/WEB-INF/views/ta/register.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/views/auth/register.jsp").forward(request, response);
         }
     }
 }

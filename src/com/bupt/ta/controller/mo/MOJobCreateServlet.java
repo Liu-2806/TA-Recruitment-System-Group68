@@ -24,7 +24,7 @@ public class MOJobCreateServlet extends BaseServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.getRequestDispatcher("/WEB-INF/views/mo/job-create.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/mo/post-position.jsp").forward(request, response);
     }
 
     /**
@@ -48,7 +48,7 @@ public class MOJobCreateServlet extends BaseServlet {
         } catch (Exception ex) {
             request.setAttribute("errorMessage", ex.getMessage());
             request.setAttribute("formData", params);
-            request.getRequestDispatcher("/WEB-INF/views/mo/job-create.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/views/mo/post-position.jsp").forward(request, response);
         }
     }
 }

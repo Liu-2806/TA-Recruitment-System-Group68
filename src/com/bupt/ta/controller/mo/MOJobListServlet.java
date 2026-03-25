@@ -30,6 +30,6 @@ public class MOJobListServlet extends BaseServlet {
         query.setSortBy(request.getParameter("sortBy"));
         request.setAttribute("jobsPage", jobService.listJobsByMO(user.getId(), query));
         request.setAttribute("query", query);
-        request.getRequestDispatcher("/WEB-INF/views/mo/job-list.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/mo/postings.jsp").forward(request, response);
     }
 }
