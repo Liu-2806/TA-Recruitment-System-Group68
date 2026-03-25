@@ -275,6 +275,8 @@
     </div>
   </div>
 
+  <jsp:include page="/WEB-INF/views/common/footer.jsp" />
+
   <script src="<%= contextPath %>/assets/js/pages/ta-position-details.js"></script>
 </body>
 </html>

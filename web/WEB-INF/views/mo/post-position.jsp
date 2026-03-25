@@ -144,6 +144,8 @@
         <p><strong>Pro Tip:</strong> Once a position is posted, it will be visible to all eligible students immediately. You can track applicant progress from your dashboard.</p>
       </div>
     </main>
+
+    <jsp:include page="/WEB-INF/views/common/footer.jsp" />
   </div>
 </body>
 </html>

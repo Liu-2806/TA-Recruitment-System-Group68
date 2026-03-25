@@ -81,7 +81,7 @@
               </div>
             </div>
             <div class="ta-inline-actions">
-              <a class="ta-mini-button ta-mini-button--link" href="<%= contextPath %>/ta-profile-preview.jsp">Update</a>
+              <a class="ta-mini-button ta-mini-button--link" href="<%= contextPath %>/ta-profile-preview.jsp#resume-upload">Upload / Replace</a>
               <button class="ta-mini-button ta-mini-button--primary" type="button">
                 <span class="ta-mini-button__icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" focusable="false">
@@ -92,195 +92,181 @@
               </button>
             </div>
           </section>
-
-          <section class="ta-card">
-            <div class="ta-card__header">
-              <h3 class="ta-card__eyebrow">Expertise</h3>
-              <button class="ta-card__icon-button" type="button" aria-label="Add skill">
-                <svg viewBox="0 0 24 24" focusable="false">
-                  <path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </button>
-            </div>
-            <div class="ta-skill-list">
-              <span class="ta-skill-chip">Java</span>
-              <span class="ta-skill-chip">Python</span>
-              <span class="ta-skill-chip">Project Management</span>
-              <span class="ta-skill-chip">Communication</span>
-            </div>
-          </section>
         </aside>
 
         <section class="ta-dashboard-content">
-          <section class="ta-hero-card">
-            <div class="ta-hero-card__glow"></div>
-            <div class="ta-hero-card__content">
-              <div>
-                <h2 class="ta-hero-card__title">Action Required</h2>
-                <p class="ta-hero-card__text">
-                  You have <span>2 applications</span> currently waiting for Module Organizer (MO) review.
-                </p>
+          <section class="ta-board-card ta-board-card--timetable">
+            <div class="ta-board-card__header">
+              <div class="ta-board-card__title-group">
+                <span class="ta-board-card__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" focusable="false">
+                    <path d="M7 3.75v3.5M17 3.75v3.5M4.75 8.25h14.5m-13 1.25h11a1.75 1.75 0 0 1 1.75 1.75v6.5A1.75 1.75 0 0 1 17.25 19.5H6.75A1.75 1.75 0 0 1 5 17.75v-6.5A1.75 1.75 0 0 1 6.75 9.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </span>
+                <div>
+                  <p class="ta-board-card__eyebrow">Timetable</p>
+                  <h2>Weekly Teaching Schedule</h2>
+                </div>
               </div>
-              <a class="ta-hero-card__button" href="<%= contextPath %>/ta-applications-preview.jsp">
-                <span>Track My Progress</span>
-                <span class="ta-hero-card__button-icon" aria-hidden="true">
+              <div class="ta-board-card__toolbar">
+                <button class="ta-week-switch" type="button" id="taPrevWeek" aria-label="Previous week">
                   <svg viewBox="0 0 24 24" focusable="false">
-                    <path d="M5.5 12h13m0 0-5-5m5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M14.5 6.5 9 12l5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
-                </span>
-              </a>
-            </div>
-          </section>
-
-          <section class="ta-card ta-card--wide">
-            <div class="ta-card__wide-header">
-              <div class="ta-card__wide-title">
-                <span class="ta-card__wide-icon" aria-hidden="true">
+                </button>
+                <span class="ta-board-card__meta" id="taWeekLabel">Week of 25 Mar - 31 Mar</span>
+                <button class="ta-week-switch" type="button" id="taNextWeek" aria-label="Next week">
                   <svg viewBox="0 0 24 24" focusable="false">
-                    <path d="M5.5 8h13v10h-13Zm3-2.5h7V8h-7Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9.5 6.5 15 12l-5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
-                </span>
-                <h3>Latest Job Postings</h3>
+                </button>
               </div>
-              <a class="ui-link-button" href="<%= contextPath %>/ta-positions-preview.jsp">Browse All</a>
             </div>
 
-            <div class="ta-job-grid">
-              <article class="ta-job-card">
-                <div class="ta-job-card__icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" focusable="false">
-                    <path d="M5.5 8h13v10h-13Zm3-2.5h7V8h-7Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </div>
-                <h4>Software Engineering TA</h4>
-                <p>Prof. Wang</p>
-              </article>
-
-              <article class="ta-job-card">
-                <div class="ta-job-card__icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" focusable="false">
-                    <path d="M5.5 8h13v10h-13Zm3-2.5h7V8h-7Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </div>
-                <h4>Data Structures TA</h4>
-                <p>Prof. Li</p>
-              </article>
-
-              <article class="ta-job-card">
-                <div class="ta-job-card__icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" focusable="false">
-                    <path d="M5.5 8h13v10h-13Zm3-2.5h7V8h-7Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </div>
-                <h4>Computer Networks TA</h4>
-                <p>Prof. Zhang</p>
-              </article>
+            <div class="ta-course-strip" id="taCourseStrip">
+              <div class="ta-course-strip__content">
+                <span class="ta-course-strip__label" id="taCourseLabel">Course TA</span>
+                <strong id="taCourseTitle">Software Engineering TA</strong>
+                <p id="taCourseMeta">Tue 14:00 - 16:00 · Queens Building QB-302 · Weekly support session</p>
+              </div>
+              <a class="ta-course-strip__link" id="taCourseLink" href="<%= contextPath %>/ta-applications-preview.jsp#application-se3001">Related Application</a>
             </div>
+
+            <div class="ta-calendar-legend">
+              <span class="ta-calendar-legend__item"><span class="ta-calendar-legend__dot ta-calendar-legend__dot--lab"></span>Lab Support</span>
+              <span class="ta-calendar-legend__item"><span class="ta-calendar-legend__dot ta-calendar-legend__dot--exam"></span>Invigilation</span>
+              <span class="ta-calendar-legend__item"><span class="ta-calendar-legend__dot ta-calendar-legend__dot--checkoff"></span>Project Check-off</span>
+            </div>
+
+            <div class="ta-calendar">
+              <div class="ta-calendar__weekdays">
+                <div class="ta-calendar__weekday">Mon</div>
+                <div class="ta-calendar__weekday">Tue</div>
+                <div class="ta-calendar__weekday">Wed</div>
+                <div class="ta-calendar__weekday">Thu</div>
+                <div class="ta-calendar__weekday">Fri</div>
+                <div class="ta-calendar__weekday">Sat</div>
+                <div class="ta-calendar__weekday">Sun</div>
+              </div>
+              <div class="ta-calendar__grid" id="taCalendarGrid" data-position-url="<%= contextPath %>/ta-position-details-preview.jsp"></div>
+            </div>
+
+            <section class="ta-schedule-detail" id="taScheduleDetail" aria-live="polite">
+              <div class="ta-schedule-detail__header">
+                <div>
+                  <p class="ta-schedule-detail__eyebrow">Selected Task</p>
+                  <h3 id="taScheduleDetailTitle">Select a work day</h3>
+                </div>
+                <span class="ta-schedule-detail__badge" id="taScheduleDetailBadge">No selection</span>
+              </div>
+              <p class="ta-schedule-detail__meta" id="taScheduleDetailMeta">
+                Choose a highlighted day to inspect the arranged TA duty and jump to the related position detail page.
+              </p>
+              <p class="ta-schedule-detail__description" id="taScheduleDetailDescription">
+                Scheduled activity details for this week will appear here.
+              </p>
+              <div class="ta-schedule-detail__actions">
+                <a class="ta-schedule-detail__action" id="taScheduleDetailLink" href="<%= contextPath %>/ta-position-details-preview.jsp">Open Position Details</a>
+              </div>
+            </section>
           </section>
 
-          <section class="ta-card ta-card--table">
-            <div class="ta-table__head">
-              <h3>Active Application Tracking</h3>
-            </div>
-            <div class="ta-table__wrap">
-              <table class="ta-table">
-                <thead>
-                  <tr>
-                    <th>Job Position</th>
-                    <th class="ta-table__center">Status</th>
-                    <th class="ta-table__right">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Software Engineering TA</td>
-                    <td class="ta-table__center">
-                      <span class="ta-status ta-status--pending">
-                        <span class="ta-status__icon" aria-hidden="true">
-                          <svg viewBox="0 0 24 24" focusable="false">
-                            <path d="M12 6.25v5.5l3.25 1.75M12 20a8 8 0 1 0-8-8 8 8 0 0 0 8 8Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                          </svg>
-                        </span>
-                        Pending
-                      </span>
-                    </td>
-                    <td class="ta-table__right"><a class="ui-link-button" href="<%= contextPath %>/ta-applications-preview.jsp">Details</a></td>
-                  </tr>
-                  <tr>
-                    <td>Database Systems TA</td>
-                    <td class="ta-table__center">
-                      <span class="ta-status ta-status--accepted">
-                        <span class="ta-status__icon" aria-hidden="true">
-                          <svg viewBox="0 0 24 24" focusable="false">
-                            <path d="M7.75 12.25 10.5 15l5.75-5.75M12 20a8 8 0 1 0-8-8 8 8 0 0 0 8 8Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                          </svg>
-                        </span>
-                        Accepted
-                      </span>
-                    </td>
-                    <td class="ta-table__right"><a class="ui-link-button" href="<%= contextPath %>/ta-applications-preview.jsp">Details</a></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </section>
+          <div class="ta-dashboard-panels">
+            <section class="ta-board-card">
+              <div class="ta-board-card__header">
+                <div class="ta-board-card__title-group">
+                  <span class="ta-board-card__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" focusable="false">
+                      <path d="M5.5 8h13v10h-13Zm3-2.5h7V8h-7Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </span>
+                  <div>
+                    <p class="ta-board-card__eyebrow">Positions</p>
+                    <h2>Recommended Open Roles</h2>
+                  </div>
+                </div>
+                <a class="ta-board-card__link" href="<%= contextPath %>/ta-positions-preview.jsp">Browse All</a>
+              </div>
 
-          <div class="ta-dashboard-bottom">
-            <section class="ta-card ta-card--bottom">
-              <h3 class="ta-card__eyebrow ta-card__eyebrow--with-icon">
-                <span class="ta-card__eyebrow-icon ta-card__eyebrow-icon--danger" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" focusable="false">
-                    <path d="M12 8.75V13m0 3h.01M12 20a8 8 0 1 0-8-8 8 8 0 0 0 8 8Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </span>
-                Urgent Deadlines
-              </h3>
-              <div class="ta-deadline-list">
-                <div class="ta-deadline-item">
-                  <div class="ta-deadline-item__date">
-                    <strong>30</strong>
-                    <span>Mar</span>
+              <div class="ta-quick-list">
+                <article class="ta-quick-item">
+                  <div class="ta-quick-item__meta">
+                    <h3>Software Engineering TA</h3>
+                    <p>Prof. Wang · Deadline 30 Mar · Java, Testing</p>
                   </div>
-                  <p>Software Engineering Application Deadline</p>
-                </div>
-                <div class="ta-deadline-item">
-                  <div class="ta-deadline-item__date">
-                    <strong>02</strong>
-                    <span>Apr</span>
+                  <a class="ta-quick-item__action" href="<%= contextPath %>/ta-position-details-preview.jsp">View Details</a>
+                </article>
+
+                <article class="ta-quick-item">
+                  <div class="ta-quick-item__meta">
+                    <h3>Database Systems TA</h3>
+                    <p>Prof. Li · Deadline 31 Mar · SQL, Data Analysis</p>
                   </div>
-                  <p>Data Structures Interview Session</p>
-                </div>
+                  <a class="ta-quick-item__action" href="<%= contextPath %>/ta-position-details-preview.jsp">View Details</a>
+                </article>
+
+                <article class="ta-quick-item">
+                  <div class="ta-quick-item__meta">
+                    <h3>AI Foundations TA</h3>
+                    <p>Prof. Zhang · Deadline 02 Apr · Python, ML</p>
+                  </div>
+                  <a class="ta-quick-item__action" href="<%= contextPath %>/ta-position-details-preview.jsp">View Details</a>
+                </article>
               </div>
             </section>
 
-            <section class="ta-card ta-card--bottom">
-              <h3 class="ta-card__eyebrow ta-card__eyebrow--with-icon">
-                <span class="ta-card__eyebrow-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" focusable="false">
-                    <path d="M5.5 7.75h13a1.25 1.25 0 0 1 1.25 1.25v6A1.25 1.25 0 0 1 18.5 16.25H9.75l-3.5 2v-2H5.5A1.25 1.25 0 0 1 4.25 15v-6A1.25 1.25 0 0 1 5.5 7.75Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </span>
-                Portal Alerts
-              </h3>
-              <ul class="ta-alert-list">
-                <li class="ta-alert-item">
-                  <span class="ta-alert-item__dot ta-alert-item__dot--success"></span>
-                  <p>Your resume has passed the initial screening.</p>
-                </li>
-                <li class="ta-alert-item">
-                  <span class="ta-alert-item__dot"></span>
-                  <p>3 new TA positions were posted this week.</p>
-                </li>
-              </ul>
+            <section class="ta-board-card">
+              <div class="ta-board-card__header">
+                <div class="ta-board-card__title-group">
+                  <span class="ta-board-card__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" focusable="false">
+                      <path d="M7.5 4.75h9v14.5h-9Zm3 3h3m-3 4h5m-5 4h4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </span>
+                  <div>
+                    <p class="ta-board-card__eyebrow">Applications</p>
+                    <h2>Recent Application List</h2>
+                  </div>
+                </div>
+                <a class="ta-board-card__link" href="<%= contextPath %>/ta-applications-preview.jsp">Open All</a>
+              </div>
+
+              <div class="ta-history-list">
+                <article class="ta-history-item">
+                  <div class="ta-history-item__status ta-history-item__status--pending">Pending</div>
+                  <div class="ta-history-item__content">
+                    <h3>Software Engineering TA</h3>
+                    <p>Submitted 24 Mar · Waiting for MO review</p>
+                  </div>
+                  <a class="ta-history-item__link" href="<%= contextPath %>/ta-applications-preview.jsp#application-se3001">View History</a>
+                </article>
+
+                <article class="ta-history-item">
+                  <div class="ta-history-item__status ta-history-item__status--accepted">Accepted</div>
+                  <div class="ta-history-item__content">
+                    <h3>Data Structures TA</h3>
+                    <p>Offer received 19 Mar · Start onboarding</p>
+                  </div>
+                  <a class="ta-history-item__link" href="<%= contextPath %>/ta-applications-preview.jsp#application-cs2202">View History</a>
+                </article>
+
+                <article class="ta-history-item">
+                  <div class="ta-history-item__status ta-history-item__status--rejected">Rejected</div>
+                  <div class="ta-history-item__content">
+                    <h3>Database Systems TA</h3>
+                    <p>Closed 12 Mar · Feedback available</p>
+                  </div>
+                  <a class="ta-history-item__link" href="<%= contextPath %>/ta-applications-preview.jsp#history-archive">View History</a>
+                </article>
+              </div>
             </section>
           </div>
         </section>
       </div>
     </main>
 
-    <footer class="ta-dashboard-footer">
-      <p>2025 University TA Recruitment Portal. Processing with academic integrity.</p>
-    </footer>
+    <jsp:include page="/WEB-INF/views/common/footer.jsp" />
   </div>
+  <script src="<%= contextPath %>/assets/js/pages/ta-dashboard.js"></script>
 </body>
 </html>

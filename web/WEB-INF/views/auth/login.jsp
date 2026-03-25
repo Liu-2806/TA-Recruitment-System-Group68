@@ -91,9 +91,20 @@
             <a class="auth-button auth-button--secondary" href="<%= contextPath %>/register-preview.jsp">Sign up as TA</a>
           </form>
 
+          <div class="auth-card__footer">
+            <span class="auth-card__footer-text">
+              By continuing, you agree to the
+              <a class="auth-card__footer-link" href="<%= contextPath %>/legal?type=agreement#user-agreement">User Agreement</a>
+              and
+              <a class="auth-card__footer-link" href="<%= contextPath %>/legal?type=privacy#privacy-policy">Privacy Policy</a>.
+            </span>
+          </div>
+
         </div>
       </section>
     </main>
+
+    <jsp:include page="/WEB-INF/views/common/footer.jsp" />
   </div>
 
   <script src="<%= contextPath %>/assets/js/pages/login.js"></script>

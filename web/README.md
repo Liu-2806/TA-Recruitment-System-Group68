@@ -30,6 +30,7 @@ Examples:
 - `WEB-INF/views/admin/workload.jsp`
 - `assets/css/pages/login.css`
 - `assets/js/pages/login.js`
+- `assets/js/pages/ta-dashboard.js`
 
 ## Role entry structure
 
@@ -51,6 +52,7 @@ Planned role-based page entry points:
 - `WEB-INF/views/common/header.jsp`: top bar with branding, page context, notifications, and user info
 - `WEB-INF/views/common/sidebar.jsp`: role-aware navigation for TA, MO, and Admin
 - `WEB-INF/views/common/footer.jsp`: system, group, and version info
+- `WEB-INF/views/common/legal.jsp`: shared placeholder page for User Agreement and Privacy Policy
 - `WEB-INF/views/common/layout.jsp`: shared page shell for content pages
 
 The shared `layout.jsp` expects request attributes such as:
@@ -70,5 +72,7 @@ The shared `layout.jsp` expects request attributes such as:
 
 - JSP pages under `WEB-INF/views` are intended to be rendered through servlets.
 - Shared CSS and JS files are placed in `assets`.
+- Shared public placeholder pages can also be placed under `WEB-INF/views/common` and exposed through a servlet route.
+- Standalone auth, TA, MO, and Admin pages should also include the shared `footer.jsp` to keep the bottom section consistent.
 - Empty role/page folders use `.gitkeep` so the structure can be tracked in Git.
 - JSTL dependencies for shared JSP fragments are stored in `WEB-INF/lib`.
