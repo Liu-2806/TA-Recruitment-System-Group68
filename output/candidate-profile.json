@@ -1,8 +1,0 @@
-{
-  "name": "Alex Chen",
-  "email": "alex.chen@example.com",
-  "phone": "+44 7123 456789",
-  "education": "MSc Computer Science, Queen Mary University of London",
-  "skills": ["java", "python", "communication", "teaching", "data analysis", "machine learning", "git", "testing"],
-  "experienceHighlights": ["Teaching Assistant for introductory programming labs, supporting weekly Java exercises and answering student questions.", "Research project on machine learning-based skill classification for student profiles.", "Internship project building internal dashboards and data analysis scripts in Python."]
-}
