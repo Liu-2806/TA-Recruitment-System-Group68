@@ -1,0 +1,106 @@
+TA Recruitment System Group 68
+Shared Environment Requirements
+
+1. Required Environment
+
+- Operating System: Windows 10 or Windows 11
+- Java: JDK 21
+- Servlet API: javax.servlet 4.x compatible container
+- Shell: PowerShell
+- Encoding: UTF-8
+
+2. Required Local Dependency JARs
+
+- lib/pdfbox-app-3.0.2.jar
+- lib/gson-2.11.0.jar
+- lib/javax.servlet-api-4.0.1.jar
+
+3. Direct Download Links
+
+JDK 21
+- Oracle:
+  https://www.oracle.com/java/technologies/downloads/#java21
+- Adoptium:
+  https://adoptium.net/temurin/releases/?version=21
+
+PowerShell
+- https://github.com/PowerShell/PowerShell/releases
+
+PDFBox 3.0.2
+- https://repo1.maven.org/maven2/org/apache/pdfbox/pdfbox-app/3.0.2/pdfbox-app-3.0.2.jar
+
+Gson 2.11.0
+- https://repo1.maven.org/maven2/com/google/code/gson/gson/2.11.0/gson-2.11.0.jar
+
+Servlet API 4.0.1
+- https://repo1.maven.org/maven2/javax/servlet/javax.servlet-api/4.0.1/javax.servlet-api-4.0.1.jar
+
+4. Current Module Scope
+
+The currently completed owned modules are:
+- PDF resume input module
+- structured resume extraction module
+- LLM / local-rule job matching module
+
+These modules are implemented in:
+- src/com/bupt/ta/
+- web/
+- data/
+
+Current frontend root note:
+- use `web/` as the active JSP and static asset root
+- historical `src/main/webapp` references in logs are not the current runtime directory
+
+5. Compile Check Command
+
+Run this command in the project root to verify the current module compiles:
+
+powershell -ExecutionPolicy Bypass -Command "javac -encoding UTF-8 -cp 'lib/pdfbox-app-3.0.2.jar;lib/gson-2.11.0.jar;lib/javax.servlet-api-4.0.1.jar' -d build/module-check (Get-ChildItem -Recurse -Filter *.java src/com/bupt/ta | ForEach-Object { $_.FullName })"
+
+6. Optional LLM Configuration
+
+If API-based matching is needed, configure:
+- LLM_API_URL
+- LLM_API_KEY
+- LLM_MODEL
+
+Recommended private setup:
+- copy .env.example to .env.local
+- edit .env.local locally
+- do not commit .env.local
+
+The code supports both environment variables and .env.local loading.
+
+Supported DeepSeek base URL forms:
+- https://api.deepseek.com
+- https://api.deepseek.com/v1
+
+7. Data Constraint Reminder
+
+According to the handout:
+- use Java or Java Servlet/JSP
+- use text-based files only
+- do not use a database
+
+Allowed project data files include:
+- .txt
+- .csv
+- .json
+- .xml
+
+8. Collaboration Rule
+
+After each code change, update these files together:
+- README.md
+- requirements.txt
+- docs/简历输入模块中文说明手册.md
+- docs/代码结构树.md
+
+9. New Member Setup Steps
+
+1. Pull the latest repository.
+2. Install JDK 21.
+3. Make sure the three JAR files in lib/ exist.
+4. Copy .env.example to .env.local if LLM mode is needed.
+5. Import the project into the team IDE setup or run the compile check command above.
+6. Do not commit local API secrets or local build output.

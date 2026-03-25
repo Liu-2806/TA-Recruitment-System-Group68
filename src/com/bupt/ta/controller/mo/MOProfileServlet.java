@@ -26,7 +26,7 @@ public class MOProfileServlet extends BaseServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User user = currentUser(request);
         request.setAttribute("profile", profileService.getMOProfile(user.getId()));
-        request.getRequestDispatcher("/WEB-INF/views/mo/profile.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/mo/profile-edit.jsp").forward(request, response);
     }
 
     /**
@@ -46,7 +46,7 @@ public class MOProfileServlet extends BaseServlet {
         } catch (Exception ex) {
             request.setAttribute("errorMessage", ex.getMessage());
             request.setAttribute("profile", params);
-            request.getRequestDispatcher("/WEB-INF/views/mo/profile.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/views/mo/profile-edit.jsp").forward(request, response);
         }
     }
 }

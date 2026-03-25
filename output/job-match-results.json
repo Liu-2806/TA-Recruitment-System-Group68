@@ -1,0 +1,28 @@
+{
+  "matches": [
+    {
+      "jobId": "JOB-002",
+      "title": "Java Programming TA",
+      "module": "Object Oriented Programming",
+      "score": 86,
+      "matchingMethod": "local-keyword",
+      "explanation": "Local fallback matcher found overlap in java, testing, communication, teaching, git. The score also considers TA-related experience and module keywords in the resume."
+    },
+    {
+      "jobId": "JOB-003",
+      "title": "AI Skills Screening Assistant",
+      "module": "AI Fundamentals",
+      "score": 84,
+      "matchingMethod": "local-keyword",
+      "explanation": "Local fallback matcher found overlap in python, machine learning, data analysis, communication. The score also considers TA-related experience and module keywords in the resume."
+    },
+    {
+      "jobId": "JOB-001",
+      "title": "Database Systems TA",
+      "module": "Database Systems",
+      "score": 81,
+      "matchingMethod": "local-keyword",
+      "explanation": "Local fallback matcher found overlap in data analysis, communication, teaching. The score also considers TA-related experience and module keywords in the resume."
+    }
+  ]
+}

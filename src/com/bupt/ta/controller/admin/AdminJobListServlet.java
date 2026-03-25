@@ -28,6 +28,6 @@ public class AdminJobListServlet extends BaseServlet {
         query.setSortBy(request.getParameter("sortBy"));
         request.setAttribute("jobsPage", jobService.searchAllJobsForAdmin(query));
         request.setAttribute("query", query);
-        request.getRequestDispatcher("/WEB-INF/views/admin/job-list.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/admin/all-jobs.jsp").forward(request, response);
     }
 }
