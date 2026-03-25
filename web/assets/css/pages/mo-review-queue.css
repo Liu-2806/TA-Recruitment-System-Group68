@@ -1,0 +1,128 @@
+.mo-review-queue-toolbar {
+  margin-bottom: 18px;
+}
+
+.mo-review-queue-toolbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.mo-review-queue-sort {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 220px;
+}
+
+.mo-review-queue-sort label {
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.mo-review-queue-sort__select {
+  position: relative;
+}
+
+.mo-review-queue-sort__select select {
+  width: 100%;
+  height: 40px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #475569;
+  padding: 0 38px 0 14px;
+  font-size: 14px;
+  font-weight: 700;
+  outline: none;
+  appearance: none;
+}
+
+.mo-review-queue-sort__select select:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
+}
+
+.mo-review-queue-sort__caret {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 12px;
+  pointer-events: none;
+}
+
+.mo-review-queue-summary__note {
+  max-width: 360px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 14px;
+  line-height: 1.6;
+  font-weight: 600;
+}
+
+.mo-review-queue-summary__note strong {
+  font-weight: 900;
+}
+
+.mo-review-queue__time strong {
+  display: block;
+  color: #334155;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.mo-review-queue__time p {
+  margin: 6px 0 0;
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.mo-review-priority {
+  min-height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mo-review-priority--high {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.mo-review-priority--medium {
+  background: #fffbeb;
+  color: #b45309;
+}
+
+.mo-review-priority--low {
+  background: #f8fafc;
+  color: #64748b;
+}
+
+@media (max-width: 1200px) {
+  .mo-review-queue-toolbar__actions {
+    width: 100%;
+  }
+
+  .mo-review-queue-sort {
+    width: 100%;
+  }
+
+  .mo-review-queue-summary__note {
+    max-width: none;
+  }
+}

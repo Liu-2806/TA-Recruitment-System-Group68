@@ -72,13 +72,8 @@
 
             <div class="mo-post-field">
               <label for="deadline">* Application Deadline</label>
-              <div class="mo-post-input">
-                <input id="deadline" type="text" value="2026/03/30">
-                <span class="mo-post-input__calendar" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" focusable="false">
-                    <path d="M7 3.75v3.5M17 3.75v3.5M4.75 8.25h14.5m-13 1.25h11a1.75 1.75 0 0 1 1.75 1.75v6.5A1.75 1.75 0 0 1 17.25 19.5H6.75A1.75 1.75 0 0 1 5 17.75v-6.5A1.75 1.75 0 0 1 6.75 9.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </span>
+              <div class="mo-post-input mo-post-input--picker" id="deadlinePickerField">
+                <input id="deadline" name="deadline" type="datetime-local" value="2026-03-30T17:00" step="900">
               </div>
             </div>
 
@@ -92,13 +87,21 @@
                 <label for="requiredSkills">* Required Skills</label>
                 <span>Use commas to separate</span>
               </div>
-              <input id="requiredSkills" type="text" placeholder="Java, Python, Communication Skills...">
+              <div class="mo-post-input mo-post-input--skills">
+                <span class="mo-post-input__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" focusable="false">
+                    <path d="M4.75 10.25 10.25 4.75H17l2.25 2.25v6.75L13.75 19.25 4.75 10.25Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="14.5" cy="9.5" r="1" fill="currentColor"/>
+                  </svg>
+                </span>
+                <input id="requiredSkills" name="requiredSkills" type="text" placeholder="Java, Python, Communication Skills...">
+              </div>
             </div>
 
             <div class="mo-post-field mo-post-field--full">
               <label for="estimatedWorkload">Estimated Workload</label>
               <div class="mo-post-input">
-                <input id="estimatedWorkload" type="number" value="6">
+                <input id="estimatedWorkload" name="estimatedWorkload" type="number" value="6" min="1">
                 <span class="mo-post-input__suffix">Hours / Week</span>
               </div>
             </div>
@@ -114,23 +117,14 @@
               <span>Post Position</span>
             </button>
 
-            <button class="mo-post-actions__secondary" type="button">
-              <span class="mo-post-actions__icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" focusable="false">
-                  <path d="M7.5 4.75h8l3 3V19H5.5V4.75Zm2 0v4h5v-4M9.5 19v-5h5v5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </span>
-              <span>Save Draft</span>
-            </button>
-
-            <button class="mo-post-actions__cancel" type="button">
+            <a class="mo-post-actions__cancel" href="<%= contextPath %>/mo-dashboard-preview.jsp">
               <span class="mo-post-actions__icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" focusable="false">
                   <path d="m7 7 10 10M17 7 7 17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </span>
               <span>Cancel</span>
-            </button>
+            </a>
           </div>
         </form>
       </section>
@@ -147,5 +141,6 @@
 
     <jsp:include page="/WEB-INF/views/common/footer.jsp" />
   </div>
+  <script src="<%= contextPath %>/assets/js/pages/mo-post-position.js"></script>
 </body>
 </html>

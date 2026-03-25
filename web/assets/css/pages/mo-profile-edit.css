@@ -386,6 +386,12 @@
   font-weight: 700;
 }
 
+.mo-profile-security__button:hover {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+  color: #2563eb;
+}
+
 .mo-profile-actions {
   display: flex;
   align-items: center;
@@ -432,17 +438,191 @@
   height: 18px;
 }
 
-.mo-profile-footer {
-  margin-top: 32px;
-  padding: 24px 16px 32px;
-  border-top: 1px solid #f1f5f9;
-  text-align: center;
+.mo-password-modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 80;
 }
 
-.mo-profile-footer p {
-  margin: 0;
+.mo-password-modal.is-open {
+  display: flex;
+}
+
+.mo-password-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.mo-password-modal__dialog {
+  position: relative;
+  width: min(100%, 560px);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 28px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
+  padding: 28px;
+  z-index: 1;
+}
+
+.mo-password-modal__close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #64748b;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mo-password-modal__close:hover {
+  border-color: #bfdbfe;
+  color: #2563eb;
+  background: #eff6ff;
+}
+
+.mo-password-modal__close svg {
+  width: 16px;
+  height: 16px;
+}
+
+.mo-password-modal__header {
+  margin-bottom: 22px;
+  padding-right: 44px;
+}
+
+.mo-password-modal__eyebrow {
+  margin: 0 0 8px;
   color: #94a3b8;
-  font-size: 12px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.mo-password-modal__header h2 {
+  margin: 0;
+  color: #1e293b;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.mo-password-modal__header p {
+  margin: 10px 0 0;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.mo-password-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.mo-password-form__field label {
+  display: block;
+  margin-bottom: 8px;
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.mo-password-form__input {
+  position: relative;
+}
+
+.mo-password-form__icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: #94a3b8;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mo-password-form__icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.mo-password-form__input input {
+  width: 100%;
+  height: 46px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #334155;
+  padding: 0 16px 0 40px;
+  font-size: 14px;
+  font-weight: 600;
+  outline: none;
+}
+
+.mo-password-form__input input:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
+}
+
+.mo-password-form__tips {
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.mo-password-form__tips p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.mo-password-form__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 4px;
+}
+
+.mo-password-form__cancel,
+.mo-password-form__submit {
+  min-height: 46px;
+  padding: 0 20px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.mo-password-form__cancel {
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #64748b;
+}
+
+.mo-password-form__submit {
+  border: 0;
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 14px 28px rgba(37, 99, 235, 0.18);
 }
 
 @media (max-width: 1080px) {
@@ -482,5 +662,19 @@
   .mo-profile-header__actions {
     width: 100%;
     justify-content: space-between;
+  }
+
+  .mo-password-modal {
+    padding: 16px;
+  }
+
+  .mo-password-modal__dialog {
+    padding: 22px 18px 18px;
+    border-radius: 22px;
+  }
+
+  .mo-password-form__actions {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
