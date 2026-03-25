@@ -118,9 +118,9 @@
               <span class="agreement-box__check" aria-hidden="true"></span>
               <span class="agreement-box__text">
                 I have read and agree to the
-                <a href="#">User Agreement</a>
+                <a href="<%= contextPath %>/legal?type=agreement#user-agreement">User Agreement</a>
                 and
-                <a href="#">Privacy Policy</a>.
+                <a href="<%= contextPath %>/legal?type=privacy#privacy-policy">Privacy Policy</a>.
               </span>
             </label>
 
@@ -146,6 +146,8 @@
         </div>
       </section>
     </main>
+
+    <jsp:include page="/WEB-INF/views/common/footer.jsp" />
   </div>
 
   <script src="<%= contextPath %>/assets/js/pages/register.js"></script>

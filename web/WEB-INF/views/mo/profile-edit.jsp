@@ -162,9 +162,7 @@
       </div>
     </main>
 
-    <footer class="mo-profile-footer">
-      <p>&copy; 2026 TA Recruitment System - BUPT Department HR</p>
-    </footer>
+    <jsp:include page="/WEB-INF/views/common/footer.jsp" />
   </div>
 </body>
 </html>

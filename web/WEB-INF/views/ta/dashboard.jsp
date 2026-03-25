@@ -92,23 +92,6 @@
               </button>
             </div>
           </section>
-
-          <section class="ta-card">
-            <div class="ta-card__header">
-              <h3 class="ta-card__eyebrow">Expertise</h3>
-              <button class="ta-card__icon-button" type="button" aria-label="Add skill">
-                <svg viewBox="0 0 24 24" focusable="false">
-                  <path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </button>
-            </div>
-            <div class="ta-skill-list">
-              <span class="ta-skill-chip">Java</span>
-              <span class="ta-skill-chip">Python</span>
-              <span class="ta-skill-chip">Project Management</span>
-              <span class="ta-skill-chip">Communication</span>
-            </div>
-          </section>
         </aside>
 
         <section class="ta-dashboard-content">
@@ -224,63 +207,11 @@
               </table>
             </div>
           </section>
-
-          <div class="ta-dashboard-bottom">
-            <section class="ta-card ta-card--bottom">
-              <h3 class="ta-card__eyebrow ta-card__eyebrow--with-icon">
-                <span class="ta-card__eyebrow-icon ta-card__eyebrow-icon--danger" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" focusable="false">
-                    <path d="M12 8.75V13m0 3h.01M12 20a8 8 0 1 0-8-8 8 8 0 0 0 8 8Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </span>
-                Urgent Deadlines
-              </h3>
-              <div class="ta-deadline-list">
-                <div class="ta-deadline-item">
-                  <div class="ta-deadline-item__date">
-                    <strong>30</strong>
-                    <span>Mar</span>
-                  </div>
-                  <p>Software Engineering Application Deadline</p>
-                </div>
-                <div class="ta-deadline-item">
-                  <div class="ta-deadline-item__date">
-                    <strong>02</strong>
-                    <span>Apr</span>
-                  </div>
-                  <p>Data Structures Interview Session</p>
-                </div>
-              </div>
-            </section>
-
-            <section class="ta-card ta-card--bottom">
-              <h3 class="ta-card__eyebrow ta-card__eyebrow--with-icon">
-                <span class="ta-card__eyebrow-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" focusable="false">
-                    <path d="M5.5 7.75h13a1.25 1.25 0 0 1 1.25 1.25v6A1.25 1.25 0 0 1 18.5 16.25H9.75l-3.5 2v-2H5.5A1.25 1.25 0 0 1 4.25 15v-6A1.25 1.25 0 0 1 5.5 7.75Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </span>
-                Portal Alerts
-              </h3>
-              <ul class="ta-alert-list">
-                <li class="ta-alert-item">
-                  <span class="ta-alert-item__dot ta-alert-item__dot--success"></span>
-                  <p>Your resume has passed the initial screening.</p>
-                </li>
-                <li class="ta-alert-item">
-                  <span class="ta-alert-item__dot"></span>
-                  <p>3 new TA positions were posted this week.</p>
-                </li>
-              </ul>
-            </section>
-          </div>
         </section>
       </div>
     </main>
 
-    <footer class="ta-dashboard-footer">
-      <p>2025 University TA Recruitment Portal. Processing with academic integrity.</p>
-    </footer>
+    <jsp:include page="/WEB-INF/views/common/footer.jsp" />
   </div>
 </body>
 </html>
