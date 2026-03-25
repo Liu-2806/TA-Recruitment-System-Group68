@@ -24,6 +24,6 @@ public class MOApplicantDetailServlet extends BaseServlet {
         }
         String applicationId = request.getParameter("applicationId");
         request.setAttribute("application", applicationService.getApplicationDetailForMO(applicationId, user.getId()));
-        request.getRequestDispatcher("/WEB-INF/views/mo/applicant-detail.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/mo/applicant-details.jsp").forward(request, response);
     }
 }

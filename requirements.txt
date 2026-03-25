@@ -44,8 +44,12 @@ The currently completed owned modules are:
 
 These modules are implemented in:
 - src/com/bupt/ta/
-- web/WEB-INF/views/
+- web/
 - data/
+
+Current frontend root note:
+- use `web/` as the active JSP and static asset root
+- historical `src/main/webapp` references in logs are not the current runtime directory
 
 5. Compile Check Command
 

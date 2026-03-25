@@ -23,7 +23,7 @@ public class AdminMOCreateServlet extends BaseServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.getRequestDispatcher("/WEB-INF/views/admin/mo-create.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/admin/create-mo.jsp").forward(request, response);
     }
 
     /**
@@ -42,7 +42,7 @@ public class AdminMOCreateServlet extends BaseServlet {
         } catch (Exception ex) {
             request.setAttribute("errorMessage", ex.getMessage());
             request.setAttribute("formData", params);
-            request.getRequestDispatcher("/WEB-INF/views/admin/mo-create.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/views/admin/create-mo.jsp").forward(request, response);
         }
     }
 }

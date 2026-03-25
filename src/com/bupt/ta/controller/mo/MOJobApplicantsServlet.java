@@ -24,6 +24,6 @@ public class MOJobApplicantsServlet extends BaseServlet {
         query.setStatus(request.getParameter("status"));
         request.setAttribute("job", jobService.getJobById(jobId));
         request.setAttribute("applicationsPage", applicationService.listApplicationsByJob(jobId, query));
-        request.getRequestDispatcher("/WEB-INF/views/mo/applicant-list.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/mo/applicants.jsp").forward(request, response);
     }
 }

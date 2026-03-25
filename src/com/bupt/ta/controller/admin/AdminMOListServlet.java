@@ -29,6 +29,6 @@ public class AdminMOListServlet extends BaseServlet {
         query.put("sortBy", request.getParameter("sortBy"));
         request.setAttribute("mosPage", userService.searchMOs(query));
         request.setAttribute("query", query);
-        request.getRequestDispatcher("/WEB-INF/views/admin/mo-list.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/admin/all-mos.jsp").forward(request, response);
     }
 }

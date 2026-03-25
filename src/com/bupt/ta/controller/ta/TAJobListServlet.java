@@ -28,6 +28,6 @@ public class TAJobListServlet extends BaseServlet {
         query.setSortBy(request.getParameter("sortBy"));
         request.setAttribute("jobsPage", jobService.searchOpenJobs(query));
         request.setAttribute("query", query);
-        request.getRequestDispatcher("/WEB-INF/views/ta/job-list.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/ta/positions.jsp").forward(request, response);
     }
 }

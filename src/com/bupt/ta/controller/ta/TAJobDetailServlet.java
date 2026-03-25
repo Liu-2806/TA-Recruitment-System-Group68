@@ -27,6 +27,6 @@ public class TAJobDetailServlet extends BaseServlet {
         String jobId = request.getParameter("jobId");
         request.setAttribute("job", jobService.getJobById(jobId));
         request.setAttribute("matchAnalysis", recommendationService.buildJobMatchForTA(user.getId(), jobId));
-        request.getRequestDispatcher("/WEB-INF/views/ta/job-detail.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/ta/position-details.jsp").forward(request, response);
     }
 }

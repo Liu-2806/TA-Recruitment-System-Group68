@@ -3,3 +3,5 @@ build/
 output/
 tmp/
 *.class
+work-log.md
+

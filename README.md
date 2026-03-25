@@ -30,12 +30,7 @@
 
 ## 仓库整体架构说明
 
-当前仓库不是一个完全收敛到单一目录结构的标准 Maven Web 项目，而是包含了两个阶段的内容：
-
-1. 早期的原型 / 预览资源
-2. 当前正在接入业务逻辑的主框架
-
-理解这个仓库时，最重要的是区分“哪一部分是当前真正承载业务逻辑的主框架”。
+当前仓库已经收敛出一套可以继续开发的主结构，但仍保留少量阶段性痕迹，例如旧 demo 的编译产物和历史工作日志。理解仓库时，最重要的是区分“当前真正承载业务逻辑的主框架”与“仅用于保留历史上下文的材料”。
 
 ### 1. 当前主框架
 
@@ -71,31 +66,32 @@
 也就是说，`src/com/bupt/ta/controller/...` 里的 Servlet 目前 forward 的都是这套页面，例如：
 
 - `/WEB-INF/views/ta/profile.jsp`
-- `/WEB-INF/views/ta/job-detail.jsp`
-- `/WEB-INF/views/mo/applicant-list.jsp`
-- `/WEB-INF/views/mo/applicant-detail.jsp`
+- `/WEB-INF/views/ta/position-details.jsp`
+- `/WEB-INF/views/mo/applicants.jsp`
+- `/WEB-INF/views/mo/applicant-details.jsp`
 
 这套页面是当前业务联动时真正对应的视图层。
 
-### 3. 预览与原型资源
+### 3. 当前前端资源目录
 
-仓库中还存在：
+当前前端资源已经统一收敛到：
 
-- `src/main/webapp/`
+- `web/`
 
-这部分更像是较早阶段的页面预览、样式资源和 prototype 内容，里面包含：
+该目录下同时包含：
 
-- preview 页面
-- assets 静态资源
-- 另一套 `WEB-INF/views`
-- 另一份 `web.xml`
+- preview 页面入口
+- `assets` 静态资源
+- 当前使用的 `WEB-INF/views`
+- 当前使用的 `WEB-INF/lib`
+- 当前使用的 `WEB-INF/web.xml`
 
-它对理解整体项目演化有帮助，但当前我负责并已经接入的模块逻辑，不是基于这套目录完成的，而是基于：
+因此，当前已接入业务逻辑的前后端主结构是：
 
 - `src/com/bupt/ta/`
-- `web/WEB-INF/views/`
+- `web/`
 
-因此，如果你要继续在当前业务框架上开发，应优先看这两部分，而不是把 `src/main/webapp` 当成唯一主入口。
+如果你继续在当前业务框架上开发，应优先看这两部分。`work-log.md` 中出现的 `src/main/webapp` 是阶段性历史记录，不再作为当前目录结构说明。
 
 ### 4. 数据层结构
 
@@ -288,9 +284,9 @@
 - `src/com/bupt/ta/controller/ta/TAJobDetailServlet.java`
 - `src/com/bupt/ta/controller/mo/MOApplicantDetailServlet.java`
 - `src/com/bupt/ta/controller/mo/MOJobApplicantsServlet.java`
-- `web/WEB-INF/views/ta/job-detail.jsp`
-- `web/WEB-INF/views/mo/applicant-list.jsp`
-- `web/WEB-INF/views/mo/applicant-detail.jsp`
+- `web/WEB-INF/views/ta/position-details.jsp`
+- `web/WEB-INF/views/mo/applicants.jsp`
+- `web/WEB-INF/views/mo/applicant-details.jsp`
 
 ### 当前匹配模块的处理流程
 
@@ -343,7 +339,7 @@ AI 当前只负责：
 
 在：
 
-- `web/WEB-INF/views/ta/job-detail.jsp`
+- `web/WEB-INF/views/ta/position-details.jsp`
 
 中已经能够展示：
 
@@ -358,7 +354,7 @@ AI 当前只负责：
 
 在：
 
-- `web/WEB-INF/views/mo/applicant-list.jsp`
+- `web/WEB-INF/views/mo/applicants.jsp`
 
 中已经能够展示：
 
@@ -367,7 +363,7 @@ AI 当前只负责：
 
 在：
 
-- `web/WEB-INF/views/mo/applicant-detail.jsp`
+- `web/WEB-INF/views/mo/applicant-details.jsp`
 
 中已经能够展示：
 
@@ -485,19 +481,17 @@ javac -encoding UTF-8 -cp "lib/pdfbox-app-3.0.2.jar;lib/gson-2.11.0.jar;lib/java
 - `src/com/bupt/ta`
 - `web/WEB-INF/views`
 
-### 2. 当前仓库存在双 web 目录
+### 2. 当前前端目录已统一到 `web`
 
-仓库中同时存在：
+当前前端资源、preview 页面、JSP 视图和 taglib 依赖统一位于：
 
-- `web/WEB-INF/...`
-- `src/main/webapp/WEB-INF/...`
+- `web/`
 
-当前 controller forward 的是：
+当前 controller forward 的也是：
 
 - `web/WEB-INF/views/...`
 
-因此，如果后续有人部署项目时忽略了这一点，可能会出现“部署后页面不是当前版本”的情况。  
-这属于仓库当前的结构事实，需要组内在最终部署方案中进一步统一。
+因此，后续协作时应直接以 `web/` 作为当前前端根目录。`work-log.md` 中保留的旧路径仅用于记录阶段过程。
 
 ### 3. 正式登录模块尚未完成
 
