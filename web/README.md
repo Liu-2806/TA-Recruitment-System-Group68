@@ -27,7 +27,7 @@ Examples:
 - `WEB-INF/views/auth/login.jsp`
 - `WEB-INF/views/ta/dashboard.jsp`
 - `WEB-INF/views/mo/post-position.jsp`
-- `WEB-INF/views/admin/all-jobs.jsp`
+- `WEB-INF/views/admin/workload.jsp`
 - `assets/css/pages/login.css`
 - `assets/js/pages/login.js`
 
@@ -40,11 +40,11 @@ Examples:
 - MO pages: `WEB-INF/views/mo`
 - Admin pages: `WEB-INF/views/admin`
 
-Current role-based page entry points:
+Planned role-based page entry points:
 
-- TA: dashboard, profile, positions, position-details, applications
-- MO: dashboard, profile-edit, post-position, postings, applicants, applicant-details
-- Admin: dashboard, create-mo, all-mos, all-jobs
+- TA: dashboard, profile, positions, applications
+- MO: dashboard, profile, post-position, postings, applicants
+- Admin: dashboard, mo-list, ta-list, workload
 
 ## Shared layout
 
@@ -72,4 +72,3 @@ The shared `layout.jsp` expects request attributes such as:
 - Shared CSS and JS files are placed in `assets`.
 - Empty role/page folders use `.gitkeep` so the structure can be tracked in Git.
 - JSTL dependencies for shared JSP fragments are stored in `WEB-INF/lib`.
-- The active web root is this `web/` directory.

@@ -23,7 +23,7 @@
     <main class="auth-stage">
       <section class="auth-card" aria-labelledby="login-heading">
         <div class="auth-card__hero">
-          <h1 id="login-heading" class="auth-card__title">Welcome Back</h1>
+          <h1 id="login-heading" class="auth-card__title">Welcome</h1>
           <p class="auth-card__subtitle">Please sign in to your account</p>
         </div>
 
