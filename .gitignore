@@ -1,7 +1,0 @@
-.env.local
-build/
-output/
-tmp/
-*.class
-work-log.md
-
