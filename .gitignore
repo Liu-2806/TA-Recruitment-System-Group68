@@ -3,5 +3,9 @@ build/
 output/
 tmp/
 *.class
+.phase1-console/
+.codex-phase1-test/
+data/users/admin.json
+data/users/mo.json
 work-log.md
 

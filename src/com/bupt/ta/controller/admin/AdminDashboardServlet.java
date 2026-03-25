@@ -2,6 +2,7 @@ package com.bupt.ta.controller.admin;
 
 import com.bupt.ta.controller.common.BaseServlet;
 import com.bupt.ta.service.AnalyticsService;
+import com.bupt.ta.util.ServiceRegistry;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -14,7 +15,7 @@ import java.io.IOException;
  */
 @WebServlet("/admin/dashboard")
 public class AdminDashboardServlet extends BaseServlet {
-    private AnalyticsService analyticsService;
+    private final AnalyticsService analyticsService = ServiceRegistry.analyticsService();
 
     /**
      * 展示系统概览页面。
