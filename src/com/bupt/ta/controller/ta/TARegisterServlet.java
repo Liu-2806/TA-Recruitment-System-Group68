@@ -2,6 +2,7 @@ package com.bupt.ta.controller.ta;
 
 import com.bupt.ta.controller.common.BaseServlet;
 import com.bupt.ta.service.UserService;
+import com.bupt.ta.util.ServiceRegistry;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,7 +17,7 @@ import java.util.Map;
  */
 @WebServlet("/ta/register")
 public class TARegisterServlet extends BaseServlet {
-    private UserService userService;
+    private final UserService userService = ServiceRegistry.userService();
 
     /**
      * 展示 TA 注册页面。
@@ -36,8 +37,12 @@ public class TARegisterServlet extends BaseServlet {
         params.put("password", request.getParameter("password"));
         params.put("confirmPassword", request.getParameter("confirmPassword"));
         params.put("email", request.getParameter("email"));
-        params.put("name", request.getParameter("name"));
+        params.put("name", firstNonBlank(request.getParameter("name"), request.getParameter("fullName")));
+        params.put("fullName", request.getParameter("fullName"));
         params.put("studentId", request.getParameter("studentId"));
+        params.put("majorProgram", request.getParameter("majorProgram"));
+        params.put("academicYear", request.getParameter("academicYear"));
+        params.put("agreeTerms", request.getParameter("agreeTerms"));
 
         try {
             userService.registerTA(params);
@@ -47,5 +52,17 @@ public class TARegisterServlet extends BaseServlet {
             request.setAttribute("formData", params);
             request.getRequestDispatcher("/WEB-INF/views/auth/register.jsp").forward(request, response);
         }
+    }
+
+    private String firstNonBlank(String... values) {
+        if (values == null) {
+            return null;
+        }
+        for (String value : values) {
+            if (value != null && !value.trim().isEmpty()) {
+                return value.trim();
+            }
+        }
+        return null;
     }
 }
