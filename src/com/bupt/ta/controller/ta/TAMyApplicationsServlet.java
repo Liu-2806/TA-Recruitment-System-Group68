@@ -1,5 +1,6 @@
 package com.bupt.ta.controller.ta;
 
+import com.bupt.ta.config.ServiceRegistry;
 import com.bupt.ta.controller.common.BaseServlet;
 import com.bupt.ta.dto.ApplicationQuery;
 import com.bupt.ta.model.User;
@@ -16,7 +17,7 @@ import java.io.IOException;
  */
 @WebServlet("/ta/applications/my")
 public class TAMyApplicationsServlet extends BaseServlet {
-    private ApplicationService applicationService;
+    private final ApplicationService applicationService = ServiceRegistry.applicationService();
 
     /**
      * 展示我的申请列表。
@@ -24,6 +25,10 @@ public class TAMyApplicationsServlet extends BaseServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User user = currentUser(request);
+        if (user == null) {
+            response.sendRedirect(request.getContextPath() + "/auth/login");
+            return;
+        }
         ApplicationQuery query = new ApplicationQuery();
         query.setStatus(request.getParameter("status"));
         query.setSortBy(request.getParameter("sortBy"));
