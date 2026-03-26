@@ -8,11 +8,16 @@
 .admin-sidebar {
   width: 242px;
   min-height: 100vh;
+  height: 100vh;
   background: #111827;
   color: #cbd5e1;
   display: flex;
   flex-direction: column;
   border-right: 1px solid #1f2937;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 50;
 }
 
 .admin-sidebar__brand {
@@ -39,6 +44,8 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  flex: 1;
+  overflow-y: auto;
 }
 
 .admin-sidebar__link {
@@ -121,6 +128,20 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
+  margin-left: 242px;
+  width: calc(100% - 242px);
+}
+
+.admin-alljobs-main,
+.admin-allmos-main,
+.admin-create-main,
+.admin-workload-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  margin-left: 242px;
+  width: calc(100% - 242px);
 }
 
 .admin-topbar {
@@ -462,6 +483,9 @@
   .admin-sidebar {
     width: 100%;
     min-height: auto;
+    height: auto;
+    position: static;
+    z-index: auto;
   }
 
   .admin-sidebar__nav {
@@ -471,6 +495,15 @@
 
   .admin-sidebar__link {
     min-width: 180px;
+  }
+
+  .admin-main,
+  .admin-alljobs-main,
+  .admin-allmos-main,
+  .admin-create-main,
+  .admin-workload-main {
+    margin-left: 0;
+    width: 100%;
   }
 
   .admin-stats,

@@ -27,9 +27,11 @@ Examples:
 - `WEB-INF/views/auth/login.jsp`
 - `WEB-INF/views/ta/dashboard.jsp`
 - `WEB-INF/views/mo/post-position.jsp`
-- `WEB-INF/views/admin/workload.jsp`
+- `WEB-INF/views/admin/ta-workload.jsp`
 - `assets/css/pages/login.css`
+- `assets/css/pages/admin-ta-workload.css`
 - `assets/js/pages/login.js`
+- `assets/js/pages/admin-ta-workload.js`
 - `assets/js/pages/mo-post-position.js`
 - `assets/js/pages/mo-profile-edit.js`
 - `assets/js/pages/mo-review-queue.js`
@@ -48,7 +50,7 @@ Planned role-based page entry points:
 
 - TA: dashboard, profile, positions, applications
 - MO: dashboard, profile, post-position, postings, applicants, review-queue
-- Admin: dashboard, mo-list, ta-list, workload
+- Admin: dashboard, mo-list, ta-list, ta-workload
 
 ## Shared layout
 

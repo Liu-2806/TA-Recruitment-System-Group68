@@ -68,7 +68,7 @@
           <span>All Postings</span>
         </a>
 
-        <a class="admin-sidebar__link" href="#">
+        <a class="admin-sidebar__link" href="<%= contextPath %>/admin-ta-workload-preview.jsp">
           <span class="admin-sidebar__icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" focusable="false">
               <path d="M12 6.25v5.5l3.25 1.75M12 20a8 8 0 1 0-8-8 8 8 0 0 0 8 8Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
@@ -77,14 +77,6 @@
           <span>All TA Workload</span>
         </a>
 
-        <a class="admin-sidebar__link" href="#">
-          <span class="admin-sidebar__icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" focusable="false">
-              <path d="m10.25 4.75 1-1.5h1.5l1 1.5 1.7.35.85 1.3-.55 1.65 1.15 1.3-.3 1.55-1.55.55-.55 1.55-1.55.3-1.3-1.15-1.65.55-1.3-.85-.35-1.7-1.5-1v-1.5l1.5-1-.35-1.7.85-1.3ZM12 15.5a3.5 3.5 0 1 0-3.5-3.5A3.5 3.5 0 0 0 12 15.5Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-          <span>Settings</span>
-        </a>
       </nav>
     </aside>
 
