@@ -18,13 +18,20 @@ public final class JsonUtils {
         if (json == null) {
             return null;
         }
-        Parser parser = new Parser(json);
+        Parser parser = new Parser(stripBom(json));
         Object value = parser.parseValue();
         parser.skipWhitespace();
         if (!parser.isEnd()) {
             throw new IllegalArgumentException("Invalid JSON content");
         }
         return value;
+    }
+
+    private static String stripBom(String json) {
+        if (!json.isEmpty() && json.charAt(0) == '\ufeff') {
+            return json.substring(1);
+        }
+        return json;
     }
 
     public static String toJson(Object value) {
