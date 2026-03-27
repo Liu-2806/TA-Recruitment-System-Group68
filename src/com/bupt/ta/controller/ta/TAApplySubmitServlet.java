@@ -28,8 +28,7 @@ public class TAApplySubmitServlet extends BaseServlet {
             applicationService.createApplication(user.getId(), jobId, statement);
             response.sendRedirect(request.getContextPath() + "/ta/applications/my");
         } catch (Exception ex) {
-            request.setAttribute("errorMessage", ex.getMessage());
-            request.getRequestDispatcher("/WEB-INF/views/ta/apply-confirm.jsp").forward(request, response);
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, ex.getMessage());
         }
     }
 }

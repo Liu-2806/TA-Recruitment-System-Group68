@@ -32,6 +32,31 @@ public class JobServiceImpl implements JobService {
                     continue;
                 }
             }
+            if (query.getMajor() != null && !query.getMajor().isBlank()) {
+                String major = query.getMajor().toLowerCase(Locale.ROOT).trim();
+                Object skillsObj = posting.get("requiredSkills");
+                String skillsText = "";
+                if (skillsObj instanceof List<?> list) {
+                    StringBuilder builder = new StringBuilder();
+                    for (Object item : list) {
+                        if (item == null) {
+                            continue;
+                        }
+                        if (builder.length() > 0) {
+                            builder.append(' ');
+                        }
+                        builder.append(String.valueOf(item));
+                    }
+                    skillsText = builder.toString();
+                } else if (skillsObj != null) {
+                    skillsText = String.valueOf(skillsObj);
+                }
+                String haystack = (String.valueOf(posting.get("courseName")) + " " + String.valueOf(posting.get("description")) + " " + skillsText)
+                    .toLowerCase(Locale.ROOT);
+                if (!haystack.contains(major)) {
+                    continue;
+                }
+            }
             filtered.add(new LinkedHashMap<>(posting));
         }
         PageResult<Map<String, Object>> result = new PageResult<>();

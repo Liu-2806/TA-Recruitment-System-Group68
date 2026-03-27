@@ -1,5 +1,6 @@
 package com.bupt.ta.controller.ta;
 
+import com.bupt.ta.config.ServiceRegistry;
 import com.bupt.ta.controller.common.BaseServlet;
 import com.bupt.ta.dto.JobQuery;
 import com.bupt.ta.service.JobService;
@@ -15,7 +16,7 @@ import java.io.IOException;
  */
 @WebServlet("/ta/jobs")
 public class TAJobListServlet extends BaseServlet {
-    private JobService jobService;
+    private final JobService jobService = ServiceRegistry.jobService();
 
     /**
      * 查询并展示岗位列表。
@@ -24,6 +25,7 @@ public class TAJobListServlet extends BaseServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         JobQuery query = new JobQuery();
         query.setKeyword(request.getParameter("keyword"));
+        query.setMajor(request.getParameter("major"));
         query.setStatus(request.getParameter("status"));
         query.setSortBy(request.getParameter("sortBy"));
         request.setAttribute("jobsPage", jobService.searchOpenJobs(query));
