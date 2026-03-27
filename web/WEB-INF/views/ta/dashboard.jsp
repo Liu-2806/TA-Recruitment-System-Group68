@@ -1,13 +1,16 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
   String contextPath = request.getContextPath();
-  request.setAttribute("headerBrandHref", contextPath + "/ta-dashboard-preview.jsp");
+  request.setAttribute("headerBrandHref", contextPath + "/ta/dashboard");
   request.setAttribute("showHeaderBack", Boolean.FALSE);
   request.setAttribute("showHeaderUser", Boolean.TRUE);
-  request.setAttribute("currentUserName", "Zhang San");
+  Object profileSummaryObj = request.getAttribute("profileSummary");
+  java.util.Map profileSummary = profileSummaryObj instanceof java.util.Map ? (java.util.Map) profileSummaryObj : null;
+  String currentUserName = profileSummary == null ? "TA" : String.valueOf(profileSummary.getOrDefault("fullName", "TA"));
+  request.setAttribute("currentUserName", currentUserName);
   request.setAttribute("currentUserRoleLabel", "TA Applicant");
-  request.setAttribute("currentUserInitial", "Z");
-  request.setAttribute("notificationCount", Integer.valueOf(1));
+  request.setAttribute("currentUserInitial", currentUserName == null || currentUserName.isBlank() ? "T" : currentUserName.substring(0, 1).toUpperCase());
+  request.setAttribute("notificationCount", Integer.valueOf(0));
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -35,11 +38,11 @@
                   <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm0 1.5c-3.3 0-6 1.97-6 4.4V19h12v-1.1c0-2.43-2.7-4.4-6-4.4Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </div>
-              <h2 class="ta-profile-card__name">Zhang San</h2>
-              <p class="ta-profile-card__id">ID: 2021001234</p>
-              <p class="ta-profile-card__major">Software Engineering</p>
+              <h2 class="ta-profile-card__name"><%= profileSummary == null ? "" : String.valueOf(profileSummary.getOrDefault("fullName", "")) %></h2>
+              <p class="ta-profile-card__id">ID: <%= profileSummary == null ? "" : String.valueOf(profileSummary.getOrDefault("studentId", "")) %></p>
+              <p class="ta-profile-card__major"><%= profileSummary == null ? "" : String.valueOf(profileSummary.getOrDefault("majorProgram", "")) %></p>
             </div>
-            <a class="ta-button ta-button--soft" href="<%= contextPath %>/ta-profile-preview.jsp">
+            <a class="ta-button ta-button--soft" href="<%= contextPath %>/ta/profile">
               <span class="ta-button__icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" focusable="false">
                   <path d="M5.5 18.5h3l8.25-8.25-3-3L5.5 15.5Zm0 0-.75 3.25L8 21m5.75-11.75 3 3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
@@ -52,16 +55,23 @@
           <section class="ta-card">
             <h3 class="ta-card__eyebrow">Application Statistics</h3>
             <div class="ta-stat-grid">
+              <%
+                Object statsObj = request.getAttribute("applicationStats");
+                java.util.Map stats = statsObj instanceof java.util.Map ? (java.util.Map) statsObj : null;
+                String pendingCount = stats == null ? "0" : String.valueOf(stats.getOrDefault("pendingCount", 0));
+                String acceptedCount = stats == null ? "0" : String.valueOf(stats.getOrDefault("acceptedCount", 0));
+                String rejectedCount = stats == null ? "0" : String.valueOf(stats.getOrDefault("rejectedCount", 0));
+              %>
               <div class="ta-stat-box ta-stat-box--pending">
-                <p class="ta-stat-box__value">3</p>
+                <p class="ta-stat-box__value"><%= pendingCount %></p>
                 <p class="ta-stat-box__label">Pending</p>
               </div>
               <div class="ta-stat-box ta-stat-box--accepted">
-                <p class="ta-stat-box__value">1</p>
+                <p class="ta-stat-box__value"><%= acceptedCount %></p>
                 <p class="ta-stat-box__label">Accepted</p>
               </div>
               <div class="ta-stat-box ta-stat-box--rejected">
-                <p class="ta-stat-box__value">0</p>
+                <p class="ta-stat-box__value"><%= rejectedCount %></p>
                 <p class="ta-stat-box__label">Rejected</p>
               </div>
             </div>
@@ -69,6 +79,19 @@
 
           <section class="ta-card">
             <h3 class="ta-card__eyebrow">Resume Status</h3>
+            <%
+              Object resumeObj = request.getAttribute("resumeSummary");
+              java.util.Map resumeSummary = resumeObj instanceof java.util.Map ? (java.util.Map) resumeObj : null;
+              String resumeFileName = resumeSummary == null ? "" : String.valueOf(resumeSummary.getOrDefault("resumeFileName", ""));
+              String resumeStatusLabel = resumeSummary == null ? "" : String.valueOf(resumeSummary.getOrDefault("statusLabel", ""));
+              String resumeDownloadUrl = resumeSummary == null ? "" : String.valueOf(resumeSummary.getOrDefault("downloadUrl", ""));
+              boolean resumeDownloadEnabled = resumeDownloadUrl != null && !resumeDownloadUrl.isBlank();
+              String resumeDownloadHref = resumeDownloadEnabled ? resumeDownloadUrl : "#";
+              String resumeDownloadDisabledAttrs = resumeDownloadEnabled
+                  ? ""
+                  : "aria-disabled=\"true\" onclick=\"return false;\" style=\"opacity:0.6; pointer-events:none;\"";
+              String resumeUploadAnchor = contextPath + "/ta/profile#resume-upload";
+            %>
             <div class="ta-file-box">
               <span class="ta-file-box__icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" focusable="false">
@@ -76,20 +99,22 @@
                 </svg>
               </span>
               <div class="ta-file-box__meta">
-                <p class="ta-file-box__name">resume_zhang_san.pdf</p>
-                <p class="ta-file-box__note">Verified System PDF</p>
+                <p class="ta-file-box__name"><%= (resumeFileName == null || resumeFileName.isBlank()) ? "No resume uploaded" : resumeFileName %></p>
+                <p class="ta-file-box__note"><%= resumeStatusLabel %></p>
               </div>
             </div>
             <div class="ta-inline-actions">
-              <a class="ta-mini-button ta-mini-button--link" href="<%= contextPath %>/ta-profile-preview.jsp#resume-upload">Upload / Replace</a>
-              <button class="ta-mini-button ta-mini-button--primary" type="button">
+              <a class="ta-mini-button ta-mini-button--link" href="<%= resumeUploadAnchor %>">Upload / Replace</a>
+              <a class="ta-mini-button ta-mini-button--primary"
+                 href="<%= resumeDownloadHref %>"
+                 <%= resumeDownloadDisabledAttrs %>>
                 <span class="ta-mini-button__icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" focusable="false">
                     <path d="M12 5v9m0 0 3.5-3.5M12 14l-3.5-3.5M5.75 17.5v.75h12.5v-.75" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </span>
                 <span>Download</span>
-              </button>
+              </a>
             </div>
           </section>
         </aside>
@@ -189,29 +214,41 @@
               </div>
 
               <div class="ta-quick-list">
+                <%
+                  Object jobsObj = request.getAttribute("recommendedJobs");
+                  java.util.List jobs = jobsObj instanceof java.util.List ? (java.util.List) jobsObj : java.util.Collections.emptyList();
+                  if (jobs.isEmpty()) {
+                %>
                 <article class="ta-quick-item">
                   <div class="ta-quick-item__meta">
-                    <h3>Software Engineering TA</h3>
-                    <p>Prof. Wang · Deadline 30 Mar · Java, Testing</p>
+                    <h3>No open roles</h3>
+                    <p>Please check back later.</p>
                   </div>
-                  <a class="ta-quick-item__action" href="<%= contextPath %>/ta-position-details-preview.jsp">View Details</a>
+                  <a class="ta-quick-item__action" href="<%= contextPath %>/ta/jobs">Browse All</a>
                 </article>
-
+                <%
+                  } else {
+                    for (Object jobObj : jobs) {
+                      java.util.Map job = jobObj instanceof java.util.Map ? (java.util.Map) jobObj : null;
+                      if (job == null) { continue; }
+                      String postingId = String.valueOf(job.getOrDefault("postingId", ""));
+                      String courseName = String.valueOf(job.getOrDefault("courseName", ""));
+                      String moName = String.valueOf(job.getOrDefault("moName", ""));
+                      String deadline = String.valueOf(job.getOrDefault("deadline", ""));
+                      Object requiredSkillsObj = job.get("requiredSkills");
+                      String requiredSkillsText = requiredSkillsObj instanceof java.util.List ? String.join(", ", (java.util.List<String>) requiredSkillsObj) : String.valueOf(requiredSkillsObj == null ? "" : requiredSkillsObj);
+                %>
                 <article class="ta-quick-item">
                   <div class="ta-quick-item__meta">
-                    <h3>Database Systems TA</h3>
-                    <p>Prof. Li · Deadline 31 Mar · SQL, Data Analysis</p>
+                    <h3><%= courseName %></h3>
+                    <p><%= moName %> · Deadline <%= deadline %> · <%= requiredSkillsText %></p>
                   </div>
-                  <a class="ta-quick-item__action" href="<%= contextPath %>/ta-position-details-preview.jsp">View Details</a>
+                  <a class="ta-quick-item__action" href="<%= contextPath %>/ta/jobs/detail?jobId=<%= postingId %>">View Details</a>
                 </article>
-
-                <article class="ta-quick-item">
-                  <div class="ta-quick-item__meta">
-                    <h3>AI Foundations TA</h3>
-                    <p>Prof. Zhang · Deadline 02 Apr · Python, ML</p>
-                  </div>
-                  <a class="ta-quick-item__action" href="<%= contextPath %>/ta-position-details-preview.jsp">View Details</a>
-                </article>
+                <%
+                    }
+                  }
+                %>
               </div>
             </section>
 
@@ -232,32 +269,44 @@
               </div>
 
               <div class="ta-history-list">
+                <%
+                  Object recentAppsObj = request.getAttribute("recentApplications");
+                  java.util.List recentApps = recentAppsObj instanceof java.util.List ? (java.util.List) recentAppsObj : java.util.Collections.emptyList();
+                  if (recentApps.isEmpty()) {
+                %>
                 <article class="ta-history-item">
-                  <div class="ta-history-item__status ta-history-item__status--pending">Pending</div>
+                  <div class="ta-history-item__status ta-history-item__status--pending">No records</div>
                   <div class="ta-history-item__content">
-                    <h3>Software Engineering TA</h3>
-                    <p>Submitted 24 Mar · Waiting for MO review</p>
+                    <h3>No applications yet</h3>
+                    <p>Browse open roles and submit your first application.</p>
                   </div>
-                  <a class="ta-history-item__link" href="<%= contextPath %>/ta-applications-preview.jsp#application-se3001">View History</a>
+                  <a class="ta-history-item__link" href="<%= contextPath %>/ta/jobs">Browse Roles</a>
                 </article>
-
+                <%
+                  } else {
+                    for (Object appObj : recentApps) {
+                      java.util.Map app = appObj instanceof java.util.Map ? (java.util.Map) appObj : null;
+                      if (app == null) { continue; }
+                      String status = String.valueOf(app.getOrDefault("status", "PENDING"));
+                      String statusCss = "pending";
+                      String statusUpper = status == null ? "" : status.trim().toUpperCase();
+                      if ("ACCEPTED".equals(statusUpper)) { statusCss = "accepted"; }
+                      else if ("REJECTED".equals(statusUpper)) { statusCss = "rejected"; }
+                      String postingTitle = String.valueOf(app.getOrDefault("postingTitle", ""));
+                      String appliedAt = String.valueOf(app.getOrDefault("appliedAt", ""));
+                %>
                 <article class="ta-history-item">
-                  <div class="ta-history-item__status ta-history-item__status--accepted">Accepted</div>
+                  <div class="ta-history-item__status ta-history-item__status--<%= statusCss %>"><%= status %></div>
                   <div class="ta-history-item__content">
-                    <h3>Data Structures TA</h3>
-                    <p>Offer received 19 Mar · Start onboarding</p>
+                    <h3><%= postingTitle %></h3>
+                    <p>Submitted <%= appliedAt %></p>
                   </div>
-                  <a class="ta-history-item__link" href="<%= contextPath %>/ta-applications-preview.jsp#application-cs2202">View History</a>
+                  <a class="ta-history-item__link" href="<%= contextPath %>/ta/applications/my">View History</a>
                 </article>
-
-                <article class="ta-history-item">
-                  <div class="ta-history-item__status ta-history-item__status--rejected">Rejected</div>
-                  <div class="ta-history-item__content">
-                    <h3>Database Systems TA</h3>
-                    <p>Closed 12 Mar · Feedback available</p>
-                  </div>
-                  <a class="ta-history-item__link" href="<%= contextPath %>/ta-applications-preview.jsp#history-archive">View History</a>
-                </article>
+                <%
+                    }
+                  }
+                %>
               </div>
             </section>
           </div>

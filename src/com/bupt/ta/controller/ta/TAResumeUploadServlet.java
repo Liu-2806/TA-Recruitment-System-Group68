@@ -3,6 +3,7 @@ package com.bupt.ta.controller.ta;
 import com.bupt.ta.config.ServiceRegistry;
 import com.bupt.ta.controller.common.BaseServlet;
 import com.bupt.ta.model.User;
+import com.bupt.ta.service.ProfileService;
 import com.bupt.ta.service.ResumeService;
 
 import javax.servlet.ServletException;
@@ -14,9 +15,13 @@ import javax.servlet.http.Part;
 import java.io.IOException;
 
 @WebServlet("/ta/profile/resume")
-@MultipartConfig
+@MultipartConfig(
+    maxFileSize = 5L * 1024L * 1024L,
+    maxRequestSize = 6L * 1024L * 1024L
+)
 public class TAResumeUploadServlet extends BaseServlet {
     private final ResumeService resumeService = ServiceRegistry.resumeService();
+    private final ProfileService profileService = ServiceRegistry.profileService();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -27,10 +32,15 @@ public class TAResumeUploadServlet extends BaseServlet {
         }
         Part resumeFile = request.getPart("resumeFile");
         try {
+            if (resumeFile == null) {
+                throw new IllegalStateException("Resume file is missing.");
+            }
             resumeService.saveOrReplaceTAResume(user.getId(), resumeFile.getSubmittedFileName(), resumeFile.getInputStream());
             response.sendRedirect(request.getContextPath() + "/ta/profile");
         } catch (Exception ex) {
             request.setAttribute("errorMessage", ex.getMessage());
+            request.setAttribute("profile", profileService.getTAProfile(user.getId()));
+            request.setAttribute("allSkillTags", profileService.listAllSkillTags());
             request.getRequestDispatcher("/WEB-INF/views/ta/profile.jsp").forward(request, response);
         }
     }

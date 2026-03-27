@@ -10,7 +10,9 @@ import com.bupt.ta.repository.file.TADataRepository;
 import com.bupt.ta.service.ApplicationService;
 import com.bupt.ta.service.RecommendationService;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -41,13 +43,42 @@ public class ApplicationServiceImpl implements ApplicationService {
     public Map<String, Object> checkEligibility(String taUserId, String jobId) {
         Map<String, Object> ta = requireTa(taUserId);
         Map<String, Object> job = requireJob(jobId);
-        boolean hasResume = ta.get("resumeFileName") != null && !String.valueOf(ta.get("resumeFileName")).isBlank();
-        boolean duplicate = findExistingApplication(taUserId, jobId) != null;
+        boolean resumeUploaded = hasValue(ta.get("resumeFileName"));
+        boolean alreadyApplied = findExistingApplication(taUserId, jobId) != null;
+        boolean jobOpen = "OPEN".equalsIgnoreCase(String.valueOf(job.get("status")));
+        boolean beforeDeadline = isBeforeDeadline(job.get("deadline"));
+        boolean profileCompleted = isProfileCompleted(ta);
+        List<String> reasons = new ArrayList<>();
+        if (!profileCompleted) {
+            reasons.add("Profile is incomplete.");
+        }
+        if (!resumeUploaded) {
+            reasons.add("Resume is not uploaded.");
+        }
+        if (alreadyApplied) {
+            reasons.add("You have already applied for this job.");
+        }
+        if (!beforeDeadline) {
+            reasons.add("Deadline has passed.");
+        }
+        if (!jobOpen) {
+            reasons.add("Job is not open for applications.");
+        }
         Map<String, Object> result = new LinkedHashMap<>();
-        result.put("eligible", hasResume && !duplicate && "OPEN".equalsIgnoreCase(String.valueOf(job.get("status"))));
-        result.put("hasResume", hasResume);
-        result.put("duplicateApplication", duplicate);
-        result.put("jobOpen", "OPEN".equalsIgnoreCase(String.valueOf(job.get("status"))));
+        boolean eligible = profileCompleted && resumeUploaded && !alreadyApplied && beforeDeadline && jobOpen;
+
+        // 文档要求字段（L565-L572）
+        result.put("eligible", eligible);
+        result.put("profileCompleted", profileCompleted);
+        result.put("resumeUploaded", resumeUploaded);
+        result.put("alreadyApplied", alreadyApplied);
+        result.put("beforeDeadline", beforeDeadline);
+        result.put("reasons", reasons);
+
+        // 兼容旧字段（不删，避免影响已接入页面/逻辑）
+        result.put("hasResume", resumeUploaded);
+        result.put("duplicateApplication", alreadyApplied);
+        result.put("jobOpen", jobOpen);
         return result;
     }
 
@@ -72,8 +103,10 @@ public class ApplicationServiceImpl implements ApplicationService {
         recommendationService.buildJobMatchForTA(taUserId, jobId).forEach(application::put);
         application.put("skillMatchScore", application.get("score"));
         application.put("skillMatchExplanation", application.get("explanation"));
+        application.put("matchMethod", application.get("method"));
         application.remove("score");
         application.remove("explanation");
+        application.remove("method");
         applicationDataRepository.save(application);
         return application;
     }
@@ -158,5 +191,35 @@ public class ApplicationServiceImpl implements ApplicationService {
             }
         }
         return null;
+    }
+
+    private boolean hasValue(Object value) {
+        return value != null && !String.valueOf(value).trim().isEmpty();
+    }
+
+    private boolean isProfileCompleted(Map<String, Object> ta) {
+        if (ta == null) {
+            return false;
+        }
+        return hasValue(ta.get("fullName"))
+            && hasValue(ta.get("studentId"))
+            && hasValue(ta.get("majorProgram"))
+            && hasValue(ta.get("email"));
+    }
+
+    private boolean isBeforeDeadline(Object deadlineValue) {
+        if (deadlineValue == null) {
+            return true;
+        }
+        String text = String.valueOf(deadlineValue).trim();
+        if (text.isEmpty()) {
+            return true;
+        }
+        try {
+            LocalDate deadline = LocalDate.parse(text);
+            return !LocalDate.now().isAfter(deadline);
+        } catch (DateTimeParseException ex) {
+            return true;
+        }
     }
 }
