@@ -429,6 +429,11 @@
   box-shadow: 0 12px 24px rgba(37, 99, 235, 0.18);
 }
 
+.ta-pagination__nav.is-disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
 .ta-pagination__nav svg {
   width: 16px;
   height: 16px;

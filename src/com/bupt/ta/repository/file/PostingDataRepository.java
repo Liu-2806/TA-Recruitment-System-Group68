@@ -21,6 +21,22 @@ public class PostingDataRepository extends JsonFileRepositorySupport {
         return null;
     }
 
+    public void save(Map<String, Object> postingRecord) {
+        List<Map<String, Object>> all = findAll();
+        boolean replaced = false;
+        for (int i = 0; i < all.size(); i++) {
+            if (String.valueOf(all.get(i).get("postingId")).equals(String.valueOf(postingRecord.get("postingId")))) {
+                all.set(i, new LinkedHashMap<>(postingRecord));
+                replaced = true;
+                break;
+            }
+        }
+        if (!replaced) {
+            all.add(new LinkedHashMap<>(postingRecord));
+        }
+        writeList(FILE_PATH, all);
+    }
+
     private List<Map<String, Object>> defaultRecords() {
         List<Map<String, Object>> defaults = new ArrayList<>();
         defaults.add(createPosting(
@@ -28,21 +44,24 @@ public class PostingDataRepository extends JsonFileRepositorySupport {
             3, 1, "2026-03-30",
             "Assist in lab session teaching, support assignment marking, and answer weekly software engineering questions.",
             List.of("Java", "Testing", "Communication", "Object-Oriented Programming"),
-            6, "OPEN"
+            List.of("Lab tutoring", "Assignment marking", "Student Q&A"),
+            "Engineering and Materials Science", "Lab Module", 6, "OPEN"
         ));
         defaults.add(createPosting(
             "POST002", "CS2202", "Database Systems TA", "MO002", "Prof. Li",
             2, 0, "2026-03-31",
             "Support SQL labs, help students debug database queries, and assist with coursework Q&A.",
             List.of("SQL", "Data Analysis", "Communication"),
-            5, "OPEN"
+            List.of("SQL lab support", "Coursework troubleshooting", "Database consultation"),
+            "Computer Science", "Practical Module", 5, "OPEN"
         ));
         defaults.add(createPosting(
             "POST003", "AI1101", "AI Foundations TA", "MO003", "Prof. Zhang",
             2, 0, "2026-04-02",
             "Support foundational AI classes, review student tasks, and help with model evaluation activities.",
             List.of("Python", "Machine Learning", "Data Analysis", "Communication"),
-            6, "OPEN"
+            List.of("Workshop facilitation", "Model evaluation guidance", "Assignment review"),
+            "Artificial Intelligence", "Workshop Module", 6, "OPEN"
         ));
         return defaults;
     }
@@ -58,6 +77,9 @@ public class PostingDataRepository extends JsonFileRepositorySupport {
         String deadline,
         String description,
         List<String> requiredSkills,
+        List<String> roleResponsibilities,
+        String department,
+        String moduleType,
         int estimatedWorkloadHours,
         String status
     ) {
@@ -72,6 +94,9 @@ public class PostingDataRepository extends JsonFileRepositorySupport {
         posting.put("deadline", deadline);
         posting.put("description", description);
         posting.put("requiredSkills", requiredSkills);
+        posting.put("roleResponsibilities", roleResponsibilities);
+        posting.put("department", department);
+        posting.put("moduleType", moduleType);
         posting.put("estimatedWorkloadHours", estimatedWorkloadHours);
         posting.put("status", status);
         return posting;

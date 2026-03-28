@@ -15,6 +15,13 @@
       "Communication",
       "Object-Oriented Programming"
     ],
+    "roleResponsibilities": [
+      "Lab tutoring",
+      "Assignment marking",
+      "Student Q&A"
+    ],
+    "department": "Engineering and Materials Science",
+    "moduleType": "Lab Module",
     "estimatedWorkloadHours": 6,
     "status": "OPEN"
   },
@@ -33,6 +40,13 @@
       "Data Analysis",
       "Communication"
     ],
+    "roleResponsibilities": [
+      "SQL lab support",
+      "Coursework troubleshooting",
+      "Database consultation"
+    ],
+    "department": "Computer Science",
+    "moduleType": "Practical Module",
     "estimatedWorkloadHours": 5,
     "status": "OPEN"
   },
@@ -52,6 +66,13 @@
       "Data Analysis",
       "Communication"
     ],
+    "roleResponsibilities": [
+      "Workshop facilitation",
+      "Model evaluation guidance",
+      "Assignment review"
+    ],
+    "department": "Artificial Intelligence",
+    "moduleType": "Workshop Module",
     "estimatedWorkloadHours": 6,
     "status": "OPEN"
   }

@@ -111,6 +111,7 @@
   保存上传后的 PDF 简历文件
 - `data/system/`
   保存系统级辅助数据，例如技能标签
+  当前也承载 TA timetable 与岗位时段辅助数据
 
 这种设计符合 handout 中“不能使用数据库”的要求。
 
@@ -199,6 +200,7 @@
 输入模块主要写在以下位置：
 
 - `src/com/bupt/ta/controller/ta/TAResumeUploadServlet.java`
+- `src/com/bupt/ta/controller/ta/TAResumeDownloadServlet.java`
 - `src/com/bupt/ta/controller/ta/TAProfileServlet.java`
 - `src/com/bupt/ta/service/ResumeService.java`
 - `src/com/bupt/ta/service/impl/ResumeServiceImpl.java`
@@ -259,6 +261,7 @@
 - 当前简历文件名
 - 上传时间
 - 结构化简历信息
+- 简历下载入口
 
 ## 二、匹配模块
 
@@ -282,6 +285,8 @@
 - `src/com/bupt/ta/match/OpenAiCompatibleMatcher.java`
 - `src/com/bupt/ta/match/EnvConfigLoader.java`
 - `src/com/bupt/ta/controller/ta/TAJobDetailServlet.java`
+- `src/com/bupt/ta/controller/ta/TAApplyConfirmServlet.java`
+- `src/com/bupt/ta/controller/ta/TAApplicationWithdrawServlet.java`
 - `src/com/bupt/ta/controller/mo/MOApplicantDetailServlet.java`
 - `src/com/bupt/ta/controller/mo/MOJobApplicantsServlet.java`
 - `web/WEB-INF/views/ta/position-details.jsp`
@@ -340,6 +345,13 @@ AI 当前只负责：
 - `skillMatchExplanation`
 - `matchMethod`
 
+Current TA-side completion notes:
+
+- `data/postings/postings.json` keeps the original required fields and now also allows optional filtering metadata: `department`, `moduleType`, `roleResponsibilities`
+- `/ta/jobs` can filter by `keyword`, `major`, `department`, `moduleType`, and `responsibilityKeyword`
+- TA `withdraw / revocation request` updates the application record, decrements `applicationCount`, and releases timetable blocks in `data/system/ta-timetable.json` when the withdrawn record was already accepted
+- `/ta/profile` now shows explicit success feedback after profile save and resume replacement, and the API-LLM matcher is expected to return `score`, `explanation`, `matchedSkills`, and `missingSkills`
+
 ### 当前匹配模块页面结果
 
 #### TA 侧
@@ -356,6 +368,7 @@ AI 当前只负责：
 - 已匹配技能
 - 缺失技能
 - 当前使用的匹配方法
+- 申请前确认入口
 
 #### MO 侧
 
@@ -412,6 +425,7 @@ AI 当前只负责：
 - `data/postings/postings.json`
 - `data/applications/applications.json`
 - `data/system/skill-tags.json`
+- `data/system/ta-timetable.json`
 - `data/resumes/sample_resume.pdf`
 
 当前默认测试身份包括：
@@ -423,6 +437,11 @@ AI 当前只负责：
 
 - `POST001`
 - `APP001`
+
+当前 timetable / 冲突校验示例数据还包括：
+
+- `POST002`
+- `POST003`
 
 这使得在正式登录尚未接好之前，仍然可以验证你负责的业务主链路。
 
@@ -469,6 +488,8 @@ javac -encoding UTF-8 -cp "lib/pdfbox-app-3.0.2.jar;lib/gson-2.11.0.jar;lib/java
 - `/dev/login-as?role=TA`
 - `/ta/profile`
 - `/ta/jobs/detail?jobId=POST001`
+- `/ta/applications/confirm?jobId=POST003`（可验证 timetable conflict 校验）
+- `/ta/applications/my`（可验证 withdraw / revocation request 最小闭环）
 
 #### MO 视角
 

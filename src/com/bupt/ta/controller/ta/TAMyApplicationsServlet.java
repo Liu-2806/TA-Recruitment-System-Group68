@@ -30,10 +30,24 @@ public class TAMyApplicationsServlet extends BaseServlet {
             return;
         }
         ApplicationQuery query = new ApplicationQuery();
+        query.setKeyword(request.getParameter("keyword"));
         query.setStatus(request.getParameter("status"));
         query.setSortBy(request.getParameter("sortBy"));
+        query.setPage(parseIntOrDefault(request.getParameter("page"), 1));
+        query.setSize(parseIntOrDefault(request.getParameter("size"), 10));
         request.setAttribute("applicationsPage", applicationService.listApplicationsByTA(user.getId(), query));
         request.setAttribute("query", query);
         request.getRequestDispatcher("/WEB-INF/views/ta/applications.jsp").forward(request, response);
+    }
+
+    private int parseIntOrDefault(String value, int defaultValue) {
+        if (value == null || value.isBlank()) {
+            return defaultValue;
+        }
+        try {
+            return Integer.parseInt(value.trim());
+        } catch (NumberFormatException ex) {
+            return defaultValue;
+        }
     }
 }

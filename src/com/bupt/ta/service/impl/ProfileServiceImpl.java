@@ -50,6 +50,8 @@ public class ProfileServiceImpl implements ProfileService {
         Object skillTags = params.get("skillTags");
         if (skillTags instanceof String[] tags) {
             ta.put("skills", List.of(tags));
+        } else if (skillTags == null) {
+            ta.put("skills", List.of());
         }
         taDataRepository.save(ta);
     }
