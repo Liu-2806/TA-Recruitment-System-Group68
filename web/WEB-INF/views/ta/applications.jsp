@@ -56,6 +56,7 @@
                 <option value="ACCEPTED" <%= "ACCEPTED".equalsIgnoreCase(query.getStatus()) ? "selected" : "" %>>Accepted</option>
                 <option value="REJECTED" <%= "REJECTED".equalsIgnoreCase(query.getStatus()) ? "selected" : "" %>>Rejected</option>
                 <option value="WITHDRAWN" <%= "WITHDRAWN".equalsIgnoreCase(query.getStatus()) ? "selected" : "" %>>Withdrawn</option>
+                <option value="REVOCATION_REQUESTED" <%= "REVOCATION_REQUESTED".equalsIgnoreCase(query.getStatus()) ? "selected" : "" %>>Revocation Requested</option>
               </select>
               <span class="ta-toolbar-select__caret" aria-hidden="true">v</span>
             </div>
@@ -105,7 +106,7 @@
               String postingId = String.valueOf(application.getOrDefault("postingId", ""));
               String status = String.valueOf(application.getOrDefault("statusLabel", application.getOrDefault("status", "Pending Review")));
               String statusRaw = String.valueOf(application.getOrDefault("status", "SUBMITTED")).toLowerCase();
-              String statusCss = statusRaw.contains("accept") ? "accepted" : (statusRaw.contains("reject") ? "rejected" : (statusRaw.contains("withdraw") ? "withdrawn" : "pending"));
+              String statusCss = statusRaw.contains("accept") ? "accepted" : (statusRaw.contains("reject") ? "rejected" : (statusRaw.contains("withdraw") ? "withdrawn" : (statusRaw.contains("revocation") ? "revocation" : "pending")));
               boolean canWithdraw = "submitted".equals(statusRaw) || "under_review".equals(statusRaw) || "underreview".equals(statusRaw) || "accepted".equals(statusRaw);
               String matchExplanation = String.valueOf(application.getOrDefault("skillMatchExplanation", "No match explanation available yet."));
               java.util.List historyLogs = application.get("historyLogs") instanceof java.util.List ? (java.util.List) application.get("historyLogs") : java.util.Collections.emptyList();

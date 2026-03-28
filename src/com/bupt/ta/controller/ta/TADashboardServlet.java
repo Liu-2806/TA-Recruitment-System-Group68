@@ -217,6 +217,12 @@ public class TADashboardServlet extends BaseServlet {
         if ("REJECTED".equals(normalized)) {
             return "rejected";
         }
+        if ("WITHDRAWN".equals(normalized)) {
+            return "withdrawn";
+        }
+        if ("REVOCATION_REQUESTED".equals(normalized)) {
+            return "pending";
+        }
         return "pending";
     }
 

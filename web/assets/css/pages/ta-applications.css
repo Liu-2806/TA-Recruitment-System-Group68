@@ -314,6 +314,11 @@
   color: #1d4ed8;
 }
 
+.ta-application-card__icon--revocation {
+  background: #fef3c7;
+  color: #92400e;
+}
+
 .ta-application-card__identity h3 {
   margin: 0 0 6px;
   color: #1e293b;
@@ -365,6 +370,11 @@
 .ta-application-badge--withdrawn {
   background: #eff6ff;
   color: #1d4ed8;
+}
+
+.ta-application-badge--revocation {
+  background: #fef3c7;
+  color: #92400e;
 }
 
 .ta-application-card__details {
@@ -575,6 +585,11 @@
 .ta-history-card__badge--withdrawn {
   background: #eff6ff;
   color: #1d4ed8;
+}
+
+.ta-history-card__badge--revocation {
+  background: #fef3c7;
+  color: #92400e;
 }
 
 .ta-history-card__steps {
