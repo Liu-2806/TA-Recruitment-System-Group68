@@ -201,29 +201,37 @@ public class ApplicationServiceImpl implements ApplicationService {
         }
 
         String status = normalize(String.valueOf(record.get("status")));
-        if ("withdrawn".equals(status) || "rejected".equals(status)) {
+        if ("withdrawn".equals(status) || "rejected".equals(status) || "revocation_requested".equals(status)) {
             throw new IllegalStateException("This application can no longer be withdrawn.");
         }
         boolean acceptedAssignment = "accepted".equals(status);
 
-        record.put("status", ApplicationStatus.WITHDRAWN.name());
+        ApplicationStatus targetStatus;
+        String actionLabel;
+        if (acceptedAssignment) {
+            targetStatus = ApplicationStatus.REVOCATION_REQUESTED;
+            actionLabel = "Revocation request";
+        } else {
+            targetStatus = ApplicationStatus.WITHDRAWN;
+            actionLabel = "Withdrawal request";
+        }
+
+        record.put("status", targetStatus.name());
         record.put("updatedAt", LocalDateTime.now().format(FORMATTER));
-        record.put("statusLabel", statusLabel(ApplicationStatus.WITHDRAWN.name()));
-        String actionLabel = "accepted".equals(status) ? "Revocation request" : "Withdrawal request";
+        record.put("statusLabel", statusLabel(targetStatus.name()));
         String message = actionLabel + " submitted by TA. Reason: " + reason.trim();
         record.put("feedback", message);
         record.put("historyLogs", appendHistoryLog(
             record.get("historyLogs"),
             Map.of(
                 "time", record.get("updatedAt"),
-                "action", ApplicationStatus.WITHDRAWN.name(),
+                "action", targetStatus.name(),
                 "description", message
             )
         ));
         applicationDataRepository.save(record);
-        updatePostingApplicationCount(String.valueOf(record.get("postingId")), -1);
-        if (acceptedAssignment) {
-            taTimetableDataRepository.releaseAssignment(taUserId, String.valueOf(record.get("applicationId")));
+        if (!acceptedAssignment) {
+            updatePostingApplicationCount(String.valueOf(record.get("postingId")), -1);
         }
         return enrichApplicationRecord(new LinkedHashMap<>(record));
     }
@@ -355,7 +363,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     private int statusPriority(String status) {
         return switch (normalize(status)) {
             case "accepted" -> 0;
-            case "submitted", "underreview", "pending" -> 1;
+            case "submitted", "underreview", "pending", "revocation_requested" -> 1;
             case "rejected" -> 2;
             default -> 3;
         };
@@ -367,6 +375,7 @@ public class ApplicationServiceImpl implements ApplicationService {
             case "rejected" -> "Rejected";
             case "underreview" -> "Under Review";
             case "withdrawn" -> "Withdrawn";
+            case "revocation_requested" -> "Revocation Requested";
             default -> "Pending Review";
         };
     }

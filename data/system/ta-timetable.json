@@ -104,5 +104,43 @@
         "label": "AI Lab Assistance"
       }
     ]
+  },
+  {
+    "postingId": "POST004",
+    "courseCode": "CS1101",
+    "courseName": "Introduction to Programming TA",
+    "scheduleBlocks": [
+      {
+        "dayOfWeek": "MON",
+        "startTime": "14:00",
+        "endTime": "16:00",
+        "label": "Programming Lab Support"
+      },
+      {
+        "dayOfWeek": "THU",
+        "startTime": "14:00",
+        "endTime": "16:00",
+        "label": "Office Hours"
+      }
+    ]
+  },
+  {
+    "postingId": "POST005",
+    "courseCode": "EE2301",
+    "courseName": "Digital Electronics Lab TA",
+    "scheduleBlocks": [
+      {
+        "dayOfWeek": "WED",
+        "startTime": "14:00",
+        "endTime": "17:00",
+        "label": "Electronics Lab Session"
+      },
+      {
+        "dayOfWeek": "FRI",
+        "startTime": "10:00",
+        "endTime": "12:00",
+        "label": "Report Review Session"
+      }
+    ]
   }
 ]

@@ -7,7 +7,7 @@
     "moName": "Prof. Wang",
     "vacancies": 3,
     "applicationCount": 1,
-    "deadline": "2026-03-30",
+    "deadline": "2026-04-20",
     "description": "Assist in lab session teaching, support assignment marking, and answer weekly software engineering questions.",
     "requiredSkills": [
       "Java",
@@ -33,7 +33,7 @@
     "moName": "Prof. Li",
     "vacancies": 2,
     "applicationCount": 0,
-    "deadline": "2026-03-31",
+    "deadline": "2026-04-22",
     "description": "Support SQL labs, help students debug database queries, and assist with coursework Q&A.",
     "requiredSkills": [
       "SQL",
@@ -58,7 +58,7 @@
     "moName": "Prof. Zhang",
     "vacancies": 2,
     "applicationCount": 0,
-    "deadline": "2026-04-02",
+    "deadline": "2026-04-25",
     "description": "Support foundational AI classes, review student tasks, and help with model evaluation activities.",
     "requiredSkills": [
       "Python",
@@ -74,6 +74,57 @@
     "department": "Artificial Intelligence",
     "moduleType": "Workshop Module",
     "estimatedWorkloadHours": 6,
+    "status": "OPEN"
+  },
+  {
+    "postingId": "POST004",
+    "courseCode": "CS1101",
+    "courseName": "Introduction to Programming TA",
+    "moId": "MO001",
+    "moName": "Prof. Wang",
+    "vacancies": 4,
+    "applicationCount": 0,
+    "deadline": "2026-04-28",
+    "description": "Help first-year students with basic programming concepts, assist with lab exercises, and provide feedback on coding assignments.",
+    "requiredSkills": [
+      "Java",
+      "Python",
+      "Communication",
+      "Teaching"
+    ],
+    "roleResponsibilities": [
+      "Lab assistance",
+      "Code review",
+      "Office hour support",
+      "Assignment feedback"
+    ],
+    "department": "Computer Science",
+    "moduleType": "Lab Module",
+    "estimatedWorkloadHours": 5,
+    "status": "OPEN"
+  },
+  {
+    "postingId": "POST005",
+    "courseCode": "EE2301",
+    "courseName": "Digital Electronics Lab TA",
+    "moId": "MO002",
+    "moName": "Prof. Li",
+    "vacancies": 2,
+    "applicationCount": 0,
+    "deadline": "2026-04-18",
+    "description": "Supervise digital electronics lab sessions, help students with circuit design and FPGA programming.",
+    "requiredSkills": [
+      "Communication",
+      "Testing"
+    ],
+    "roleResponsibilities": [
+      "Lab supervision",
+      "Equipment troubleshooting",
+      "Report marking"
+    ],
+    "department": "Engineering and Materials Science",
+    "moduleType": "Lab Module",
+    "estimatedWorkloadHours": 4,
     "status": "OPEN"
   }
 ]
