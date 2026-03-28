@@ -91,7 +91,8 @@ public class UserServiceImpl implements UserService {
         String department = firstNonBlank(params, "department");
         String phone = firstNonBlank(params, "phone");
         String description = firstNonBlank(params, "description");
-        String initialPassword = firstNonBlank(params, "initialPassword", "password");
+        String initialPassword = firstNonBlank(params, "tempPassword", "initialPassword", "password");
+        String confirmPassword = firstNonBlank(params, "confirmPassword");
         String username = firstNonBlank(params, "username");
 
         requireNotBlank(fullName, "MO 姓名不能为空");
@@ -99,7 +100,12 @@ public class UserServiceImpl implements UserService {
         requireNotBlank(email, "邮箱不能为空");
         requireValidEmail(email);
         requireNotBlank(initialPassword, "初始密码不能为空");
+        requireNotBlank(confirmPassword, "确认密码不能为空");
         requireMinPasswordLength(initialPassword);
+
+        if (!initialPassword.equals(confirmPassword)) {
+            throw new BusinessException("两次输入的密码不一致");
+        }
 
         String normalizedUsername = isBlank(username) ? deriveUsername(email) : username.trim();
         if (userRepository.existsAcrossRoles("username", normalizedUsername)) {
@@ -121,9 +127,9 @@ public class UserServiceImpl implements UserService {
         record.put("fullName", fullName.trim());
         record.put("displayName", fullName.trim());
         record.put("staffId", staffId.trim());
-        record.put("department", department);
-        record.put("phone", phone);
-        record.put("description", description);
+        record.put("department", department == null ? null : department.trim());
+        record.put("phone", phone == null ? null : phone.trim());
+        record.put("description", description == null ? null : description.trim());
         record.put("role", Role.MO.name());
         record.put("password", initialPassword);
         record.put("active", Boolean.TRUE);
