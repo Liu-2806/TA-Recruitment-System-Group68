@@ -2,6 +2,7 @@ package com.bupt.ta.controller.admin;
 
 import com.bupt.ta.controller.common.BaseServlet;
 import com.bupt.ta.service.UserService;
+import com.bupt.ta.util.ServiceRegistry;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,7 +17,7 @@ import java.util.Map;
  */
 @WebServlet("/admin/mos")
 public class AdminMOListServlet extends BaseServlet {
-    private UserService userService;
+    private final UserService userService = ServiceRegistry.userService();
 
     /**
      * 查询并展示所有 MO。

@@ -99,13 +99,15 @@ public class Phase1ConsoleApp {
         }
 
         Map<String, Object> params = new LinkedHashMap<String, Object>();
+        params.put("username", readLine("Username (optional, press Enter to derive from email)"));
         params.put("fullName", readLine("Full name"));
         params.put("staffId", readLine("Staff ID"));
         params.put("email", readLine("Email"));
         params.put("department", readLine("Department"));
         params.put("phone", readLine("Phone (optional)"));
         params.put("description", readLine("Description (optional)"));
-        params.put("initialPassword", readLine("Initial password"));
+        params.put("tempPassword", readLine("Initial password"));
+        params.put("confirmPassword", readLine("Confirm password"));
 
         try {
             User user = userService.createMO(params);
@@ -155,6 +157,7 @@ public class Phase1ConsoleApp {
         System.out.println("- MO cannot be created directly; you must log in as ADMIN first.");
         System.out.println("- Default admin account is seeded automatically on first run.");
         System.out.println("- Login supports email, student ID, staff ID or username when the role matches.");
+        System.out.println("- Create MO now validates username / staff ID / email uniqueness and confirm password.");
     }
 
     private void printUser(User user) {
