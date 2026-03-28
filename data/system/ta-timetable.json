@@ -1,0 +1,108 @@
+[
+  {
+    "taId": "TA001",
+    "weekStart": "2026-03-23",
+    "currentWeekLabel": "Week of 23 Mar - 29 Mar",
+    "courseAssignment": {
+      "postingId": "POST001",
+      "courseCode": "SE3001",
+      "courseName": "Software Engineering TA",
+      "label": "Course TA",
+      "dayOfWeek": "TUE",
+      "startTime": "14:00",
+      "endTime": "16:00",
+      "location": "QB-302",
+      "description": "Weekly support session",
+      "relatedApplicationId": "APP001"
+    },
+    "activityEvents": [
+      {
+        "eventId": "EVT001",
+        "postingId": "POST001",
+        "applicationId": "APP001",
+        "title": "SE3001 Lab Support",
+        "type": "lab",
+        "date": "2026-03-24",
+        "startTime": "10:00",
+        "endTime": "12:00",
+        "location": "QB-302",
+        "description": "Guide students through the weekly lab and answer implementation questions."
+      },
+      {
+        "eventId": "EVT002",
+        "postingId": "POST001",
+        "applicationId": "APP001",
+        "title": "SE3001 Check-off",
+        "type": "checkoff",
+        "date": "2026-03-26",
+        "startTime": "16:00",
+        "endTime": "17:00",
+        "location": "QB-302",
+        "description": "Review sprint progress and check implementation milestones."
+      }
+    ]
+  },
+  {
+    "postingId": "POST001",
+    "courseCode": "SE3001",
+    "courseName": "Software Engineering TA",
+    "scheduleBlocks": [
+      {
+        "dayOfWeek": "TUE",
+        "startTime": "14:00",
+        "endTime": "16:00",
+        "label": "Course TA Support"
+      },
+      {
+        "dayOfWeek": "WED",
+        "startTime": "10:00",
+        "endTime": "12:00",
+        "label": "Weekly Lab Support"
+      },
+      {
+        "dayOfWeek": "FRI",
+        "startTime": "16:00",
+        "endTime": "17:00",
+        "label": "Project Check-off"
+      }
+    ]
+  },
+  {
+    "postingId": "POST002",
+    "courseCode": "CS2202",
+    "courseName": "Database Systems TA",
+    "scheduleBlocks": [
+      {
+        "dayOfWeek": "TUE",
+        "startTime": "15:00",
+        "endTime": "17:00",
+        "label": "SQL Lab Support"
+      },
+      {
+        "dayOfWeek": "THU",
+        "startTime": "10:00",
+        "endTime": "12:00",
+        "label": "Database Q&A Session"
+      }
+    ]
+  },
+  {
+    "postingId": "POST003",
+    "courseCode": "AI1101",
+    "courseName": "AI Foundations TA",
+    "scheduleBlocks": [
+      {
+        "dayOfWeek": "MON",
+        "startTime": "10:00",
+        "endTime": "12:00",
+        "label": "Model Evaluation Workshop"
+      },
+      {
+        "dayOfWeek": "WED",
+        "startTime": "10:30",
+        "endTime": "12:30",
+        "label": "AI Lab Assistance"
+      }
+    ]
+  }
+]

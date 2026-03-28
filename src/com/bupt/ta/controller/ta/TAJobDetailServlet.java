@@ -11,6 +11,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +34,7 @@ public class TAJobDetailServlet extends BaseServlet {
             response.sendRedirect(request.getContextPath() + "/ta/jobs");
             return;
         }
+        String returnQuery = decodeQueryString(request.getParameter("returnQuery"));
 
         Map<String, Object> job;
         try {
@@ -41,6 +44,8 @@ public class TAJobDetailServlet extends BaseServlet {
             return;
         }
         request.setAttribute("job", job);
+        request.setAttribute("returnHref", buildReturnHref(request, returnQuery));
+        request.setAttribute("encodedReturnQuery", request.getParameter("returnQuery") == null ? "" : request.getParameter("returnQuery"));
 
         Map<String, Object> matchAnalysis;
         try {
@@ -50,6 +55,20 @@ public class TAJobDetailServlet extends BaseServlet {
         }
         request.setAttribute("matchAnalysis", matchAnalysis);
         request.getRequestDispatcher("/WEB-INF/views/ta/position-details.jsp").forward(request, response);
+    }
+
+    private String decodeQueryString(String encodedValue) {
+        if (encodedValue == null || encodedValue.isBlank()) {
+            return "";
+        }
+        return URLDecoder.decode(encodedValue, StandardCharsets.UTF_8);
+    }
+
+    private String buildReturnHref(HttpServletRequest request, String returnQuery) {
+        if (returnQuery == null || returnQuery.isBlank()) {
+            return request.getContextPath() + "/ta/jobs";
+        }
+        return request.getContextPath() + "/ta/jobs?" + returnQuery;
     }
 
     private Map<String, Object> buildFallbackMatchAnalysis(String reason) {

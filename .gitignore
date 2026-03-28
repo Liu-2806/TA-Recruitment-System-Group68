@@ -10,4 +10,5 @@ data/users/mo.json
 work-log.md
 src/test/
 scripts/test-*.ps1
+src/test/
 

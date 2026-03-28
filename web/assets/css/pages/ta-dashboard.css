@@ -778,6 +778,70 @@ button.ta-calendar__day {
   gap: 24px;
 }
 
+.ta-notification-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ta-notification-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: #f8fafc;
+  border: 1px solid #e7edf6;
+}
+
+.ta-notification-item__tag {
+  min-width: 84px;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ta-notification-item__content h3 {
+  margin: 0;
+  color: #1e293b;
+  font-size: 15px;
+  line-height: 1.5;
+  font-weight: 800;
+}
+
+.ta-notification-item__content p {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.6;
+  font-weight: 600;
+}
+
+.ta-notification-item__link {
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid #dbeafe;
+  color: #2563eb;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
 .ta-quick-list,
 .ta-history-list {
   display: flex;
@@ -875,7 +939,8 @@ button.ta-calendar__day {
   .ta-board-card__header,
   .ta-schedule-detail__header,
   .ta-quick-item,
-  .ta-history-item {
+  .ta-history-item,
+  .ta-notification-item {
     grid-template-columns: 1fr;
     flex-direction: column;
     align-items: flex-start;

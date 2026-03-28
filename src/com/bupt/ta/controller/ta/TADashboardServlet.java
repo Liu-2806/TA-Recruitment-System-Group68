@@ -6,6 +6,7 @@ import com.bupt.ta.dto.ApplicationQuery;
 import com.bupt.ta.dto.JobQuery;
 import com.bupt.ta.dto.PageResult;
 import com.bupt.ta.model.User;
+import com.bupt.ta.repository.file.TATimetableDataRepository;
 import com.bupt.ta.service.ApplicationService;
 import com.bupt.ta.service.JobService;
 import com.bupt.ta.service.ProfileService;
@@ -36,6 +37,7 @@ public class TADashboardServlet extends BaseServlet {
     private final ApplicationService applicationService = ServiceRegistry.applicationService();
     private final JobService jobService = ServiceRegistry.jobService();
     private final RecommendationService recommendationService = ServiceRegistry.recommendationService();
+    private final TATimetableDataRepository taTimetableDataRepository = ServiceRegistry.taTimetableDataRepository();
 
     private static final DateTimeFormatter APPLIED_AT_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -90,61 +92,27 @@ public class TADashboardServlet extends BaseServlet {
 
         request.setAttribute("recentApplications", topN(sortRecentApplications(allApplications), 3));
 
-        request.setAttribute("timetable", buildTimetable(user.getId(), jobs, allApplications));
+        Map<String, Object> timetable = buildTimetable(user.getId(), allApplications);
+        request.setAttribute("timetable", timetable);
+
+        List<Map<String, Object>> notifications = buildNotifications(allApplications, taProfile, timetable);
+        request.setAttribute("notifications", notifications);
+        request.setAttribute("notificationCount", notifications.size());
 
         request.getRequestDispatcher("/WEB-INF/views/ta/dashboard.jsp").forward(request, response);
     }
 
-    private Map<String, Object> buildTimetable(String taId, List<Map<String, Object>> jobs, List<Map<String, Object>> applications) {
-        Map<String, Object> timetable = new LinkedHashMap<>();
-
-        LocalDate today = LocalDate.now();
-        LocalDate weekStart = today.with(java.time.temporal.TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-        LocalDate weekEnd = weekStart.plusDays(6);
-        DateTimeFormatter labelFormatter = DateTimeFormatter.ofPattern("dd MMM", Locale.UK);
-        timetable.put("currentWeekLabel", "Week of " + labelFormatter.format(weekStart) + " - " + labelFormatter.format(weekEnd));
-
-        Map<String, Object> baseJob = (jobs == null || jobs.isEmpty()) ? null : jobs.get(0);
-        Map<String, Object> baseApp = (applications == null || applications.isEmpty()) ? null : applications.get(0);
-
-        String postingId = valueOf(baseJob == null ? null : baseJob.get("postingId"));
-        String courseCode = valueOf(baseJob == null ? null : baseJob.get("courseCode"));
-        String courseName = valueOf(baseJob == null ? null : baseJob.get("courseName"));
-        if (courseName == null || courseName.isBlank()) {
-            courseName = "Software Engineering TA";
+    private Map<String, Object> buildTimetable(String taId, List<Map<String, Object>> applications) {
+        LocalDate weekStart = LocalDate.now().with(java.time.temporal.TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        Map<String, Object> timetable = new LinkedHashMap<>(taTimetableDataRepository.findTimetableByTaIdAndWeek(taId, weekStart));
+        Map<String, Object> courseAssignment = asMap(timetable.get("courseAssignment"));
+        if (!courseAssignment.isEmpty() && !hasValue(courseAssignment.get("relatedApplicationId"))) {
+            Map<String, Object> relatedApplication = findApplicationByPostingId(applications, valueOf(courseAssignment.get("postingId")));
+            if (relatedApplication != null) {
+                courseAssignment.put("relatedApplicationId", relatedApplication.get("applicationId"));
+            }
+            timetable.put("courseAssignment", courseAssignment);
         }
-
-        String applicationId = valueOf(baseApp == null ? null : baseApp.get("applicationId"));
-
-        Map<String, Object> courseAssignment = new LinkedHashMap<>();
-        courseAssignment.put("postingId", postingId == null ? "" : postingId);
-        courseAssignment.put("courseCode", courseCode == null ? "" : courseCode);
-        courseAssignment.put("courseName", courseName);
-        courseAssignment.put("label", "Course TA");
-        courseAssignment.put("dayOfWeek", "TUE");
-        courseAssignment.put("startTime", "14:00");
-        courseAssignment.put("endTime", "16:00");
-        courseAssignment.put("location", "QB-302");
-        courseAssignment.put("description", "Weekly support session");
-        courseAssignment.put("relatedApplicationId", applicationId == null ? "" : applicationId);
-        timetable.put("courseAssignment", courseAssignment);
-
-        List<Map<String, Object>> activityEvents = new ArrayList<>();
-        Map<String, Object> event = new LinkedHashMap<>();
-        event.put("eventId", "EVT001");
-        event.put("postingId", postingId == null ? "" : postingId);
-        event.put("applicationId", applicationId == null ? "" : applicationId);
-        event.put("title", (courseCode == null || courseCode.isBlank() ? "SE3001" : courseCode) + " Lab Support");
-        event.put("type", "lab");
-        event.put("date", weekStart.plusDays(1).toString());
-        event.put("startTime", "10:00");
-        event.put("endTime", "12:00");
-        event.put("location", "QB-302");
-        event.put("description", "Guide students through the weekly lab and answer implementation questions.");
-        activityEvents.add(event);
-        timetable.put("activityEvents", activityEvents);
-
-        timetable.put("taId", taId);
         return timetable;
     }
 
@@ -267,5 +235,69 @@ public class TADashboardServlet extends BaseServlet {
 
     private String valueOf(Object value) {
         return value == null ? null : String.valueOf(value).trim();
+    }
+
+    private List<Map<String, Object>> buildNotifications(
+        List<Map<String, Object>> applications,
+        Map<String, Object> taProfile,
+        Map<String, Object> timetable
+    ) {
+        List<Map<String, Object>> notices = new ArrayList<>();
+        if (!hasValue(taProfile.get("resumeFileName"))) {
+            notices.add(notification("Profile", "Upload your resume to unlock AI matching and TA applications.", "/ta/profile#resume-upload"));
+        }
+
+        for (Map<String, Object> application : topN(sortRecentApplications(applications), 2)) {
+            String status = valueOf(application.get("statusLabel"));
+            String postingTitle = valueOf(application.get("postingTitle"));
+            String applicationId = valueOf(application.get("applicationId"));
+            notices.add(notification(
+                "Application",
+                (status == null ? "Application updated" : status) + " for " + (postingTitle == null ? "your latest role" : postingTitle) + ".",
+                "/ta/applications/my#application-" + (applicationId == null ? "" : applicationId)
+            ));
+        }
+
+        Map<String, Object> assignment = asMap(timetable.get("courseAssignment"));
+        if (!assignment.isEmpty() && hasValue(assignment.get("relatedApplicationId"))) {
+            notices.add(notification(
+                "Timetable",
+                "Your weekly timetable includes " + valueOf(assignment.getOrDefault("courseName", "a teaching assignment")) + ".",
+                "/ta/applications/my#application-" + valueOf(assignment.get("relatedApplicationId"))
+            ));
+        }
+        return topN(notices, 4);
+    }
+
+    private Map<String, Object> notification(String type, String message, String path) {
+        Map<String, Object> item = new LinkedHashMap<>();
+        item.put("type", type);
+        item.put("message", message);
+        item.put("path", path);
+        return item;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> asMap(Object value) {
+        if (value instanceof Map<?, ?> map) {
+            return new LinkedHashMap<>((Map<String, Object>) map);
+        }
+        return new LinkedHashMap<>();
+    }
+
+    private boolean hasValue(Object value) {
+        return value != null && !String.valueOf(value).isBlank();
+    }
+
+    private Map<String, Object> findApplicationByPostingId(List<Map<String, Object>> applications, String postingId) {
+        if (applications == null || postingId == null || postingId.isBlank()) {
+            return null;
+        }
+        for (Map<String, Object> application : applications) {
+            if (postingId.equals(valueOf(application.get("postingId")))) {
+                return application;
+            }
+        }
+        return null;
     }
 }

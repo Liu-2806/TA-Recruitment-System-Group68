@@ -14,6 +14,9 @@ import java.util.regex.Pattern;
 final class OpenAiCompatibleMatcher {
     private static final Pattern SCORE_PATTERN = Pattern.compile("\"score\"\\s*:\\s*(\\d{1,3})");
     private static final Pattern EXPLANATION_PATTERN = Pattern.compile("\"explanation\"\\s*:\\s*\"(.*?)\"", Pattern.DOTALL);
+    private static final Pattern MATCHED_SKILLS_PATTERN = Pattern.compile("\"matchedSkills\"\\s*:\\s*\\[(.*?)]", Pattern.DOTALL);
+    private static final Pattern MISSING_SKILLS_PATTERN = Pattern.compile("\"missingSkills\"\\s*:\\s*\\[(.*?)]", Pattern.DOTALL);
+    private static final Pattern JSON_STRING_PATTERN = Pattern.compile("\"((?:\\\\.|[^\"\\\\])*)\"");
     private static final Pattern CONTENT_PATTERN = Pattern.compile("\"content\"\\s*:\\s*\"((?:\\\\.|[^\"\\\\])*)\"", Pattern.DOTALL);
     private static final Pattern OUTPUT_TEXT_PATTERN = Pattern.compile("\"output_text\"\\s*:\\s*\"((?:\\\\.|[^\"\\\\])*)\"", Pattern.DOTALL);
 
@@ -42,7 +45,19 @@ final class OpenAiCompatibleMatcher {
         }
 
         String payload = extractRelevantPayload(response.body());
-        return new MatchResult(extractScore(payload), extractExplanation(payload), "api-llm");
+        List<String> matchedSkills = extractSkillArray(payload, MATCHED_SKILLS_PATTERN);
+        List<String> missingSkills = extractSkillArray(payload, MISSING_SKILLS_PATTERN);
+        if (matchedSkills.isEmpty() && missingSkills.isEmpty()) {
+            matchedSkills = inferMatchedSkills(resumeProfile, job);
+            missingSkills = inferMissingSkills(resumeProfile, job, matchedSkills);
+        }
+        return new MatchResult(
+            extractScore(payload),
+            extractExplanation(payload),
+            "api-llm",
+            matchedSkills,
+            missingSkills
+        );
     }
 
     private String buildRequestBody(Map<String, Object> resumeProfile, Map<String, Object> job) {
@@ -69,9 +84,11 @@ final class OpenAiCompatibleMatcher {
             + "Description: " + value(job, "description") + "\n"
             + "Required skills: " + joinList(job.get("requiredSkills")) + "\n"
             + "Estimated workload hours: " + value(job, "estimatedWorkloadHours") + "\n\n"
-            + "Return JSON only with keys score and explanation.\n"
+            + "Return JSON only with keys score, explanation, matchedSkills, and missingSkills.\n"
             + "score must be an integer from 0 to 100.\n"
             + "explanation must be one concise review paragraph for a module organiser.\n"
+            + "matchedSkills must be a JSON array of required skills that are clearly evidenced in the supplied candidate data.\n"
+            + "missingSkills must be a JSON array of important required skills or capability gaps that are not clearly evidenced.\n"
             + "The explanation must explicitly cover: matched evidence, important gaps or missing evidence, and practical suitability.\n"
             + "Base the analysis only on the supplied structured data.\n"
             + "Do not assume facts not present in the input.\n"
@@ -150,6 +167,23 @@ final class OpenAiCompatibleMatcher {
         return matcher.group(1).replace("\\n", " ").replace("\\\"", "\"");
     }
 
+    private List<String> extractSkillArray(String content, Pattern arrayPattern) {
+        Matcher matcher = arrayPattern.matcher(content);
+        if (!matcher.find()) {
+            return List.of();
+        }
+        String arrayContent = matcher.group(1);
+        Matcher stringMatcher = JSON_STRING_PATTERN.matcher(arrayContent);
+        java.util.LinkedHashSet<String> values = new java.util.LinkedHashSet<>();
+        while (stringMatcher.find()) {
+            String value = unescapeJsonString(stringMatcher.group(1)).trim();
+            if (!value.isEmpty()) {
+                values.add(value);
+            }
+        }
+        return List.copyOf(values);
+    }
+
     private String escapeJson(String input) {
         return input
             .replace("\\", "\\\\")
@@ -182,5 +216,45 @@ final class OpenAiCompatibleMatcher {
             return String.join(", ", ((List<?>) value).stream().map(String::valueOf).toList());
         }
         return value == null ? "" : String.valueOf(value);
+    }
+
+    private List<String> inferMatchedSkills(Map<String, Object> resumeProfile, Map<String, Object> job) {
+        List<String> resumeSkills = toStringList(resumeProfile.get("skills"));
+        List<String> requiredSkills = toStringList(job.get("requiredSkills"));
+        java.util.LinkedHashSet<String> matched = new java.util.LinkedHashSet<>();
+        for (String requiredSkill : requiredSkills) {
+            for (String resumeSkill : resumeSkills) {
+                if (requiredSkill.equalsIgnoreCase(resumeSkill)) {
+                    matched.add(requiredSkill);
+                    break;
+                }
+            }
+        }
+        return List.copyOf(matched);
+    }
+
+    private List<String> inferMissingSkills(Map<String, Object> resumeProfile, Map<String, Object> job, List<String> matchedSkills) {
+        List<String> requiredSkills = toStringList(job.get("requiredSkills"));
+        java.util.LinkedHashSet<String> missing = new java.util.LinkedHashSet<>();
+        for (String requiredSkill : requiredSkills) {
+            boolean alreadyMatched = false;
+            for (String matchedSkill : matchedSkills) {
+                if (requiredSkill.equalsIgnoreCase(matchedSkill)) {
+                    alreadyMatched = true;
+                    break;
+                }
+            }
+            if (!alreadyMatched) {
+                missing.add(requiredSkill);
+            }
+        }
+        return List.copyOf(missing);
+    }
+
+    private List<String> toStringList(Object value) {
+        if (value instanceof List<?> list) {
+            return list.stream().map(String::valueOf).toList();
+        }
+        return List.of();
     }
 }
