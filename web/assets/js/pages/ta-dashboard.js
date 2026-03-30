@@ -120,6 +120,17 @@
       ]
     }
   };
+  const serverSchedule = window.taDashboardSchedule;
+  if (serverSchedule && Array.isArray(serverSchedule.activities)) {
+    weeklySchedule["0"] = {
+      course: {
+        title: serverSchedule.course && serverSchedule.course.title ? serverSchedule.course.title : "Software Engineering TA",
+        meta: serverSchedule.course && serverSchedule.course.meta ? serverSchedule.course.meta : "No fixed course session arranged for this week",
+        link: serverSchedule.course && serverSchedule.course.link ? serverSchedule.course.link : "#"
+      },
+      activities: serverSchedule.activities
+    };
+  }
 
   const state = {
     weekOffset: 0,
@@ -268,7 +279,9 @@
       taskMap.get(key).push(task);
     });
 
-    weekLabel.textContent = formatRange(weekStart);
+    weekLabel.textContent = state.weekOffset === 0 && serverSchedule && serverSchedule.currentWeekLabel
+      ? serverSchedule.currentWeekLabel
+      : formatRange(weekStart);
     renderCourse(weekData);
 
     const preferredTodayKey = state.weekOffset === 0 ? isoKey(today) : null;

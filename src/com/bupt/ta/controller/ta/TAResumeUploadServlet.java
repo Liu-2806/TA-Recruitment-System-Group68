@@ -36,7 +36,7 @@ public class TAResumeUploadServlet extends BaseServlet {
                 throw new IllegalStateException("Resume file is missing.");
             }
             resumeService.saveOrReplaceTAResume(user.getId(), resumeFile.getSubmittedFileName(), resumeFile.getInputStream());
-            response.sendRedirect(request.getContextPath() + "/ta/profile");
+            response.sendRedirect(request.getContextPath() + "/ta/profile?resumeUpdated=1");
         } catch (Exception ex) {
             request.setAttribute("errorMessage", ex.getMessage());
             request.setAttribute("profile", profileService.getTAProfile(user.getId()));

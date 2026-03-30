@@ -8,5 +8,6 @@ public enum ApplicationStatus {
     UNDER_REVIEW,
     ACCEPTED,
     REJECTED,
-    WITHDRAWN
+    WITHDRAWN,
+    REVOCATION_REQUESTED
 }

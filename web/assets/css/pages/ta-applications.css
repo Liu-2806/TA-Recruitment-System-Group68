@@ -309,6 +309,16 @@
   color: #64748b;
 }
 
+.ta-application-card__icon--withdrawn {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.ta-application-card__icon--revocation {
+  background: #fef3c7;
+  color: #92400e;
+}
+
 .ta-application-card__identity h3 {
   margin: 0 0 6px;
   color: #1e293b;
@@ -357,6 +367,16 @@
   color: #64748b;
 }
 
+.ta-application-badge--withdrawn {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.ta-application-badge--revocation {
+  background: #fef3c7;
+  color: #92400e;
+}
+
 .ta-application-card__details {
   color: #2563eb;
   font-size: 14px;
@@ -401,6 +421,13 @@
   gap: 14px;
 }
 
+.ta-application-card__action-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .ta-application-card__secondary,
 .ta-application-card__primary {
   min-height: 42px;
@@ -429,6 +456,49 @@
   background: #f8fafc;
   border: 1px solid #e2e8f0;
   color: #475569;
+}
+
+.ta-withdraw-panel {
+  min-width: min(360px, 100%);
+}
+
+.ta-withdraw-panel summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+.ta-withdraw-panel summary::-webkit-details-marker {
+  display: none;
+}
+
+.ta-withdraw-panel__form {
+  margin-top: 10px;
+  padding: 14px;
+  border-radius: 14px;
+  background: #f8fafc;
+  border: 1px solid #e7edf6;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ta-withdraw-panel__form label {
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ta-withdraw-panel__form textarea {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid #dbe3ef;
+  background: #ffffff;
+  color: #334155;
+  padding: 10px 12px;
+  resize: vertical;
+  font: inherit;
 }
 
 .ta-history-board {
@@ -512,6 +582,16 @@
   color: #64748b;
 }
 
+.ta-history-card__badge--withdrawn {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.ta-history-card__badge--revocation {
+  background: #fef3c7;
+  color: #92400e;
+}
+
 .ta-history-card__steps {
   list-style: none;
   padding: 0;
@@ -546,7 +626,8 @@
   .ta-applications-summary,
   .ta-application-card__top,
   .ta-application-card__actions,
-  .ta-history-board__header {
+  .ta-history-board__header,
+  .ta-application-card__action-group {
     flex-direction: column;
     align-items: flex-start;
   }

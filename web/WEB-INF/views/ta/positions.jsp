@@ -8,10 +8,15 @@
   request.setAttribute("showHeaderUser", Boolean.TRUE);
   Object queryObj = request.getAttribute("query");
   com.bupt.ta.dto.JobQuery query = queryObj instanceof com.bupt.ta.dto.JobQuery ? (com.bupt.ta.dto.JobQuery) queryObj : new com.bupt.ta.dto.JobQuery();
+  String encodedReturnQuery = String.valueOf(request.getAttribute("encodedReturnQuery") == null ? "" : request.getAttribute("encodedReturnQuery"));
 
   Object pageObj = request.getAttribute("jobsPage");
   com.bupt.ta.dto.PageResult jobsPage = pageObj instanceof com.bupt.ta.dto.PageResult ? (com.bupt.ta.dto.PageResult) pageObj : null;
   java.util.List jobs = jobsPage == null || jobsPage.getRecords() == null ? java.util.Collections.emptyList() : jobsPage.getRecords();
+  int currentPage = jobsPage == null ? 1 : jobsPage.getPage();
+  int pageSize = jobsPage == null ? 10 : jobsPage.getSize();
+  int total = jobsPage == null ? jobs.size() : (int) jobsPage.getTotal();
+  int totalPages = pageSize <= 0 ? 1 : Math.max(1, (int) Math.ceil(total / (double) pageSize));
 
   String currentUserName = "TA";
   request.setAttribute("currentUserName", currentUserName);
@@ -67,12 +72,40 @@
           </div>
 
           <div class="ta-filter-field">
+            <label for="positionDepartment">Department</label>
+            <div class="ta-filter-select">
+              <input id="positionDepartment" name="department" type="text" placeholder="e.g. Computer Science" value="<%= query.getDepartment() == null ? "" : query.getDepartment() %>">
+              <span class="ta-filter-select__caret" aria-hidden="true">v</span>
+            </div>
+          </div>
+
+          <div class="ta-filter-field">
+            <label for="positionModuleType">Module Type</label>
+            <div class="ta-filter-select">
+              <input id="positionModuleType" name="moduleType" type="text" placeholder="e.g. Lab Module" value="<%= query.getModuleType() == null ? "" : query.getModuleType() %>">
+              <span class="ta-filter-select__caret" aria-hidden="true">v</span>
+            </div>
+          </div>
+
+          <div class="ta-filter-field ta-filter-field--wide">
+            <label for="positionResponsibilities">Responsibilities</label>
+            <div class="ta-filter-input">
+              <span class="ta-filter-input__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <path d="M5 6.75h14M5 12h14M5 17.25h10" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+              <input id="positionResponsibilities" name="responsibilityKeyword" type="text" placeholder="e.g. marking, Q&A, workshop" value="<%= query.getResponsibilityKeyword() == null ? "" : query.getResponsibilityKeyword() %>">
+            </div>
+          </div>
+
+          <div class="ta-filter-field">
             <label for="positionSort">Sort By</label>
             <div class="ta-filter-select">
-              <select id="positionSort">
-                <option>Latest Posted</option>
-                <option>Upcoming Deadline</option>
-                <option>Most Vacancies</option>
+              <select id="positionSort" name="sortBy">
+                <option value="latest" <%= query.getSortBy() == null || query.getSortBy().isBlank() || "latest".equalsIgnoreCase(query.getSortBy()) ? "selected" : "" %>>Latest Posted</option>
+                <option value="deadline" <%= "deadline".equalsIgnoreCase(query.getSortBy()) ? "selected" : "" %>>Upcoming Deadline</option>
+                <option value="vacancies" <%= "vacancies".equalsIgnoreCase(query.getSortBy()) ? "selected" : "" %>>Most Vacancies</option>
               </select>
               <span class="ta-filter-select__caret" aria-hidden="true">v</span>
             </div>
@@ -114,6 +147,8 @@
               String deadline = String.valueOf(job.getOrDefault("deadline", ""));
               String vacancies = String.valueOf(job.getOrDefault("vacancies", ""));
               String status = String.valueOf(job.getOrDefault("status", "OPEN"));
+              String department = String.valueOf(job.getOrDefault("department", ""));
+              String moduleType = String.valueOf(job.getOrDefault("moduleType", ""));
               String statusCss = "open";
               Object requiredSkillsObj = job.get("requiredSkills");
               java.util.List requiredSkillsList = requiredSkillsObj instanceof java.util.List ? (java.util.List) requiredSkillsObj : java.util.Collections.emptyList();
@@ -129,6 +164,7 @@
               <div>
                 <h3><%= courseName %></h3>
                 <p><%= moName %> <span>Vacancies: <%= vacancies %></span></p>
+                <p><%= department %><%= department.isBlank() || moduleType.isBlank() ? "" : " | " %><%= moduleType %></p>
               </div>
             </div>
 
@@ -137,7 +173,7 @@
                 <span class="ta-position-status__dot"></span>
                 <%= status %>
               </span>
-              <a href="<%= contextPath %>/ta/jobs/detail?jobId=<%= postingId %>" class="ta-position-card__details">
+              <a href="<%= contextPath %>/ta/jobs/detail?jobId=<%= postingId %><%= encodedReturnQuery.isBlank() ? "" : "&returnQuery=" + encodedReturnQuery %>" class="ta-position-card__details">
                 <span>View Details</span>
                 <span class="ta-position-card__details-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" focusable="false">
@@ -194,22 +230,36 @@
       </section>
 
       <footer class="ta-positions-footer">
-        <p>Showing <%= jobs.size() %> available positions</p>
+        <%
+          int startIndex = total == 0 ? 0 : ((currentPage - 1) * pageSize) + 1;
+          int endIndex = Math.min(total, currentPage * pageSize);
+          String baseParams = "keyword=" + java.net.URLEncoder.encode(query.getKeyword() == null ? "" : query.getKeyword(), "UTF-8")
+              + "&major=" + java.net.URLEncoder.encode(query.getMajor() == null ? "" : query.getMajor(), "UTF-8")
+              + "&department=" + java.net.URLEncoder.encode(query.getDepartment() == null ? "" : query.getDepartment(), "UTF-8")
+              + "&moduleType=" + java.net.URLEncoder.encode(query.getModuleType() == null ? "" : query.getModuleType(), "UTF-8")
+              + "&responsibilityKeyword=" + java.net.URLEncoder.encode(query.getResponsibilityKeyword() == null ? "" : query.getResponsibilityKeyword(), "UTF-8")
+              + "&sortBy=" + java.net.URLEncoder.encode(query.getSortBy() == null ? "" : query.getSortBy(), "UTF-8")
+              + "&size=" + pageSize;
+        %>
+        <p>Showing <%= startIndex %>-<%= endIndex %> of <%= total %> available positions</p>
         <div class="ta-pagination">
-          <button type="button" class="ta-pagination__nav" aria-label="Previous page">
+          <a class="ta-pagination__nav <%= currentPage <= 1 ? "is-disabled" : "" %>"
+             aria-label="Previous page"
+             href="<%= currentPage <= 1 ? "#" : (contextPath + "/ta/jobs?" + baseParams + "&page=" + (currentPage - 1)) %>">
             <svg viewBox="0 0 24 24" focusable="false">
               <path d="M14.5 6.5 9 12l5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-          </button>
-          <button type="button" class="ta-pagination__page is-active">1</button>
-          <button type="button" class="ta-pagination__page">2</button>
-          <button type="button" class="ta-pagination__page">3</button>
-          <span class="ta-pagination__dots">...</span>
-          <button type="button" class="ta-pagination__nav" aria-label="Next page">
+          </a>
+          <span class="ta-pagination__page is-active"><%= currentPage %></span>
+          <span class="ta-pagination__dots">/</span>
+          <span class="ta-pagination__page"><%= totalPages %></span>
+          <a class="ta-pagination__nav <%= currentPage >= totalPages ? "is-disabled" : "" %>"
+             aria-label="Next page"
+             href="<%= currentPage >= totalPages ? "#" : (contextPath + "/ta/jobs?" + baseParams + "&page=" + (currentPage + 1)) %>">
             <svg viewBox="0 0 24 24" focusable="false">
               <path d="M9.5 6.5 15 12l-5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-          </button>
+          </a>
         </div>
       </footer>
     </main>
