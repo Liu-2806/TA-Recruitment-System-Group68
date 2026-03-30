@@ -28,6 +28,8 @@ public class AdminMOListServlet extends BaseServlet {
         query.put("keyword", request.getParameter("keyword"));
         query.put("status", request.getParameter("status"));
         query.put("sortBy", request.getParameter("sortBy"));
+        query.put("page", request.getParameter("page"));
+        query.put("size", request.getParameter("size"));
         request.setAttribute("mosPage", userService.searchMOs(query));
         request.setAttribute("query", query);
         request.getRequestDispatcher("/WEB-INF/views/admin/all-mos.jsp").forward(request, response);
