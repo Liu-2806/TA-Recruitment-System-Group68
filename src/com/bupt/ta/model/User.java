@@ -15,6 +15,9 @@ public class User implements Serializable {
     private String staffId;
     private String department;
     private String phone;
+    private String description;
+    private String createdAt;
+    private int postingCount;
     private String status;
     private Role role;
 
@@ -88,6 +91,30 @@ public class User implements Serializable {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public int getPostingCount() {
+        return postingCount;
+    }
+
+    public void setPostingCount(int postingCount) {
+        this.postingCount = postingCount;
     }
 
     public String getStatus() {
