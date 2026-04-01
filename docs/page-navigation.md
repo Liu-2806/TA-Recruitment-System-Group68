@@ -26,7 +26,7 @@
 | `mo-postings-preview.jsp` | `WEB-INF/views/mo/postings.jsp` | http://localhost:8080/TA-Recruitment-System-Group68/mo-postings-preview.jsp
 | `mo-applicants-preview.jsp` | `WEB-INF/views/mo/applicants.jsp` | http://localhost:8080/TA-Recruitment-System-Group68/mo-applicants-preview.jsp
 | `mo-applicant-details-preview.jsp` | `WEB-INF/views/mo/applicant-details.jsp` | http://localhost:8080/TA-Recruitment-System-Group68/
-| `admin-dashboard-preview.jsp` | `WEB-INF/views/admin/dashboard.jsp` | http://localhost:8080/TA-Recruitment-System-Group68/mo-applicant-details-preview.jsp
+| `admin-dashboard-preview.jsp` | `WEB-INF/views/admin/dashboard.jsp` | http://localhost:8080/TA-Recruitment-System-Group68/admin-dashboard-preview.jsp
 | `admin-create-mo-preview.jsp` | `WEB-INF/views/admin/create-mo.jsp` | http://localhost:8080/TA-Recruitment-System-Group68/admin-create-mo-preview.jsp
 | `admin-all-mos-preview.jsp` | `WEB-INF/views/admin/all-mos.jsp` | http://localhost:8080/TA-Recruitment-System-Group68/admin-all-mos-preview.jsp
 | `admin-all-jobs-preview.jsp` | `WEB-INF/views/admin/all-jobs.jsp` | http://localhost:8080/TA-Recruitment-System-Group68/admin-all-jobs-preview.jsp

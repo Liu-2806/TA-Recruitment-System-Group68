@@ -17,6 +17,14 @@ public interface AnalyticsService {
     Map<String, Object> getSystemOverview();
 
     /**
+     * 获取 MO 仪表盘概览数据。
+     *
+     * @param moUserId MO 用户 ID
+     * @return 概览数据
+     */
+    Map<String, Object> getMODashboardOverview(String moUserId);
+
+    /**
      * 获取 TA 工作量报表。
      *
      * @param query 查询参数

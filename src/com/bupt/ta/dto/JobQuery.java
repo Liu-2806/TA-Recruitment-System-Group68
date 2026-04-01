@@ -5,6 +5,10 @@ package com.bupt.ta.dto;
  */
 public class JobQuery {
     private String keyword;
+    private String major;
+    private String department;
+    private String moduleType;
+    private String responsibilityKeyword;
     private String status;
     private int page = 1;
     private int size = 10;
@@ -16,6 +20,38 @@ public class JobQuery {
 
     public void setKeyword(String keyword) {
         this.keyword = keyword;
+    }
+
+    public String getMajor() {
+        return major;
+    }
+
+    public void setMajor(String major) {
+        this.major = major;
+    }
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+
+    public String getModuleType() {
+        return moduleType;
+    }
+
+    public void setModuleType(String moduleType) {
+        this.moduleType = moduleType;
+    }
+
+    public String getResponsibilityKeyword() {
+        return responsibilityKeyword;
+    }
+
+    public void setResponsibilityKeyword(String responsibilityKeyword) {
+        this.responsibilityKeyword = responsibilityKeyword;
     }
 
     public String getStatus() {

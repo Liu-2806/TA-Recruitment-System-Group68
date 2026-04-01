@@ -27,7 +27,8 @@
     <main class="mo-dashboard-main">
       <div class="mo-dashboard-grid">
         <aside class="mo-dashboard-sidebar">
-          <section class="mo-card mo-profile-card">
+          <section class="mo-card mo-card--profile mo-profile-card">
+            <div class="mo-card__accent"></div>
             <div class="mo-profile-card__avatar">
               <svg viewBox="0 0 24 24" focusable="false">
                 <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm0 1.5c-3.3 0-6 1.97-6 4.4V19h12v-1.1c0-2.43-2.7-4.4-6-4.4Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
@@ -60,10 +61,10 @@
               <strong>8</strong>
               <span>applications found</span>
             </div>
-            <button class="mo-metric-card__button" type="button">
+            <a class="mo-metric-card__button" href="<%= contextPath %>/mo-review-queue-preview.jsp">
               <span>Manage Review</span>
               <span aria-hidden="true">-></span>
-            </button>
+            </a>
           </section>
 
           <section class="mo-card mo-alert-card">
@@ -165,30 +166,11 @@
               </article>
             </div>
           </section>
-
-          <section class="mo-card mo-activity-card">
-            <div class="mo-activity-card__header">
-              <h3>Latest Recruitment Activity</h3>
-            </div>
-
-            <div class="mo-activity-card__item">
-              <div class="mo-activity-card__item-left">
-                <span class="mo-activity-card__item-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" focusable="false">
-                    <path d="M12 12a3.75 3.75 0 1 0-3.75-3.75A3.75 3.75 0 0 0 12 12Zm0 1.5c-3.17 0-5.75 1.89-5.75 4.22V19h11.5v-.28c0-2.33-2.58-4.22-5.75-4.22Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </span>
-                <div>
-                  <h4>Software Engineering TA</h4>
-                  <p>Notification received: <strong>2 hours ago</strong></p>
-                </div>
-              </div>
-              <span class="mo-activity-card__badge">+3 New Applications</span>
-            </div>
-          </section>
         </section>
       </div>
     </main>
+
+    <jsp:include page="/WEB-INF/views/common/footer.jsp" />
   </div>
 </body>
 </html>

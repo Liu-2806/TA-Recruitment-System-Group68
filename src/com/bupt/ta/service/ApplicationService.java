@@ -57,6 +57,8 @@ public interface ApplicationService {
      */
     Map<String, Object> getApplicationDetailForMO(String applicationId, String moUserId);
 
+    Map<String, Object> withdrawApplicationByTA(String applicationId, String taUserId, String reason);
+
     /**
      * 更新申请状态（MO 侧录取/拒绝）。
      *

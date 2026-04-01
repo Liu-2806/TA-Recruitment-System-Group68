@@ -75,6 +75,12 @@ Supported DeepSeek base URL forms:
 - https://api.deepseek.com
 - https://api.deepseek.com/v1
 
+Explainability requirement for API-based matching:
+- the LLM prompt must evaluate only the provided structured resume data and job data
+- the LLM prompt must not assume missing facts or use external knowledge
+- the LLM output must remain reviewable by a human MO and explain both supporting evidence and important gaps
+- the AI result is advisory only and must not be treated as an automatic hiring decision
+
 7. Data Constraint Reminder
 
 According to the handout:
@@ -95,6 +101,11 @@ After each code change, update these files together:
 - requirements.txt
 - docs/简历输入模块中文说明手册.md
 - docs/代码结构树.md
+
+Git upload reminder:
+- ignore `src/test/` by default
+- ignore `scripts/test-*.ps1` by default
+- do not upload temporary or auxiliary test files unless they are explicitly needed for delivery
 
 9. New Member Setup Steps
 

@@ -27,9 +27,15 @@ Examples:
 - `WEB-INF/views/auth/login.jsp`
 - `WEB-INF/views/ta/dashboard.jsp`
 - `WEB-INF/views/mo/post-position.jsp`
-- `WEB-INF/views/admin/all-jobs.jsp`
+- `WEB-INF/views/admin/ta-workload.jsp`
 - `assets/css/pages/login.css`
+- `assets/css/pages/admin-ta-workload.css`
 - `assets/js/pages/login.js`
+- `assets/js/pages/admin-ta-workload.js`
+- `assets/js/pages/mo-post-position.js`
+- `assets/js/pages/mo-profile-edit.js`
+- `assets/js/pages/mo-review-queue.js`
+- `assets/js/pages/ta-dashboard.js`
 
 ## Role entry structure
 
@@ -40,17 +46,18 @@ Examples:
 - MO pages: `WEB-INF/views/mo`
 - Admin pages: `WEB-INF/views/admin`
 
-Current role-based page entry points:
+Planned role-based page entry points:
 
-- TA: dashboard, profile, positions, position-details, applications
-- MO: dashboard, profile-edit, post-position, postings, applicants, applicant-details
-- Admin: dashboard, create-mo, all-mos, all-jobs
+- TA: dashboard, profile, positions, applications
+- MO: dashboard, profile, post-position, postings, applicants, review-queue
+- Admin: dashboard, mo-list, ta-list, ta-workload
 
 ## Shared layout
 
 - `WEB-INF/views/common/header.jsp`: top bar with branding, page context, notifications, and user info
 - `WEB-INF/views/common/sidebar.jsp`: role-aware navigation for TA, MO, and Admin
 - `WEB-INF/views/common/footer.jsp`: system, group, and version info
+- `WEB-INF/views/common/legal.jsp`: shared placeholder page for User Agreement and Privacy Policy
 - `WEB-INF/views/common/layout.jsp`: shared page shell for content pages
 
 The shared `layout.jsp` expects request attributes such as:
@@ -70,6 +77,7 @@ The shared `layout.jsp` expects request attributes such as:
 
 - JSP pages under `WEB-INF/views` are intended to be rendered through servlets.
 - Shared CSS and JS files are placed in `assets`.
+- Shared public placeholder pages can also be placed under `WEB-INF/views/common` and exposed through a servlet route.
+- Standalone auth, TA, MO, and Admin pages should also include the shared `footer.jsp` to keep the bottom section consistent.
 - Empty role/page folders use `.gitkeep` so the structure can be tracked in Git.
 - JSTL dependencies for shared JSP fragments are stored in `WEB-INF/lib`.
-- The active web root is this `web/` directory.

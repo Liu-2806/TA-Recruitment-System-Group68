@@ -301,6 +301,7 @@
 
 .ta-upload-box {
   padding: 0 20px 20px;
+  scroll-margin-top: 92px;
 }
 
 .ta-upload-box h3 {

@@ -2,13 +2,14 @@ package com.bupt.ta.controller.admin;
 
 import com.bupt.ta.controller.common.BaseServlet;
 import com.bupt.ta.service.UserService;
+import com.bupt.ta.util.ServiceRegistry;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -16,7 +17,7 @@ import java.util.Map;
  */
 @WebServlet("/admin/mos/create")
 public class AdminMOCreateServlet extends BaseServlet {
-    private UserService userService;
+    private final UserService userService = ServiceRegistry.userService();
 
     /**
      * 展示创建 MO 页面。
@@ -31,11 +32,18 @@ public class AdminMOCreateServlet extends BaseServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Map<String, Object> params = new HashMap<>();
+        Map<String, Object> params = new LinkedHashMap<String, Object>();
         params.put("username", request.getParameter("username"));
-        params.put("name", request.getParameter("name"));
+        params.put("fullName", firstNonBlank(request.getParameter("fullName"), request.getParameter("name")));
+        params.put("name", firstNonBlank(request.getParameter("name"), request.getParameter("fullName")));
+        params.put("staffId", request.getParameter("staffId"));
         params.put("email", request.getParameter("email"));
-        params.put("tempPassword", request.getParameter("tempPassword"));
+        params.put("department", request.getParameter("department"));
+        params.put("phone", request.getParameter("phone"));
+        params.put("description", request.getParameter("description"));
+        params.put("tempPassword", firstNonBlank(request.getParameter("tempPassword"), request.getParameter("initialPassword")));
+        params.put("initialPassword", firstNonBlank(request.getParameter("initialPassword"), request.getParameter("tempPassword")));
+        params.put("confirmPassword", request.getParameter("confirmPassword"));
         try {
             userService.createMO(params);
             response.sendRedirect(request.getContextPath() + "/admin/mos");
@@ -44,5 +52,17 @@ public class AdminMOCreateServlet extends BaseServlet {
             request.setAttribute("formData", params);
             request.getRequestDispatcher("/WEB-INF/views/admin/create-mo.jsp").forward(request, response);
         }
+    }
+
+    private String firstNonBlank(String... values) {
+        if (values == null) {
+            return null;
+        }
+        for (String value : values) {
+            if (value != null && !value.trim().isEmpty()) {
+                return value.trim();
+            }
+        }
+        return null;
     }
 }
