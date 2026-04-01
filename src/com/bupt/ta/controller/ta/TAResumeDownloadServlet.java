@@ -3,6 +3,7 @@ package com.bupt.ta.controller.ta;
 import com.bupt.ta.controller.common.BaseServlet;
 import com.bupt.ta.model.User;
 import com.bupt.ta.repository.file.TADataRepository;
+import com.bupt.ta.util.DataPaths;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -11,7 +12,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Map;
 
 @WebServlet("/ta/resume/download")
@@ -39,7 +39,7 @@ public class TAResumeDownloadServlet extends BaseServlet {
         }
 
         String resumeFileName = String.valueOf(resumeFileNameObj).trim();
-        Path file = Paths.get("data", "resumes", resumeFileName);
+        Path file = DataPaths.resolveDataRoot().resolve("resumes").resolve(resumeFileName);
         if (!Files.exists(file)) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Resume file not found.");
             return;
