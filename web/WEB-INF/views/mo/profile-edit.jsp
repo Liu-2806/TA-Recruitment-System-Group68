@@ -133,10 +133,9 @@
                 </span>
                 <div>
                   <strong>Login Password</strong>
-                  <p>Last login: 2026-03-18 14:20:05</p>
                 </div>
               </div>
-              <button class="mo-profile-security__button" type="button">Change Password</button>
+              <button class="mo-profile-security__button" type="button" id="openPasswordDialog">Change Password</button>
             </div>
           </section>
 
@@ -162,9 +161,73 @@
       </div>
     </main>
 
-    <footer class="mo-profile-footer">
-      <p>&copy; 2026 TA Recruitment System - BUPT Department HR</p>
-    </footer>
+    <jsp:include page="/WEB-INF/views/common/footer.jsp" />
+
+    <div class="mo-password-modal" id="moPasswordModal" aria-hidden="true">
+      <div class="mo-password-modal__backdrop" data-close-password-modal="true"></div>
+      <div class="mo-password-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="moPasswordDialogTitle">
+        <button class="mo-password-modal__close" type="button" id="closePasswordDialog" aria-label="Close password dialog">
+          <svg viewBox="0 0 24 24" focusable="false">
+            <path d="m7 7 10 10M17 7 7 17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+
+        <div class="mo-password-modal__header">
+          <span class="mo-password-modal__eyebrow">Account Security</span>
+          <h2 id="moPasswordDialogTitle">Change Password</h2>
+          <p>Update your account password here. The new password will be used from your next login.</p>
+        </div>
+
+        <form class="mo-password-form" action="#" method="post">
+          <div class="mo-password-form__field">
+            <label for="currentPassword">Current Password</label>
+            <div class="mo-password-form__input">
+              <span class="mo-password-form__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <path d="M7.75 10V8.5a4.25 4.25 0 0 1 8.5 0V10m-9 0h10a1.25 1.25 0 0 1 1.25 1.25v7.25a1.25 1.25 0 0 1-1.25 1.25h-10A1.25 1.25 0 0 1 6 18.5v-7.25A1.25 1.25 0 0 1 7.25 10Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+              <input id="currentPassword" name="currentPassword" type="password" placeholder="Enter current password">
+            </div>
+          </div>
+
+          <div class="mo-password-form__field">
+            <label for="newPassword">New Password</label>
+            <div class="mo-password-form__input">
+              <span class="mo-password-form__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <path d="M7.75 10V8.5a4.25 4.25 0 0 1 8.5 0V10m-9 0h10a1.25 1.25 0 0 1 1.25 1.25v7.25a1.25 1.25 0 0 1-1.25 1.25h-10A1.25 1.25 0 0 1 6 18.5v-7.25A1.25 1.25 0 0 1 7.25 10Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+              <input id="newPassword" name="newPassword" type="password" placeholder="Create a new password">
+            </div>
+          </div>
+
+          <div class="mo-password-form__field">
+            <label for="confirmNewPassword">Confirm New Password</label>
+            <div class="mo-password-form__input">
+              <span class="mo-password-form__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <path d="M7.75 10V8.5a4.25 4.25 0 0 1 8.5 0V10m-9 0h10a1.25 1.25 0 0 1 1.25 1.25v7.25a1.25 1.25 0 0 1-1.25 1.25h-10A1.25 1.25 0 0 1 6 18.5v-7.25A1.25 1.25 0 0 1 7.25 10Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+              <input id="confirmNewPassword" name="confirmNewPassword" type="password" placeholder="Re-enter the new password">
+            </div>
+          </div>
+
+          <div class="mo-password-form__tips">
+            <p>Recommended: use at least 8 characters and combine letters, numbers, and symbols.</p>
+          </div>
+
+          <div class="mo-password-form__actions">
+            <button class="mo-password-form__cancel" type="button" id="cancelPasswordDialog">Cancel</button>
+            <button class="mo-password-form__submit" type="submit">Update Password</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
+
+  <script src="<%= contextPath %>/assets/js/pages/mo-profile-edit.js"></script>
 </body>
 </html>

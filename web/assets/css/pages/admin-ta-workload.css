@@ -1,0 +1,711 @@
+.admin-workload-shell {
+  min-height: 100vh;
+  display: flex;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.admin-workload-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-workload-content {
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 28px 24px 40px;
+}
+
+.admin-workload-heading {
+  margin-bottom: 22px;
+}
+
+.admin-workload-heading__eyebrow {
+  margin: 0 0 12px;
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.admin-workload-heading__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  margin-bottom: 8px;
+}
+
+.admin-workload-heading__back:hover {
+  color: #2563eb;
+}
+
+.admin-workload-heading__back-icon {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-workload-heading__back-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.admin-workload-heading h1 {
+  margin: 0;
+  color: #1e293b;
+  font-size: 22px;
+  line-height: 1.2;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+.admin-ta-filter,
+.admin-ta-table-card,
+.admin-ta-analysis-card {
+  background: #ffffff;
+  border: 1px solid #eef2f7;
+  border-radius: 24px;
+  box-shadow: 0 16px 32px rgba(148, 163, 184, 0.08);
+}
+
+.admin-ta-filter {
+  padding: 18px 20px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(220px, 0.9fr) minmax(220px, 0.9fr) auto;
+  gap: 14px;
+  align-items: end;
+  margin-bottom: 22px;
+}
+
+.admin-ta-filter__field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-ta-filter__field label {
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.admin-ta-filter__input,
+.admin-ta-filter__select {
+  position: relative;
+}
+
+.admin-ta-filter__input input,
+.admin-ta-filter__select select {
+  width: 100%;
+  height: 46px;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #ffffff;
+  color: #475569;
+  font-size: 15px;
+  font-weight: 600;
+  outline: none;
+}
+
+.admin-ta-filter__input input {
+  padding: 0 14px 0 42px;
+}
+
+.admin-ta-filter__select select {
+  appearance: none;
+  padding: 0 38px 0 14px;
+}
+
+.admin-ta-filter__icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  color: #94a3b8;
+  display: inline-flex;
+}
+
+.admin-ta-filter__icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.admin-ta-filter__caret {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 12px;
+  pointer-events: none;
+}
+
+.admin-ta-filter__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-ta-filter__search {
+  min-width: 136px;
+  height: 46px;
+  border: 0;
+  border-radius: 16px;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 800;
+  box-shadow: 0 14px 24px rgba(37, 99, 235, 0.18);
+}
+
+.admin-ta-filter__reset {
+  width: 46px;
+  height: 46px;
+  border: 1px solid #eef2f7;
+  border-radius: 14px;
+  background: #f8fafc;
+  color: #94a3b8;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-ta-filter__reset svg {
+  width: 18px;
+  height: 18px;
+}
+
+.admin-ta-table__wrap {
+  overflow-x: auto;
+}
+
+.admin-ta-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-ta-table thead th {
+  background: #fbfdff;
+  border-bottom: 1px solid #f1f5f9;
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 18px 24px;
+  text-align: left;
+}
+
+.admin-ta-table tbody td {
+  border-bottom: 1px solid #f8fafc;
+  padding: 18px 24px;
+  vertical-align: middle;
+}
+
+.admin-ta-table__right {
+  text-align: right !important;
+}
+
+.admin-ta-name {
+  color: #1e293b;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.admin-ta-student {
+  color: #c0cad8;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.admin-ta-major {
+  color: #475569;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.admin-ta-count,
+.admin-ta-hours {
+  color: #334155;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.admin-ta-hours--alert {
+  color: #d97706;
+}
+
+.admin-ta-status {
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.admin-ta-status--normal {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.admin-ta-status--alert {
+  background: #fffbeb;
+  color: #b45309;
+}
+
+.admin-ta-status--idle {
+  background: #f1f5f9;
+  color: #94a3b8;
+}
+
+.admin-ta-details-button {
+  border: 0;
+  background: transparent;
+  color: #2563eb;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.admin-ta-analysis-card {
+  margin-top: 18px;
+  padding: 22px 24px 26px;
+}
+
+.admin-ta-analysis-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.admin-ta-analysis-card__title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-ta-analysis-card__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  background: #eff6ff;
+  color: #2563eb;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-ta-analysis-card__icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.admin-ta-analysis-card__title h2 {
+  margin: 0;
+  color: #1e293b;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+.admin-ta-analysis-card__subtitle {
+  margin: 6px 0 0 52px;
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.admin-ta-analysis-card__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px;
+  border-radius: 14px;
+  background: #f8fafc;
+  border: 1px solid #eef2f7;
+}
+
+.admin-ta-analysis-card__toggle button {
+  min-height: 34px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.admin-ta-analysis-card__toggle .is-active {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.admin-ta-analysis-card__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(260px, 0.55fr);
+  gap: 20px;
+  align-items: stretch;
+}
+
+.admin-ta-chart {
+  position: relative;
+  min-height: 230px;
+  padding: 28px 22px 12px;
+  border-radius: 22px;
+  background: #fbfdff;
+  border: 1px solid #eef2f7;
+  display: flex;
+  align-items: flex-end;
+}
+
+.admin-ta-chart__baseline {
+  position: absolute;
+  left: 22px;
+  right: 22px;
+  bottom: 34px;
+  height: 1px;
+  background: #dbe4ef;
+}
+
+.admin-ta-chart__bars {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  align-items: end;
+}
+
+.admin-ta-chart__group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-ta-chart__bar {
+  width: 100%;
+  max-width: 148px;
+  border-radius: 14px 14px 0 0;
+}
+
+.admin-ta-chart__bar--light {
+  background: #eaf2ff;
+}
+
+.admin-ta-chart__bar--medium {
+  background: #c8dcfb;
+}
+
+.admin-ta-chart__bar--strong {
+  background: #2563eb;
+}
+
+.admin-ta-chart__bar--warn {
+  background: #f59e0b;
+}
+
+.admin-ta-chart__group span {
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.admin-ta-analysis-side {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.admin-ta-insight-card {
+  padding: 20px 18px;
+  border-radius: 18px;
+  background: #fbfdff;
+  border: 1px solid #eef2f7;
+}
+
+.admin-ta-insight-card--alert {
+  background: #fff9e8;
+  border-color: #fde68a;
+}
+
+.admin-ta-insight-card__eyebrow {
+  display: block;
+  margin-bottom: 10px;
+  color: #c0cad8;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.admin-ta-insight-card strong {
+  display: block;
+  color: #1e293b;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.admin-ta-insight-card p {
+  margin: 10px 0 0;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.6;
+  font-weight: 600;
+}
+
+.admin-ta-export {
+  margin-top: 18px;
+}
+
+.admin-ta-export__button {
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #ffffff;
+  color: #475569;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 800;
+  box-shadow: 0 12px 22px rgba(148, 163, 184, 0.08);
+}
+
+.admin-ta-export__icon {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-ta-export__icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.admin-ta-modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 80;
+}
+
+.admin-ta-modal.is-open {
+  display: flex;
+}
+
+.admin-ta-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.admin-ta-modal__dialog {
+  position: relative;
+  width: min(100%, 920px);
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 28px;
+  box-shadow: 0 28px 68px rgba(15, 23, 42, 0.18);
+  padding: 28px;
+  z-index: 1;
+}
+
+.admin-ta-modal__close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #64748b;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-ta-modal__close svg {
+  width: 16px;
+  height: 16px;
+}
+
+.admin-ta-modal__header {
+  margin-bottom: 22px;
+  padding-right: 42px;
+}
+
+.admin-ta-modal__eyebrow {
+  display: block;
+  margin-bottom: 8px;
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.admin-ta-modal__header h2 {
+  margin: 0;
+  color: #1e293b;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+.admin-ta-modal__header p {
+  margin: 10px 0 0;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.admin-ta-modal__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.admin-ta-detail-card {
+  padding: 20px;
+  border-radius: 18px;
+  background: #fbfdff;
+  border: 1px solid #eef2f7;
+}
+
+.admin-ta-detail-card h3 {
+  margin: 0 0 16px;
+  color: #334155;
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.admin-ta-detail-card__list,
+.admin-ta-position-list,
+.admin-ta-analysis-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-ta-detail-item,
+.admin-ta-position-item,
+.admin-ta-analysis-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid #eef2f7;
+}
+
+.admin-ta-detail-item strong,
+.admin-ta-position-item strong,
+.admin-ta-analysis-item strong {
+  color: #334155;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.admin-ta-detail-item span,
+.admin-ta-position-item span,
+.admin-ta-analysis-item span {
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.6;
+  font-weight: 600;
+  text-align: right;
+}
+
+.admin-ta-suggestion-list {
+  margin: 0;
+  padding-left: 18px;
+  color: #475569;
+  font-size: 14px;
+  line-height: 1.7;
+  font-weight: 600;
+}
+
+@media (max-width: 1200px) {
+  .admin-workload-shell {
+    flex-direction: column;
+  }
+
+  .admin-ta-filter {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .admin-ta-filter__actions {
+    grid-column: 1 / -1;
+  }
+
+  .admin-ta-analysis-card__body,
+  .admin-ta-modal__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .admin-workload-content {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .admin-ta-filter {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-workload-heading,
+  .admin-ta-analysis-card__header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .admin-ta-modal {
+    padding: 16px;
+  }
+
+  .admin-ta-modal__dialog {
+    padding: 22px 18px;
+  }
+}

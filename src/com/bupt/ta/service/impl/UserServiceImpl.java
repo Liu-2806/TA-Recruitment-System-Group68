@@ -6,10 +6,18 @@ import com.bupt.ta.model.Role;
 import com.bupt.ta.model.User;
 import com.bupt.ta.repository.UserRepository;
 import com.bupt.ta.service.UserService;
+import com.bupt.ta.util.DataPaths;
+import com.bupt.ta.util.JsonUtils;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -91,7 +99,8 @@ public class UserServiceImpl implements UserService {
         String department = firstNonBlank(params, "department");
         String phone = firstNonBlank(params, "phone");
         String description = firstNonBlank(params, "description");
-        String initialPassword = firstNonBlank(params, "initialPassword", "password");
+        String initialPassword = firstNonBlank(params, "tempPassword", "initialPassword", "password");
+        String confirmPassword = firstNonBlank(params, "confirmPassword");
         String username = firstNonBlank(params, "username");
 
         requireNotBlank(fullName, "MO 姓名不能为空");
@@ -99,7 +108,12 @@ public class UserServiceImpl implements UserService {
         requireNotBlank(email, "邮箱不能为空");
         requireValidEmail(email);
         requireNotBlank(initialPassword, "初始密码不能为空");
+        requireNotBlank(confirmPassword, "确认密码不能为空");
         requireMinPasswordLength(initialPassword);
+
+        if (!initialPassword.equals(confirmPassword)) {
+            throw new BusinessException("两次输入的密码不一致");
+        }
 
         String normalizedUsername = isBlank(username) ? deriveUsername(email) : username.trim();
         if (userRepository.existsAcrossRoles("username", normalizedUsername)) {
@@ -121,9 +135,9 @@ public class UserServiceImpl implements UserService {
         record.put("fullName", fullName.trim());
         record.put("displayName", fullName.trim());
         record.put("staffId", staffId.trim());
-        record.put("department", department);
-        record.put("phone", phone);
-        record.put("description", description);
+        record.put("department", department == null ? null : department.trim());
+        record.put("phone", phone == null ? null : phone.trim());
+        record.put("description", description == null ? null : description.trim());
         record.put("role", Role.MO.name());
         record.put("password", initialPassword);
         record.put("active", Boolean.TRUE);
@@ -136,21 +150,38 @@ public class UserServiceImpl implements UserService {
     @Override
     public PageResult<User> searchMOs(Map<String, Object> query) {
         String keyword = firstNonBlank(query, "keyword");
+        String status = firstNonBlank(query, "status");
         String department = firstNonBlank(query, "department");
+        String sortBy = firstNonBlank(query, "sortBy");
+        int page = parsePositiveInt(query == null ? null : query.get("page"), 1);
+        int size = parsePositiveInt(query == null ? null : query.get("size"), 10);
         List<Map<String, Object>> records = userRepository.findAllByRole(Role.MO);
-        List<User> users = new ArrayList<User>();
+        List<Map<String, Object>> matchedRecords = new ArrayList<Map<String, Object>>();
         for (Map<String, Object> record : records) {
-            if (!matchesKeyword(record, keyword) || !matchesDepartment(record, department)) {
+            if (!matchesKeyword(record, keyword)
+                    || !matchesStatus(record, status)
+                    || !matchesDepartment(record, department)) {
                 continue;
             }
+            matchedRecords.add(record);
+        }
+
+        sortMoRecords(matchedRecords, sortBy);
+
+        long total = matchedRecords.size();
+        int fromIndex = Math.min((page - 1) * size, matchedRecords.size());
+        int toIndex = Math.min(fromIndex + size, matchedRecords.size());
+
+        List<User> users = new ArrayList<User>();
+        for (Map<String, Object> record : matchedRecords.subList(fromIndex, toIndex)) {
             users.add(toUser(record));
         }
 
         PageResult<User> result = new PageResult<User>();
         result.setRecords(users);
-        result.setPage(parsePositiveInt(query == null ? null : query.get("page"), 1));
-        result.setSize(users.size());
-        result.setTotal(users.size());
+        result.setPage(page);
+        result.setSize(size);
+        result.setTotal(total);
         return result;
     }
 
@@ -160,7 +191,9 @@ public class UserServiceImpl implements UserService {
         if (record == null) {
             throw new BusinessException("MO 账号不存在");
         }
-        return toUser(record);
+        User user = toUser(record);
+        user.setPostingCount(countPostingRecords(user.getMoId()));
+        return user;
     }
 
     @Override
@@ -174,22 +207,37 @@ public class UserServiceImpl implements UserService {
         }
 
         String fullName = firstNonBlank(params, "fullName", "name");
+        String email = firstNonBlank(params, "email");
         String department = firstNonBlank(params, "department");
-        String phone = firstNonBlank(params, "phone");
-        String description = firstNonBlank(params, "description");
+        String phone = normalizeOptionalText(params, "phone");
+        String description = normalizeOptionalText(params, "description");
+        String status = firstNonBlank(params, "status");
 
-        if (!isBlank(fullName)) {
-            existing.put("fullName", fullName.trim());
-            existing.put("displayName", fullName.trim());
+        requireNotBlank(fullName, "MO 姓名不能为空");
+        requireNotBlank(email, "邮箱不能为空");
+        requireValidEmail(email);
+
+        String currentEmail = firstNonBlank(existing, "email");
+        String normalizedEmail = email.trim().toLowerCase(Locale.ENGLISH);
+        if (!normalizedEmail.equalsIgnoreCase(currentEmail) && userRepository.existsAcrossRoles("email", normalizedEmail)) {
+            throw new BusinessException("邮箱已存在");
         }
-        if (!isBlank(department)) {
-            existing.put("department", department.trim());
+
+        existing.put("fullName", fullName.trim());
+        existing.put("displayName", fullName.trim());
+        existing.put("email", normalizedEmail);
+
+        if (params != null && params.containsKey("department")) {
+            existing.put("department", department);
         }
-        if (!isBlank(phone)) {
-            existing.put("phone", phone.trim());
+        if (params != null && params.containsKey("phone")) {
+            existing.put("phone", phone);
         }
-        if (!isBlank(description)) {
-            existing.put("description", description.trim());
+        if (params != null && params.containsKey("description")) {
+            existing.put("description", description);
+        }
+        if (!isBlank(status)) {
+            existing.put("active", parseMoActiveStatus(status));
         }
         existing.put("updatedAt", DATE_TIME_FORMATTER.format(LocalDateTime.now()));
         userRepository.update(Role.MO, existing);
@@ -232,10 +280,130 @@ public class UserServiceImpl implements UserService {
     private User toUser(Map<String, Object> record) {
         User user = new User();
         user.setId(firstNonBlank(record, "id", "taId", "moId"));
+        user.setMoId(firstNonBlank(record, "moId", "id"));
         user.setUsername(firstNonBlank(record, "username"));
+        user.setFullName(firstNonBlank(record, "fullName", "displayName"));
         user.setDisplayName(firstNonBlank(record, "displayName", "fullName"));
+        user.setEmail(firstNonBlank(record, "email"));
+        user.setStaffId(firstNonBlank(record, "staffId"));
+        user.setDepartment(firstNonBlank(record, "department"));
+        user.setPhone(firstNonBlank(record, "phone"));
+        user.setDescription(firstNonBlank(record, "description"));
+        user.setCreatedAt(firstNonBlank(record, "createdAt"));
+        user.setStatus(resolveStatus(record));
         user.setRole(Role.valueOf(firstNonBlank(record, "role")));
         return user;
+    }
+
+    private int countPostingRecords(String moId) {
+        if (isBlank(moId)) {
+            return 0;
+        }
+
+        Path postingsFile = DataPaths.resolvePostingsFile();
+        if (!Files.exists(postingsFile)) {
+            return 0;
+        }
+
+        try {
+            String rawJson = new String(Files.readAllBytes(postingsFile), StandardCharsets.UTF_8).trim();
+            if (rawJson.isEmpty()) {
+                return 0;
+            }
+            Object parsed = JsonUtils.parse(rawJson);
+            if (!(parsed instanceof List)) {
+                throw new BusinessException("岗位数据格式无效: " + postingsFile);
+            }
+
+            int count = 0;
+            for (Object item : (List<?>) parsed) {
+                if (!(item instanceof Map)) {
+                    continue;
+                }
+                @SuppressWarnings("unchecked")
+                Map<String, Object> posting = (Map<String, Object>) item;
+                String ownerMoId = firstNonBlank(posting, "moId", "ownerId");
+                if (moId.equals(ownerMoId)) {
+                    count++;
+                }
+            }
+            return count;
+        } catch (IOException ex) {
+            throw new BusinessException("读取岗位数据失败: " + postingsFile);
+        }
+    }
+
+    private void sortMoRecords(List<Map<String, Object>> records, String sortBy) {
+        if (records == null || records.size() <= 1) {
+            return;
+        }
+
+        Comparator<Map<String, Object>> comparator = buildMoComparator(sortBy);
+        Collections.sort(records, comparator);
+    }
+
+    private Comparator<Map<String, Object>> buildMoComparator(String sortBy) {
+        String normalizedSortBy = isBlank(sortBy) ? "createdAtDesc" : sortBy.trim();
+        if ("fullNameAsc".equalsIgnoreCase(normalizedSortBy) || "nameAsc".equalsIgnoreCase(normalizedSortBy)) {
+            return compareByField("fullName", false);
+        }
+        if ("fullNameDesc".equalsIgnoreCase(normalizedSortBy) || "nameDesc".equalsIgnoreCase(normalizedSortBy)) {
+            return compareByField("fullName", true);
+        }
+        if ("staffIdAsc".equalsIgnoreCase(normalizedSortBy)) {
+            return compareByField("staffId", false);
+        }
+        if ("staffIdDesc".equalsIgnoreCase(normalizedSortBy)) {
+            return compareByField("staffId", true);
+        }
+        if ("emailAsc".equalsIgnoreCase(normalizedSortBy)) {
+            return compareByField("email", false);
+        }
+        if ("emailDesc".equalsIgnoreCase(normalizedSortBy)) {
+            return compareByField("email", true);
+        }
+        if ("departmentAsc".equalsIgnoreCase(normalizedSortBy)) {
+            return compareByField("department", false);
+        }
+        if ("departmentDesc".equalsIgnoreCase(normalizedSortBy)) {
+            return compareByField("department", true);
+        }
+        if ("createdAtAsc".equalsIgnoreCase(normalizedSortBy)) {
+            return compareByField("createdAt", false);
+        }
+        return compareByField("createdAt", true);
+    }
+
+    private Comparator<Map<String, Object>> compareByField(final String fieldName, final boolean descending) {
+        return new Comparator<Map<String, Object>>() {
+            @Override
+            public int compare(Map<String, Object> left, Map<String, Object> right) {
+                String leftValue = comparableFieldValue(left, fieldName);
+                String rightValue = comparableFieldValue(right, fieldName);
+                int comparison = leftValue.compareToIgnoreCase(rightValue);
+                if (comparison == 0) {
+                    comparison = comparableFieldValue(left, "id").compareToIgnoreCase(comparableFieldValue(right, "id"));
+                }
+                return descending ? -comparison : comparison;
+            }
+        };
+    }
+
+    private String comparableFieldValue(Map<String, Object> record, String fieldName) {
+        if ("fullName".equals(fieldName)) {
+            return safeComparable(firstNonBlank(record, "fullName", "displayName"));
+        }
+        if ("createdAt".equals(fieldName)) {
+            return safeComparable(firstNonBlank(record, "createdAt", "updatedAt"));
+        }
+        if ("id".equals(fieldName)) {
+            return safeComparable(firstNonBlank(record, "id", "moId"));
+        }
+        return safeComparable(firstNonBlank(record, fieldName));
+    }
+
+    private String safeComparable(String value) {
+        return value == null ? "" : value;
     }
 
     private boolean matchesKeyword(Map<String, Object> record, String keyword) {
@@ -254,6 +422,66 @@ public class UserServiceImpl implements UserService {
             return true;
         }
         return department.trim().equalsIgnoreCase(firstNonBlank(record, "department"));
+    }
+
+    private boolean matchesStatus(Map<String, Object> record, String status) {
+        if (isBlank(status)) {
+            return true;
+        }
+        return normalizeStatus(status).equals(resolveStatus(record));
+    }
+
+    private String resolveStatus(Map<String, Object> record) {
+        String explicitStatus = firstNonBlank(record, "status");
+        if (!isBlank(explicitStatus)) {
+            return normalizeStatus(explicitStatus);
+        }
+        Object active = record.get("active");
+        if (active instanceof Boolean) {
+            return ((Boolean) active).booleanValue() ? "ACTIVE" : "INACTIVE";
+        }
+        String activeText = active == null ? null : String.valueOf(active).trim();
+        if ("false".equalsIgnoreCase(activeText) || "0".equals(activeText)) {
+            return "INACTIVE";
+        }
+        return "ACTIVE";
+    }
+
+    private String normalizeStatus(String status) {
+        if (isBlank(status)) {
+            return "ACTIVE";
+        }
+        String normalized = status.trim().toUpperCase(Locale.ENGLISH);
+        if ("ENABLED".equals(normalized)) {
+            return "ACTIVE";
+        }
+        if ("DISABLED".equals(normalized)) {
+            return "INACTIVE";
+        }
+        return normalized;
+    }
+
+    private Boolean parseMoActiveStatus(String status) {
+        String normalized = normalizeStatus(status);
+        if ("ACTIVE".equals(normalized)) {
+            return Boolean.TRUE;
+        }
+        if ("INACTIVE".equals(normalized)) {
+            return Boolean.FALSE;
+        }
+        throw new BusinessException("MO 状态无效");
+    }
+
+    private String normalizeOptionalText(Map<String, Object> values, String key) {
+        if (values == null || key == null || !values.containsKey(key)) {
+            return null;
+        }
+        Object raw = values.get(key);
+        if (raw == null) {
+            return null;
+        }
+        String text = String.valueOf(raw).trim();
+        return text.isEmpty() ? null : text;
     }
 
     private boolean contains(Object fieldValue, String keyword) {

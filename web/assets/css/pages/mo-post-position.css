@@ -178,6 +178,10 @@
   padding: 0 16px;
 }
 
+.mo-post-input input[type="datetime-local"] {
+  padding-right: 50px;
+}
+
 .mo-post-field textarea {
   min-height: 120px;
   padding: 14px 16px;
@@ -241,6 +245,7 @@
 
 .mo-post-input__calendar {
   right: 14px;
+  pointer-events: none;
 }
 
 .mo-post-actions {
@@ -251,7 +256,6 @@
 }
 
 .mo-post-actions__primary,
-.mo-post-actions__secondary,
 .mo-post-actions__cancel {
   min-height: 48px;
   border-radius: 16px;
@@ -269,13 +273,6 @@
   background: #2563eb;
   color: #ffffff;
   box-shadow: 0 14px 28px rgba(37, 99, 235, 0.18);
-}
-
-.mo-post-actions__secondary {
-  min-width: 126px;
-  border: 1px solid #e2e8f0;
-  background: #ffffff;
-  color: #475569;
 }
 
 .mo-post-actions__cancel {
@@ -336,6 +333,10 @@
   color: #2563eb;
 }
 
+.mo-post-input--picker {
+  cursor: pointer;
+}
+
 @media (max-width: 760px) {
   .mo-post-header__inner,
   .mo-post-main {
@@ -360,7 +361,6 @@
   }
 
   .mo-post-actions__primary,
-  .mo-post-actions__secondary,
   .mo-post-actions__cancel {
     width: 100%;
   }

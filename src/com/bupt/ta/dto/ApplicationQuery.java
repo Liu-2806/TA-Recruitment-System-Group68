@@ -4,10 +4,19 @@ package com.bupt.ta.dto;
  * 申请查询条件。
  */
 public class ApplicationQuery {
+    private String keyword;
     private String status;
     private int page = 1;
     private int size = 10;
     private String sortBy;
+
+    public String getKeyword() {
+        return keyword;
+    }
+
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
+    }
 
     public String getStatus() {
         return status;

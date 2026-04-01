@@ -11,6 +11,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @WebServlet("/ta/jobs/detail")
 public class TAJobDetailServlet extends BaseServlet {
@@ -25,8 +30,56 @@ public class TAJobDetailServlet extends BaseServlet {
             return;
         }
         String jobId = request.getParameter("jobId");
-        request.setAttribute("job", jobService.getJobById(jobId));
-        request.setAttribute("matchAnalysis", recommendationService.buildJobMatchForTA(user.getId(), jobId));
+        if (jobId == null || jobId.isBlank()) {
+            response.sendRedirect(request.getContextPath() + "/ta/jobs");
+            return;
+        }
+        String returnQuery = decodeQueryString(request.getParameter("returnQuery"));
+
+        Map<String, Object> job;
+        try {
+            job = jobService.getJobById(jobId.trim());
+        } catch (Exception ex) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Job posting not found.");
+            return;
+        }
+        request.setAttribute("job", job);
+        request.setAttribute("returnHref", buildReturnHref(request, returnQuery));
+        request.setAttribute("encodedReturnQuery", request.getParameter("returnQuery") == null ? "" : request.getParameter("returnQuery"));
+
+        Map<String, Object> matchAnalysis;
+        try {
+            matchAnalysis = recommendationService.buildJobMatchForTA(user.getId(), jobId.trim());
+        } catch (Exception ex) {
+            matchAnalysis = buildFallbackMatchAnalysis(ex.getMessage());
+        }
+        request.setAttribute("matchAnalysis", matchAnalysis);
         request.getRequestDispatcher("/WEB-INF/views/ta/position-details.jsp").forward(request, response);
+    }
+
+    private String decodeQueryString(String encodedValue) {
+        if (encodedValue == null || encodedValue.isBlank()) {
+            return "";
+        }
+        return URLDecoder.decode(encodedValue, StandardCharsets.UTF_8);
+    }
+
+    private String buildReturnHref(HttpServletRequest request, String returnQuery) {
+        if (returnQuery == null || returnQuery.isBlank()) {
+            return request.getContextPath() + "/ta/jobs";
+        }
+        return request.getContextPath() + "/ta/jobs?" + returnQuery;
+    }
+
+    private Map<String, Object> buildFallbackMatchAnalysis(String reason) {
+        Map<String, Object> fallback = new LinkedHashMap<>();
+        fallback.put("score", 0);
+        fallback.put("explanation", reason == null || reason.isBlank()
+            ? "Match analysis is unavailable. Please upload your resume and complete your profile."
+            : reason);
+        fallback.put("method", "UNAVAILABLE");
+        fallback.put("matchedSkills", List.of());
+        fallback.put("missingSkills", List.of());
+        return fallback;
     }
 }

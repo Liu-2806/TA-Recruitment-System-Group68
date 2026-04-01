@@ -47,10 +47,21 @@ public class TAProfileServlet extends BaseServlet {
 
         try {
             profileService.updateTAProfile(user.getId(), params);
-            response.sendRedirect(request.getContextPath() + "/ta/profile");
+            response.sendRedirect(request.getContextPath() + "/ta/profile?saved=1");
         } catch (Exception ex) {
+            Map<String, Object> profile = new HashMap<>(profileService.getTAProfile(user.getId()));
+            profile.put("fullName", params.get("name"));
+            profile.put("email", params.get("email"));
+            profile.put("phone", params.get("phone"));
+            profile.put("majorProgram", params.get("major"));
+            profile.put("academicYear", params.get("grade"));
+            profile.put("intro", params.get("intro"));
+            Object skillTags = params.get("skillTags");
+            if (skillTags instanceof String[] tags) {
+                profile.put("skills", java.util.List.of(tags));
+            }
             request.setAttribute("errorMessage", ex.getMessage());
-            request.setAttribute("profile", params);
+            request.setAttribute("profile", profile);
             request.setAttribute("allSkillTags", profileService.listAllSkillTags());
             request.getRequestDispatcher("/WEB-INF/views/ta/profile.jsp").forward(request, response);
         }

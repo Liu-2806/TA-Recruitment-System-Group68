@@ -2,6 +2,7 @@ package com.bupt.ta.controller.admin;
 
 import com.bupt.ta.controller.common.BaseServlet;
 import com.bupt.ta.service.UserService;
+import com.bupt.ta.util.ServiceRegistry;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,7 +17,7 @@ import java.util.Map;
  */
 @WebServlet("/admin/mos")
 public class AdminMOListServlet extends BaseServlet {
-    private UserService userService;
+    private final UserService userService = ServiceRegistry.userService();
 
     /**
      * 查询并展示所有 MO。
@@ -27,6 +28,8 @@ public class AdminMOListServlet extends BaseServlet {
         query.put("keyword", request.getParameter("keyword"));
         query.put("status", request.getParameter("status"));
         query.put("sortBy", request.getParameter("sortBy"));
+        query.put("page", request.getParameter("page"));
+        query.put("size", request.getParameter("size"));
         request.setAttribute("mosPage", userService.searchMOs(query));
         request.setAttribute("query", query);
         request.getRequestDispatcher("/WEB-INF/views/admin/all-mos.jsp").forward(request, response);

@@ -9,7 +9,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -32,16 +32,18 @@ public class AdminMOCreateServlet extends BaseServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Map<String, Object> params = new HashMap<>();
+        Map<String, Object> params = new LinkedHashMap<String, Object>();
         params.put("username", request.getParameter("username"));
+        params.put("fullName", firstNonBlank(request.getParameter("fullName"), request.getParameter("name")));
         params.put("name", firstNonBlank(request.getParameter("name"), request.getParameter("fullName")));
-        params.put("fullName", request.getParameter("fullName"));
         params.put("staffId", request.getParameter("staffId"));
         params.put("email", request.getParameter("email"));
         params.put("department", request.getParameter("department"));
         params.put("phone", request.getParameter("phone"));
         params.put("description", request.getParameter("description"));
+        params.put("tempPassword", firstNonBlank(request.getParameter("tempPassword"), request.getParameter("initialPassword")));
         params.put("initialPassword", firstNonBlank(request.getParameter("initialPassword"), request.getParameter("tempPassword")));
+        params.put("confirmPassword", request.getParameter("confirmPassword"));
         try {
             userService.createMO(params);
             response.sendRedirect(request.getContextPath() + "/admin/mos");

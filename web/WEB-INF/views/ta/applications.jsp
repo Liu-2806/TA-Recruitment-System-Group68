@@ -1,15 +1,21 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
   String contextPath = request.getContextPath();
-  request.setAttribute("headerBrandHref", contextPath + "/ta-dashboard-preview.jsp");
+  request.setAttribute("headerBrandHref", contextPath + "/ta/dashboard");
   request.setAttribute("showHeaderBack", Boolean.TRUE);
-  request.setAttribute("headerBackHref", contextPath + "/ta-dashboard-preview.jsp");
+  request.setAttribute("headerBackHref", contextPath + "/ta/dashboard");
   request.setAttribute("headerBackLabel", "Back to Dashboard");
   request.setAttribute("showHeaderUser", Boolean.TRUE);
-  request.setAttribute("currentUserName", "Zhang San");
+  request.setAttribute("currentUserName", "TA");
   request.setAttribute("currentUserRoleLabel", "TA Applicant");
-  request.setAttribute("currentUserInitial", "Z");
-  request.setAttribute("notificationCount", Integer.valueOf(1));
+  request.setAttribute("currentUserInitial", "T");
+  request.setAttribute("notificationCount", Integer.valueOf(0));
+
+  Object queryObj = request.getAttribute("query");
+  com.bupt.ta.dto.ApplicationQuery query = queryObj instanceof com.bupt.ta.dto.ApplicationQuery ? (com.bupt.ta.dto.ApplicationQuery) queryObj : new com.bupt.ta.dto.ApplicationQuery();
+  Object pageObj = request.getAttribute("applicationsPage");
+  com.bupt.ta.dto.PageResult applicationsPage = pageObj instanceof com.bupt.ta.dto.PageResult ? (com.bupt.ta.dto.PageResult) pageObj : null;
+  java.util.List applications = applicationsPage == null || applicationsPage.getRecords() == null ? java.util.Collections.emptyList() : applicationsPage.getRecords();
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -27,167 +33,163 @@
     <jsp:include page="/WEB-INF/views/common/header.jsp" />
 
     <main class="ta-applications-main">
-      <section class="ta-applications-filter">
-        <div class="ta-applications-filter__left">
-          <div class="ta-applications-filter__title">
-            <span class="ta-applications-filter__icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" focusable="false">
-                <path d="M4.75 6.25h14.5L14 12v5.25l-4 1.5V12Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </span>
-            <span>Filter by Status:</span>
-          </div>
-
-          <div class="ta-applications-tabs" role="tablist" aria-label="Application Status Filters">
-            <button class="ta-applications-tabs__item is-active" type="button" aria-pressed="true">All</button>
-            <button class="ta-applications-tabs__item" type="button" aria-pressed="false">Pending</button>
-            <button class="ta-applications-tabs__item" type="button" aria-pressed="false">Accepted</button>
-            <button class="ta-applications-tabs__item" type="button" aria-pressed="false">Rejected</button>
-          </div>
+      <section class="ta-applications-toolbar">
+        <div class="ta-applications-toolbar__header">
+          <span class="ta-applications-toolbar__icon" aria-hidden="true">Filter</span>
+          <h2>Search &amp; Filter</h2>
         </div>
 
-        <p class="ta-applications-filter__current">Current: <strong>All Records</strong></p>
+        <form class="ta-applications-toolbar__grid" action="<%= contextPath %>/ta/applications/my" method="get">
+          <div class="ta-toolbar-field ta-toolbar-field--wide">
+            <label for="applicationKeywords">Keywords</label>
+            <div class="ta-toolbar-input">
+              <input id="applicationKeywords" name="keyword" type="text" placeholder="Position, MO, course code..." value="<%= query.getKeyword() == null ? "" : query.getKeyword() %>">
+            </div>
+          </div>
+
+          <div class="ta-toolbar-field">
+            <label for="applicationStatus">Status</label>
+            <div class="ta-toolbar-select">
+              <select id="applicationStatus" name="status">
+                <option value="" <%= query.getStatus() == null || query.getStatus().isBlank() ? "selected" : "" %>>All Status</option>
+                <option value="SUBMITTED" <%= "SUBMITTED".equalsIgnoreCase(query.getStatus()) ? "selected" : "" %>>Pending</option>
+                <option value="ACCEPTED" <%= "ACCEPTED".equalsIgnoreCase(query.getStatus()) ? "selected" : "" %>>Accepted</option>
+                <option value="REJECTED" <%= "REJECTED".equalsIgnoreCase(query.getStatus()) ? "selected" : "" %>>Rejected</option>
+                <option value="WITHDRAWN" <%= "WITHDRAWN".equalsIgnoreCase(query.getStatus()) ? "selected" : "" %>>Withdrawn</option>
+                <option value="REVOCATION_REQUESTED" <%= "REVOCATION_REQUESTED".equalsIgnoreCase(query.getStatus()) ? "selected" : "" %>>Revocation Requested</option>
+              </select>
+              <span class="ta-toolbar-select__caret" aria-hidden="true">v</span>
+            </div>
+          </div>
+
+          <div class="ta-toolbar-field">
+            <label for="applicationSort">Sort By</label>
+            <div class="ta-toolbar-select">
+              <select id="applicationSort" name="sortBy">
+                <option value="updated" <%= query.getSortBy() == null || query.getSortBy().isBlank() || "updated".equalsIgnoreCase(query.getSortBy()) ? "selected" : "" %>>Latest Updated</option>
+                <option value="submitted" <%= "submitted".equalsIgnoreCase(query.getSortBy()) ? "selected" : "" %>>Recently Submitted</option>
+                <option value="status" <%= "status".equalsIgnoreCase(query.getSortBy()) ? "selected" : "" %>>Status Priority</option>
+              </select>
+              <span class="ta-toolbar-select__caret" aria-hidden="true">v</span>
+            </div>
+          </div>
+
+          <div class="ta-toolbar-actions">
+            <button class="ta-toolbar-actions__apply" type="submit">Apply Filter</button>
+            <a class="ta-toolbar-actions__reset" href="<%= contextPath %>/ta/applications/my" aria-label="Reset filters">Reset</a>
+          </div>
+        </form>
       </section>
 
-      <section class="ta-applications-table-card">
-        <div class="ta-applications-table__wrap">
-          <table class="ta-applications-table">
-            <thead>
-              <tr>
-                <th>Position</th>
-                <th>Applied Date</th>
-                <th>Status</th>
-                <th class="ta-applications-table__right">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>
-                  <div class="ta-application-position">
-                    <span class="ta-application-position__icon ta-application-position__icon--pending" aria-hidden="true">
-                      <svg viewBox="0 0 24 24" focusable="false">
-                        <path d="M12 8.5v4.5m0 3h.01M12 20a8 8 0 1 0-8-8 8 8 0 0 0 8 8Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                    </span>
-                    <div class="ta-application-position__meta">
-                      <strong>Software Engineering TA</strong>
-                      <p>MO: Prof. Wang</p>
-                    </div>
-                  </div>
-                </td>
-                <td class="ta-applications-table__date">2026-03-10</td>
-                <td>
-                  <span class="ta-application-status ta-application-status--pending">
-                    <span class="ta-application-status__icon" aria-hidden="true">
-                      <svg viewBox="0 0 24 24" focusable="false">
-                        <path d="M12 6.25v5.5l3.25 1.75M12 20a8 8 0 1 0-8-8 8 8 0 0 0 8 8Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                    </span>
-                    Pending
-                  </span>
-                </td>
-                <td class="ta-applications-table__right">
-                  <a class="ta-application-action" href="<%= contextPath %>/ta-position-details-preview.jsp">
-                    <span class="ta-application-action__icon" aria-hidden="true">
-                      <svg viewBox="0 0 24 24" focusable="false">
-                        <path d="M7.75 4.75h6l3 3v11.5H7.75Zm6 0v3h3M10 12.25h4m-4 3h4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                    </span>
-                    <span>View Details</span>
-                  </a>
-                </td>
-              </tr>
+      <section class="ta-application-board">
+        <%
+          if (applications.isEmpty()) {
+        %>
+        <article class="ta-application-card">
+          <div class="ta-application-card__top">
+            <div class="ta-application-card__identity">
+              <div>
+                <h3>No applications found</h3>
+                <p>Try adjusting the filters or submit your first application.</p>
+              </div>
+            </div>
+          </div>
+          <div class="ta-application-card__actions">
+            <a class="ta-application-card__primary" href="<%= contextPath %>/ta/jobs">Browse Open Roles</a>
+          </div>
+        </article>
+        <%
+          } else {
+            for (Object appObj : applications) {
+              java.util.Map application = appObj instanceof java.util.Map ? (java.util.Map) appObj : java.util.Collections.emptyMap();
+              String applicationId = String.valueOf(application.getOrDefault("applicationId", ""));
+              String postingId = String.valueOf(application.getOrDefault("postingId", ""));
+              String status = String.valueOf(application.getOrDefault("statusLabel", application.getOrDefault("status", "Pending Review")));
+              String statusRaw = String.valueOf(application.getOrDefault("status", "SUBMITTED")).toLowerCase();
+              String statusCss = statusRaw.contains("accept") ? "accepted" : (statusRaw.contains("reject") ? "rejected" : (statusRaw.contains("withdraw") ? "withdrawn" : (statusRaw.contains("revocation") ? "revocation" : "pending")));
+              boolean canWithdraw = "submitted".equals(statusRaw) || "under_review".equals(statusRaw) || "underreview".equals(statusRaw) || "accepted".equals(statusRaw);
+              String matchExplanation = String.valueOf(application.getOrDefault("skillMatchExplanation", "No match explanation available yet."));
+              java.util.List historyLogs = application.get("historyLogs") instanceof java.util.List ? (java.util.List) application.get("historyLogs") : java.util.Collections.emptyList();
+        %>
+        <article id="application-<%= applicationId %>" class="ta-application-card">
+          <div class="ta-application-card__top">
+            <div class="ta-application-card__identity">
+              <span class="ta-application-card__icon ta-application-card__icon--<%= statusCss %>" aria-hidden="true">Status</span>
+              <div>
+                <h3><%= String.valueOf(application.getOrDefault("postingTitle", "")) %></h3>
+                <p><%= String.valueOf(application.getOrDefault("courseCode", "")) %> · <%= String.valueOf(application.getOrDefault("moName", "")) %> · Submitted <%= String.valueOf(application.getOrDefault("appliedAt", "")) %></p>
+              </div>
+            </div>
 
-              <tr>
-                <td>
-                  <div class="ta-application-position">
-                    <span class="ta-application-position__icon ta-application-position__icon--accepted" aria-hidden="true">
-                      <svg viewBox="0 0 24 24" focusable="false">
-                        <path d="M7.75 12.25 10.5 15l5.75-5.75M12 20a8 8 0 1 0-8-8 8 8 0 0 0 8 8Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                    </span>
-                    <div class="ta-application-position__meta">
-                      <strong>Data Structures TA</strong>
-                      <p>MO: Prof. Li</p>
-                    </div>
-                  </div>
-                </td>
-                <td class="ta-applications-table__date">2026-03-08</td>
-                <td>
-                  <span class="ta-application-status ta-application-status--accepted">
-                    <span class="ta-application-status__icon" aria-hidden="true">
-                      <svg viewBox="0 0 24 24" focusable="false">
-                        <path d="M7.75 12.25 10.5 15l5.75-5.75M12 20a8 8 0 1 0-8-8 8 8 0 0 0 8 8Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                    </span>
-                    Accepted
-                  </span>
-                </td>
-                <td class="ta-applications-table__right">
-                  <button class="ta-application-action" type="button">
-                    <span class="ta-application-action__icon" aria-hidden="true">
-                      <svg viewBox="0 0 24 24" focusable="false">
-                        <path d="M4.75 7.25h14.5a1.25 1.25 0 0 1 1.25 1.25v7a1.25 1.25 0 0 1-1.25 1.25H4.75A1.25 1.25 0 0 1 3.5 15.5v-7a1.25 1.25 0 0 1 1.25-1.25Zm0 .75L12 12.75 19.25 8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                    </span>
-                    <span>Contact MO</span>
-                  </button>
-                </td>
-              </tr>
+            <div class="ta-application-card__meta-actions">
+              <span class="ta-application-badge ta-application-badge--<%= statusCss %>"><%= status %></span>
+              <a class="ta-application-card__details" href="<%= contextPath %>/ta/jobs/detail?jobId=<%= postingId %>">Open Position</a>
+            </div>
+          </div>
 
-              <tr>
-                <td>
-                  <div class="ta-application-position">
-                    <span class="ta-application-position__icon ta-application-position__icon--rejected" aria-hidden="true">
-                      <svg viewBox="0 0 24 24" focusable="false">
-                        <path d="m8 8 8 8m0-8-8 8M12 20a8 8 0 1 0-8-8 8 8 0 0 0 8 8Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                    </span>
-                    <div class="ta-application-position__meta">
-                      <strong>Database Systems TA</strong>
-                      <p>MO: Prof. Zhang</p>
-                    </div>
-                  </div>
-                </td>
-                <td class="ta-applications-table__date">2026-03-01</td>
-                <td>
-                  <span class="ta-application-status ta-application-status--rejected">
-                    <span class="ta-application-status__icon" aria-hidden="true">
-                      <svg viewBox="0 0 24 24" focusable="false">
-                        <path d="m8 8 8 8m0-8-8 8M12 20a8 8 0 1 0-8-8 8 8 0 0 0 8 8Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                    </span>
-                    Rejected
-                  </span>
-                </td>
-                <td class="ta-applications-table__right">
-                  <button class="ta-application-action" type="button">
-                    <span class="ta-application-action__icon" aria-hidden="true">
-                      <svg viewBox="0 0 24 24" focusable="false">
-                        <path d="M5.5 7.75h13A1.25 1.25 0 0 1 19.75 9v6A1.25 1.25 0 0 1 18.5 16.25H9.75l-3.5 2v-2H5.5A1.25 1.25 0 0 1 4.25 15V9A1.25 1.25 0 0 1 5.5 7.75Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                    </span>
-                    <span>View Feedback</span>
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+          <div class="ta-application-card__bottom">
+            <div class="ta-application-info">
+              <p class="ta-application-info__label">Current Stage</p>
+              <p class="ta-application-info__value"><%= status %></p>
+            </div>
+            <div class="ta-application-info">
+              <p class="ta-application-info__label">Match Insight</p>
+              <p class="ta-application-info__value"><%= matchExplanation %></p>
+            </div>
+            <div class="ta-application-info">
+              <p class="ta-application-info__label">Feedback</p>
+              <p class="ta-application-info__value"><%= String.valueOf(application.getOrDefault("feedback", "")).isBlank() ? "No feedback yet." : String.valueOf(application.get("feedback")) %></p>
+            </div>
+          </div>
 
-        <div class="ta-applications-table__footer">
-          <p>Total Records: 3</p>
-          <button class="ta-applications-export" type="button">
-            <span>Export All Records</span>
-            <span class="ta-applications-export__icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" focusable="false">
-                <path d="M5.5 12h13m0 0-5-5m5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </span>
-          </button>
-        </div>
+          <div class="ta-application-card__actions">
+            <a class="ta-application-card__secondary" href="#history-<%= applicationId %>">View Full History</a>
+            <div class="ta-application-card__action-group">
+              <a class="ta-application-card__primary" href="<%= contextPath %>/ta/jobs/detail?jobId=<%= postingId %>">View Matching Details</a>
+              <%
+                if (canWithdraw) {
+                  String withdrawLabel = "accepted".equals(statusRaw) ? "Request Revocation" : "Withdraw";
+              %>
+              <details class="ta-withdraw-panel">
+                <summary class="ta-application-card__primary ta-application-card__primary--ghost"><%= withdrawLabel %></summary>
+                <form action="<%= contextPath %>/ta/applications/withdraw" method="post" class="ta-withdraw-panel__form">
+                  <input type="hidden" name="applicationId" value="<%= applicationId %>">
+                  <label for="reason-<%= applicationId %>"><%= "accepted".equals(statusRaw) ? "Reason for revocation request" : "Reason for withdrawal" %></label>
+                  <textarea id="reason-<%= applicationId %>" name="reason" rows="3" required placeholder="Briefly explain why you need to update this application."></textarea>
+                  <button type="submit" class="ta-application-card__primary ta-application-card__primary--ghost"><%= withdrawLabel %></button>
+                </form>
+              </details>
+              <%
+                }
+              %>
+            </div>
+          </div>
+        </article>
+
+        <article id="history-<%= applicationId %>" class="ta-history-card">
+          <div class="ta-history-card__head">
+            <h3><%= String.valueOf(application.getOrDefault("postingTitle", "")) %></h3>
+            <span class="ta-history-card__badge ta-history-card__badge--<%= statusCss %>"><%= status %></span>
+          </div>
+          <ul class="ta-history-card__steps">
+            <%
+              for (Object logObj : historyLogs) {
+                java.util.Map log = logObj instanceof java.util.Map ? (java.util.Map) logObj : java.util.Collections.emptyMap();
+            %>
+            <li><strong><%= String.valueOf(log.getOrDefault("time", "")) %></strong><span><%= String.valueOf(log.getOrDefault("description", "")) %></span></li>
+            <%
+              }
+            %>
+          </ul>
+        </article>
+        <%
+            }
+          }
+        %>
       </section>
     </main>
+
+    <jsp:include page="/WEB-INF/views/common/footer.jsp" />
   </div>
 </body>
 </html>
