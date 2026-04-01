@@ -12,6 +12,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Map;
 
 @WebServlet("/mo/jobs/applicants")
 public class MOJobApplicantsServlet extends BaseServlet {
@@ -21,18 +22,39 @@ public class MOJobApplicantsServlet extends BaseServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User user = currentUser(request);
-        if (user == null) {
-            response.sendRedirect(request.getContextPath() + "/auth/login");
+        String jobId = request.getParameter("jobId");
+        if (jobId == null || jobId.isBlank()) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "jobId is required.");
             return;
         }
-        String jobId = request.getParameter("jobId");
+
+        Map<String, Object> job = jobService.getJobById(jobId);
+        if (user == null || !user.getId().equals(String.valueOf(job.get("moId")))) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "You do not have permission to view applicants for this job.");
+            return;
+        }
+
         ApplicationQuery query = new ApplicationQuery();
         query.setKeyword(request.getParameter("keyword"));
         query.setStatus(request.getParameter("status"));
         query.setSortBy(request.getParameter("sortBy"));
-        request.setAttribute("job", jobService.getJobById(jobId));
+        query.setPage(parsePositiveInt(request.getParameter("page"), 1));
+        query.setSize(parsePositiveInt(request.getParameter("size"), 10));
+        request.setAttribute("job", job);
         request.setAttribute("applicationsPage", applicationService.listApplicationsByJob(jobId, query));
         request.setAttribute("query", query);
         request.getRequestDispatcher("/WEB-INF/views/mo/applicants.jsp").forward(request, response);
+    }
+
+    private int parsePositiveInt(String rawValue, int defaultValue) {
+        if (rawValue == null || rawValue.isBlank()) {
+            return defaultValue;
+        }
+        try {
+            int parsed = Integer.parseInt(rawValue.trim());
+            return parsed > 0 ? parsed : defaultValue;
+        } catch (NumberFormatException ex) {
+            return defaultValue;
+        }
     }
 }

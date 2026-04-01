@@ -1,5 +1,6 @@
 package com.bupt.ta.repository.file;
 
+import com.bupt.ta.util.DataPaths;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -11,7 +12,6 @@ import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +19,7 @@ import java.util.Map;
 abstract class JsonFileRepositorySupport {
     private static final Type LIST_OF_MAPS = new TypeToken<List<Map<String, Object>>>() { }.getType();
     protected final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    private final Path repositoryRoot = Paths.get("data");
+    private final Path repositoryRoot = DataPaths.resolveDataRoot();
 
     protected List<Map<String, Object>> readList(String relativePath, List<Map<String, Object>> defaultValue) {
         Path path = repositoryRoot.resolve(relativePath);
