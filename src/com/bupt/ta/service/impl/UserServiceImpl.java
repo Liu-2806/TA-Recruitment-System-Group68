@@ -6,7 +6,13 @@ import com.bupt.ta.model.Role;
 import com.bupt.ta.model.User;
 import com.bupt.ta.repository.UserRepository;
 import com.bupt.ta.service.UserService;
+import com.bupt.ta.util.DataPaths;
+import com.bupt.ta.util.JsonUtils;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -185,7 +191,9 @@ public class UserServiceImpl implements UserService {
         if (record == null) {
             throw new BusinessException("MO 账号不存在");
         }
-        return toUser(record);
+        User user = toUser(record);
+        user.setPostingCount(countPostingRecords(user.getMoId()));
+        return user;
     }
 
     @Override
@@ -199,22 +207,37 @@ public class UserServiceImpl implements UserService {
         }
 
         String fullName = firstNonBlank(params, "fullName", "name");
+        String email = firstNonBlank(params, "email");
         String department = firstNonBlank(params, "department");
-        String phone = firstNonBlank(params, "phone");
-        String description = firstNonBlank(params, "description");
+        String phone = normalizeOptionalText(params, "phone");
+        String description = normalizeOptionalText(params, "description");
+        String status = firstNonBlank(params, "status");
 
-        if (!isBlank(fullName)) {
-            existing.put("fullName", fullName.trim());
-            existing.put("displayName", fullName.trim());
+        requireNotBlank(fullName, "MO 姓名不能为空");
+        requireNotBlank(email, "邮箱不能为空");
+        requireValidEmail(email);
+
+        String currentEmail = firstNonBlank(existing, "email");
+        String normalizedEmail = email.trim().toLowerCase(Locale.ENGLISH);
+        if (!normalizedEmail.equalsIgnoreCase(currentEmail) && userRepository.existsAcrossRoles("email", normalizedEmail)) {
+            throw new BusinessException("邮箱已存在");
         }
-        if (!isBlank(department)) {
-            existing.put("department", department.trim());
+
+        existing.put("fullName", fullName.trim());
+        existing.put("displayName", fullName.trim());
+        existing.put("email", normalizedEmail);
+
+        if (params != null && params.containsKey("department")) {
+            existing.put("department", department);
         }
-        if (!isBlank(phone)) {
-            existing.put("phone", phone.trim());
+        if (params != null && params.containsKey("phone")) {
+            existing.put("phone", phone);
         }
-        if (!isBlank(description)) {
-            existing.put("description", description.trim());
+        if (params != null && params.containsKey("description")) {
+            existing.put("description", description);
+        }
+        if (!isBlank(status)) {
+            existing.put("active", parseMoActiveStatus(status));
         }
         existing.put("updatedAt", DATE_TIME_FORMATTER.format(LocalDateTime.now()));
         userRepository.update(Role.MO, existing);
@@ -265,9 +288,49 @@ public class UserServiceImpl implements UserService {
         user.setStaffId(firstNonBlank(record, "staffId"));
         user.setDepartment(firstNonBlank(record, "department"));
         user.setPhone(firstNonBlank(record, "phone"));
+        user.setDescription(firstNonBlank(record, "description"));
+        user.setCreatedAt(firstNonBlank(record, "createdAt"));
         user.setStatus(resolveStatus(record));
         user.setRole(Role.valueOf(firstNonBlank(record, "role")));
         return user;
+    }
+
+    private int countPostingRecords(String moId) {
+        if (isBlank(moId)) {
+            return 0;
+        }
+
+        Path postingsFile = DataPaths.resolvePostingsFile();
+        if (!Files.exists(postingsFile)) {
+            return 0;
+        }
+
+        try {
+            String rawJson = new String(Files.readAllBytes(postingsFile), StandardCharsets.UTF_8).trim();
+            if (rawJson.isEmpty()) {
+                return 0;
+            }
+            Object parsed = JsonUtils.parse(rawJson);
+            if (!(parsed instanceof List)) {
+                throw new BusinessException("岗位数据格式无效: " + postingsFile);
+            }
+
+            int count = 0;
+            for (Object item : (List<?>) parsed) {
+                if (!(item instanceof Map)) {
+                    continue;
+                }
+                @SuppressWarnings("unchecked")
+                Map<String, Object> posting = (Map<String, Object>) item;
+                String ownerMoId = firstNonBlank(posting, "moId", "ownerId");
+                if (moId.equals(ownerMoId)) {
+                    count++;
+                }
+            }
+            return count;
+        } catch (IOException ex) {
+            throw new BusinessException("读取岗位数据失败: " + postingsFile);
+        }
     }
 
     private void sortMoRecords(List<Map<String, Object>> records, String sortBy) {
@@ -396,6 +459,29 @@ public class UserServiceImpl implements UserService {
             return "INACTIVE";
         }
         return normalized;
+    }
+
+    private Boolean parseMoActiveStatus(String status) {
+        String normalized = normalizeStatus(status);
+        if ("ACTIVE".equals(normalized)) {
+            return Boolean.TRUE;
+        }
+        if ("INACTIVE".equals(normalized)) {
+            return Boolean.FALSE;
+        }
+        throw new BusinessException("MO 状态无效");
+    }
+
+    private String normalizeOptionalText(Map<String, Object> values, String key) {
+        if (values == null || key == null || !values.containsKey(key)) {
+            return null;
+        }
+        Object raw = values.get(key);
+        if (raw == null) {
+            return null;
+        }
+        String text = String.valueOf(raw).trim();
+        return text.isEmpty() ? null : text;
     }
 
     private boolean contains(Object fieldValue, String keyword) {
