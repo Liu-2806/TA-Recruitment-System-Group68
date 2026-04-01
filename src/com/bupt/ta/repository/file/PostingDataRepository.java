@@ -21,6 +21,40 @@ public class PostingDataRepository extends JsonFileRepositorySupport {
         return null;
     }
 
+    public void save(Map<String, Object> postingRecord) {
+        List<Map<String, Object>> all = findAll();
+        boolean replaced = false;
+        for (int i = 0; i < all.size(); i++) {
+            if (String.valueOf(all.get(i).get("postingId")).equals(String.valueOf(postingRecord.get("postingId")))) {
+                all.set(i, new LinkedHashMap<>(postingRecord));
+                replaced = true;
+                break;
+            }
+        }
+        if (!replaced) {
+            all.add(new LinkedHashMap<>(postingRecord));
+        }
+        writeList(FILE_PATH, all);
+    }
+
+    public String nextPostingId() {
+        int max = 0;
+        for (Map<String, Object> posting : findAll()) {
+            String postingId = String.valueOf(posting.get("postingId"));
+            if (postingId.startsWith("POST")) {
+                try {
+                    int current = Integer.parseInt(postingId.substring(4));
+                    if (current > max) {
+                        max = current;
+                    }
+                } catch (NumberFormatException ignored) {
+                    // Ignore malformed IDs and continue scanning.
+                }
+            }
+        }
+        return String.format("POST%03d", max + 1);
+    }
+
     private List<Map<String, Object>> defaultRecords() {
         List<Map<String, Object>> defaults = new ArrayList<>();
         defaults.add(createPosting(
