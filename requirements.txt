@@ -41,7 +41,6 @@ The currently completed owned modules are:
 - PDF resume input module
 - structured resume extraction module
 - LLM / local-rule job matching module
-- MO backend profile / posting / applicant-review module
 
 These modules are implemented in:
 - src/com/bupt/ta/
@@ -57,28 +56,6 @@ Current frontend root note:
 Run this command in the project root to verify the current module compiles:
 
 powershell -ExecutionPolicy Bypass -Command "javac -encoding UTF-8 -cp 'lib/pdfbox-app-3.0.2.jar;lib/gson-2.11.0.jar;lib/javax.servlet-api-4.0.1.jar' -d build/module-check (Get-ChildItem -Recurse -Filter *.java src/com/bupt/ta | ForEach-Object { $_.FullName })"
-
-MO backend smoke test compile command:
-
-$files = @((Get-ChildItem -Recurse -Filter *.java src\com\bupt\ta | ForEach-Object { $_.FullName })) + @('src\test\java\com\bupt\ta\MOBackendSmokeTest.java')
-javac -encoding UTF-8 -cp "lib/pdfbox-app-3.0.2.jar;lib/gson-2.11.0.jar;lib/javax.servlet-api-4.0.1.jar" -d build/mo-smoke-classes $files
-
-MO backend smoke test run command:
-
-java -cp "build/mo-smoke-classes;lib/pdfbox-app-3.0.2.jar;lib/gson-2.11.0.jar;lib/javax.servlet-api-4.0.1.jar" com.bupt.ta.MOBackendSmokeTest
-
-Smoke test note:
-- it copies `data/` to `build/mo-smoke-data/data`
-- it verifies MO profile, job posting, applicant review, status update, and resume download without mutating the root `data/`
-
-MO manual console verification command:
-
-powershell -ExecutionPolicy Bypass -File scripts\run-mo-console.ps1
-
-Manual console note:
-- it compiles the current MO backend related source files
-- it copies `data/` to `.mo-console/data` by default
-- it stores downloaded resumes in `.mo-console/downloads`
 
 6. Optional LLM Configuration
 

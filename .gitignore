@@ -4,7 +4,6 @@ output/
 tmp/
 *.class
 .phase1-console/
-.mo-console/
 .codex-phase1-test/
 data/users/admin.json
 data/users/mo.json

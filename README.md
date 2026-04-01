@@ -331,8 +331,7 @@ AI 当前只负责：
 
 - `skillMatchScore`
 - `skillMatchExplanation`
-
-其中 `matchedSkills`、`missingSkills`、`method` 等详情字段只在运行时动态组装用于展示，不再写回 `data/applications/applications.json`。
+- `matchMethod`
 
 ### 当前匹配模块页面结果
 
@@ -439,69 +438,6 @@ javac -encoding UTF-8 -cp "lib/pdfbox-app-3.0.2.jar;lib/gson-2.11.0.jar;lib/java
 - TA 岗位匹配成功
 - MO 申请匹配成功
 
-### 1.1 MO 后端命令行 smoke test
-
-本轮已补充一个仅面向后端的命令行 smoke test，用于在不联调 JSP 的情况下验证 MO 业务链路。
-
-测试文件：
-
-- `src/test/java/com/bupt/ta/MOBackendSmokeTest.java`
-
-覆盖范围：
-
-- MO 资料读取与更新
-- MO 发布岗位并写入 `data/postings/postings.json`
-- MO 查询自己岗位列表
-- MO 查看申请人列表与详情
-- MO 更新申请状态（保持 `SUBMITTED / ACCEPTED / REJECTED`）
-- MO 下载申请人简历
-
-编译命令：
-
-```powershell
-$files = @((Get-ChildItem -Recurse -Filter *.java src\com\bupt\ta | ForEach-Object { $_.FullName })) + @('src\test\java\com\bupt\ta\MOBackendSmokeTest.java')
-javac -encoding UTF-8 -cp "lib/pdfbox-app-3.0.2.jar;lib/gson-2.11.0.jar;lib/javax.servlet-api-4.0.1.jar" -d build/mo-smoke-classes $files
-```
-
-运行命令：
-
-```powershell
-java -cp "build/mo-smoke-classes;lib/pdfbox-app-3.0.2.jar;lib/gson-2.11.0.jar;lib/javax.servlet-api-4.0.1.jar" com.bupt.ta.MOBackendSmokeTest
-```
-
-说明：
-
-- smoke test 会先复制仓库根目录下的 `data/` 到隔离目录 `build/mo-smoke-data/data`
-- 测试过程不会直接改写正式 `data/` 中的 JSON 文件
-
-### 1.2 MO 手动控制台测试脚本
-
-如果你想手动点选菜单逐项验证 MO 功能，可以直接运行：
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts\run-mo-console.ps1
-```
-
-配套控制台入口文件：
-
-- `scripts/MOConsoleApp.java`
-
-默认行为：
-
-- 自动编译当前 `src/com/bupt/ta/` 主框架
-- 自动复制根目录 `data/` 到隔离目录 `.mo-console/data`
-- 下载的简历默认写到 `.mo-console/downloads`
-
-可手动测试的菜单项包括：
-
-- MO 资料读取与更新
-- MO dashboard 概览
-- MO 发布岗位
-- MO 查询自己岗位
-- MO 查看申请人列表与详情
-- MO 审核申请状态
-- MO 下载申请人简历
-
 ### 2. 本地网页联调验证
 
 由于正式登录服务尚未完成，当前提供了一个开发专用入口：
@@ -583,17 +519,6 @@ powershell -ExecutionPolicy Bypass -File scripts\run-mo-console.ps1
 - 全站统一部署方案
 - 其他角色页面的完整业务逻辑
 - 整体 UI 美化或设计系统统一
-
-## 当前新增完成的 MO 后端能力
-
-本轮在不改动仓库主目录结构、不引入数据库的前提下，补齐了 MO 模块的后端主链路，主要包括：
-
-- `ProfileServiceImpl` 已接入 `data/users/mo.json`，支持真实的 MO 资料读取与更新
-- `JobServiceImpl` 已支持 MO 发布岗位、生成 `POSTxxx` 编号、写入 `data/postings/postings.json`
-- `JobServiceImpl` 已支持按关键字、状态和排序查询当前 MO 自己发布的岗位
-- `ApplicationServiceImpl` 已支持 MO 按岗位筛选申请、查看申请详情、更新申请状态并保留反馈
-- `MOJobApplicantsServlet` 增加了“当前岗位必须属于当前 MO”这一层后端权限校验
-- 文件型仓储已统一支持 `ta.data.dir` 数据根目录覆盖，便于命令行 smoke test 在隔离数据目录下运行
 
 ## 环境要求
 

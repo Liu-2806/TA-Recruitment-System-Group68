@@ -6,13 +6,13 @@ import com.bupt.ta.repository.file.TADataRepository;
 import com.bupt.ta.resume.PdfResumeExtractor;
 import com.bupt.ta.resume.ResumeStructurer;
 import com.bupt.ta.service.ResumeService;
-import com.bupt.ta.util.DataPaths;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
@@ -98,7 +98,7 @@ public class ResumeServiceImpl implements ResumeService {
         if (ta == null || ta.get("resumeFileName") == null) {
             throw new IllegalStateException("Resume metadata not found for the applicant.");
         }
-        Path file = DataPaths.resolveDataRoot().resolve("resumes").resolve(String.valueOf(ta.get("resumeFileName")));
+        Path file = Paths.get("data", "resumes", String.valueOf(ta.get("resumeFileName")));
         try {
             byte[] bytes = Files.readAllBytes(file);
             Map<String, Object> result = new LinkedHashMap<>();
@@ -114,7 +114,7 @@ public class ResumeServiceImpl implements ResumeService {
     private Path savePdfFile(String taUserId, String originalFileName, byte[] bytes) {
         String safeFileName = originalFileName.replaceAll("[^A-Za-z0-9._-]", "_");
         String finalName = taUserId + "_" + System.currentTimeMillis() + "_" + safeFileName;
-        Path target = DataPaths.resolveDataRoot().resolve("resumes").resolve(finalName);
+        Path target = Paths.get("data", "resumes", finalName);
         try {
             Files.createDirectories(target.getParent());
             Files.write(target, bytes);

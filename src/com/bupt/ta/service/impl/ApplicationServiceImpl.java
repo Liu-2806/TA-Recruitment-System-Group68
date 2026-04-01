@@ -13,11 +13,8 @@ import com.bupt.ta.service.RecommendationService;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 public class ApplicationServiceImpl implements ApplicationService {
@@ -77,39 +74,37 @@ public class ApplicationServiceImpl implements ApplicationService {
         application.put("skillMatchExplanation", application.get("explanation"));
         application.remove("score");
         application.remove("explanation");
-        Map<String, Object> persistedRecord = toPersistedApplicationRecord(application);
-        applicationDataRepository.save(persistedRecord);
-        return persistedRecord;
+        applicationDataRepository.save(application);
+        return application;
     }
 
     @Override
     public PageResult<Map<String, Object>> listApplicationsByTA(String taUserId, ApplicationQuery query) {
-        List<Map<String, Object>> records = new ArrayList<>();
-        for (Map<String, Object> record : applicationDataRepository.findByTaId(taUserId)) {
-            if (!matchesStatus(record, query == null ? null : query.getStatus())) {
-                continue;
-            }
-            records.add(new LinkedHashMap<>(record));
-        }
-        sortApplications(records, query == null ? null : query.getSortBy());
-        return toPageResult(query, records);
+        List<Map<String, Object>> records = new ArrayList<>(applicationDataRepository.findByTaId(taUserId));
+        PageResult<Map<String, Object>> result = new PageResult<>();
+        result.setRecords(records);
+        result.setPage(query.getPage());
+        result.setSize(query.getSize());
+        result.setTotal(records.size());
+        return result;
     }
 
     @Override
     public PageResult<Map<String, Object>> listApplicationsByJob(String jobId, ApplicationQuery query) {
         List<Map<String, Object>> records = new ArrayList<>();
         for (Map<String, Object> record : applicationDataRepository.findByPostingId(jobId)) {
-            if (!matchesStatus(record, query == null ? null : query.getStatus())) {
-                continue;
-            }
             if (recommendationService instanceof RecommendationServiceImpl impl) {
                 records.add(impl.enrichApplicationWithMatch(new LinkedHashMap<>(record)));
             } else {
                 records.add(new LinkedHashMap<>(record));
             }
         }
-        sortApplications(records, query == null ? null : query.getSortBy());
-        return toPageResult(query, records);
+        PageResult<Map<String, Object>> result = new PageResult<>();
+        result.setRecords(records);
+        result.setPage(query.getPage());
+        result.setSize(query.getSize());
+        result.setTotal(records.size());
+        return result;
     }
 
     @Override
@@ -134,13 +129,10 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     public void updateStatusByMO(String applicationId, String moUserId, ApplicationStatus newStatus, String comment) {
-        if (newStatus == ApplicationStatus.SUBMITTED) {
-            throw new IllegalStateException("MO review cannot set application status back to SUBMITTED.");
-        }
         Map<String, Object> record = getApplicationDetailForMO(applicationId, moUserId);
         record.put("status", newStatus.name());
         record.put("feedback", comment == null ? "" : comment.trim());
-        applicationDataRepository.save(toPersistedApplicationRecord(record));
+        applicationDataRepository.save(record);
     }
 
     private Map<String, Object> requireTa(String taUserId) {
@@ -166,89 +158,5 @@ public class ApplicationServiceImpl implements ApplicationService {
             }
         }
         return null;
-    }
-
-    private boolean matchesStatus(Map<String, Object> record, String status) {
-        if (status == null || status.isBlank()) {
-            return true;
-        }
-        return status.trim().equalsIgnoreCase(String.valueOf(record.get("status")));
-    }
-
-    private void sortApplications(List<Map<String, Object>> records, String sortBy) {
-        Comparator<Map<String, Object>> comparator;
-        if (sortBy == null || sortBy.isBlank()) {
-            comparator = Comparator.comparing((Map<String, Object> record) -> String.valueOf(record.get("appliedAt")), Comparator.nullsLast(String::compareTo)).reversed();
-        } else {
-            switch (sortBy.trim().toLowerCase(Locale.ROOT)) {
-                case "scoreasc":
-                    comparator = Comparator.comparingInt(record -> parseInt(record.get("skillMatchScore")));
-                    break;
-                case "scoredesc":
-                    comparator = Comparator.comparingInt((Map<String, Object> record) -> parseInt(record.get("skillMatchScore"))).reversed();
-                    break;
-                case "timeasc":
-                    comparator = Comparator.comparing((Map<String, Object> record) -> String.valueOf(record.get("appliedAt")), Comparator.nullsLast(String::compareTo));
-                    break;
-                case "timedesc":
-                    comparator = Comparator.comparing((Map<String, Object> record) -> String.valueOf(record.get("appliedAt")), Comparator.nullsLast(String::compareTo)).reversed();
-                    break;
-                default:
-                    comparator = Comparator.comparing((Map<String, Object> record) -> String.valueOf(record.get("appliedAt")), Comparator.nullsLast(String::compareTo)).reversed();
-                    break;
-            }
-        }
-        records.sort(comparator);
-    }
-
-    private int parseInt(Object rawValue) {
-        if (rawValue == null) {
-            return 0;
-        }
-        try {
-            return Integer.parseInt(String.valueOf(rawValue).trim());
-        } catch (NumberFormatException ex) {
-            return 0;
-        }
-    }
-
-    private PageResult<Map<String, Object>> toPageResult(ApplicationQuery query, List<Map<String, Object>> allRecords) {
-        ApplicationQuery safeQuery = query == null ? new ApplicationQuery() : query;
-        int page = safeQuery.getPage() <= 0 ? 1 : safeQuery.getPage();
-        int size = safeQuery.getSize() <= 0 ? allRecords.size() : safeQuery.getSize();
-        int fromIndex = Math.min((page - 1) * size, allRecords.size());
-        int toIndex = Math.min(fromIndex + size, allRecords.size());
-        List<Map<String, Object>> paged = fromIndex >= toIndex
-            ? Collections.emptyList()
-            : new ArrayList<>(allRecords.subList(fromIndex, toIndex));
-
-        PageResult<Map<String, Object>> result = new PageResult<>();
-        result.setRecords(paged);
-        result.setPage(page);
-        result.setSize(size);
-        result.setTotal(allRecords.size());
-        return result;
-    }
-
-    private Map<String, Object> toPersistedApplicationRecord(Map<String, Object> source) {
-        Map<String, Object> persisted = new LinkedHashMap<>();
-        copyIfPresent(source, persisted, "applicationId");
-        copyIfPresent(source, persisted, "postingId");
-        copyIfPresent(source, persisted, "postingTitle");
-        copyIfPresent(source, persisted, "taId");
-        copyIfPresent(source, persisted, "taName");
-        copyIfPresent(source, persisted, "appliedAt");
-        copyIfPresent(source, persisted, "status");
-        copyIfPresent(source, persisted, "statement");
-        copyIfPresent(source, persisted, "feedback");
-        copyIfPresent(source, persisted, "skillMatchScore");
-        copyIfPresent(source, persisted, "skillMatchExplanation");
-        return persisted;
-    }
-
-    private void copyIfPresent(Map<String, Object> source, Map<String, Object> target, String key) {
-        if (source.containsKey(key)) {
-            target.put(key, source.get(key));
-        }
     }
 }

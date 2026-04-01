@@ -1,6 +1,5 @@
 package com.bupt.ta.controller.mo;
 
-import com.bupt.ta.config.ServiceRegistry;
 import com.bupt.ta.controller.common.BaseServlet;
 import com.bupt.ta.model.ApplicationStatus;
 import com.bupt.ta.model.User;
@@ -17,7 +16,7 @@ import java.io.IOException;
  */
 @WebServlet("/mo/applications/status")
 public class MOApplicationStatusUpdateServlet extends BaseServlet {
-    private final ApplicationService applicationService = ServiceRegistry.applicationService();
+    private ApplicationService applicationService;
 
     /**
      * 处理录取/拒绝状态更新。
@@ -32,7 +31,8 @@ public class MOApplicationStatusUpdateServlet extends BaseServlet {
             applicationService.updateStatusByMO(applicationId, user.getId(), ApplicationStatus.valueOf(newStatus), comment);
             response.sendRedirect(request.getContextPath() + "/mo/jobs/my");
         } catch (Exception ex) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, ex.getMessage());
+            request.setAttribute("errorMessage", ex.getMessage());
+            request.getRequestDispatcher("/WEB-INF/views/common/error.jsp").forward(request, response);
         }
     }
 }
