@@ -134,20 +134,22 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     public PageResult<Map<String, Object>> listApplicationsByTA(String taUserId, ApplicationQuery query) {
+        ApplicationQuery safeQuery = query == null ? new ApplicationQuery() : query;
         List<Map<String, Object>> records = enrichApplicationsForTA(applicationDataRepository.findByTaId(taUserId));
-        records = applyApplicationFilters(records, query);
-        sortApplications(records, query == null ? null : query.getSortBy());
-        List<Map<String, Object>> pagedRecords = paginate(records, query == null ? 1 : query.getPage(), query == null ? 10 : query.getSize());
+        records = applyApplicationFilters(records, safeQuery);
+        sortApplications(records, safeQuery.getSortBy());
+        List<Map<String, Object>> pagedRecords = paginate(records, safeQuery.getPage(), safeQuery.getSize());
         PageResult<Map<String, Object>> result = new PageResult<>();
         result.setRecords(pagedRecords);
-        result.setPage(query.getPage());
-        result.setSize(query.getSize());
+        result.setPage(safeQuery.getPage());
+        result.setSize(safeQuery.getSize());
         result.setTotal(records.size());
         return result;
     }
 
     @Override
     public PageResult<Map<String, Object>> listApplicationsByJob(String jobId, ApplicationQuery query) {
+        ApplicationQuery safeQuery = query == null ? new ApplicationQuery() : query;
         List<Map<String, Object>> records = new ArrayList<>();
         for (Map<String, Object> record : applicationDataRepository.findByPostingId(jobId)) {
             if (recommendationService instanceof RecommendationServiceImpl impl) {
@@ -156,13 +158,13 @@ public class ApplicationServiceImpl implements ApplicationService {
                 records.add(enrichApplicationRecord(new LinkedHashMap<>(record)));
             }
         }
-        records = applyApplicationFilters(records, query);
-        sortApplications(records, query == null ? null : query.getSortBy());
-        List<Map<String, Object>> pagedRecords = paginate(records, query == null ? 1 : query.getPage(), query == null ? 10 : query.getSize());
+        records = applyApplicationFilters(records, safeQuery);
+        sortApplications(records, safeQuery.getSortBy());
+        List<Map<String, Object>> pagedRecords = paginate(records, safeQuery.getPage(), safeQuery.getSize());
         PageResult<Map<String, Object>> result = new PageResult<>();
         result.setRecords(pagedRecords);
-        result.setPage(query.getPage());
-        result.setSize(query.getSize());
+        result.setPage(safeQuery.getPage());
+        result.setSize(safeQuery.getSize());
         result.setTotal(records.size());
         return result;
     }
@@ -201,7 +203,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         }
 
         String status = normalize(String.valueOf(record.get("status")));
-        if ("withdrawn".equals(status) || "rejected".equals(status) || "revocation_requested".equals(status)) {
+        if ("withdrawn".equals(status) || "rejected".equals(status) || "revocationrequested".equals(status)) {
             throw new IllegalStateException("This application can no longer be withdrawn.");
         }
         boolean acceptedAssignment = "accepted".equals(status);
@@ -238,6 +240,9 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     public void updateStatusByMO(String applicationId, String moUserId, ApplicationStatus newStatus, String comment) {
+        if (newStatus == null || newStatus == ApplicationStatus.SUBMITTED) {
+            throw new IllegalStateException("MO review cannot set application status back to SUBMITTED.");
+        }
         Map<String, Object> record = getApplicationDetailForMO(applicationId, moUserId);
         record.put("status", newStatus.name());
         record.put("feedback", comment == null ? "" : comment.trim());
@@ -305,6 +310,7 @@ public class ApplicationServiceImpl implements ApplicationService {
             }
             if (!keyword.isEmpty()) {
                 String haystack = String.join(" ",
+                    normalize(String.valueOf(record.get("taName"))),
                     normalize(String.valueOf(record.get("postingTitle"))),
                     normalize(String.valueOf(record.get("courseCode"))),
                     normalize(String.valueOf(record.get("moName"))),
@@ -323,7 +329,15 @@ public class ApplicationServiceImpl implements ApplicationService {
     private void sortApplications(List<Map<String, Object>> records, String sortBy) {
         String normalized = normalize(sortBy);
         Comparator<Map<String, Object>> comparator;
-        if ("status".equals(normalized) || "statuspriority".equals(normalized)) {
+        if ("scoreasc".equals(normalized)) {
+            comparator = Comparator.comparingInt((Map<String, Object> record) -> parseInt(record.get("skillMatchScore")));
+        } else if ("scoredesc".equals(normalized)) {
+            comparator = Comparator.comparingInt((Map<String, Object> record) -> parseInt(record.get("skillMatchScore"))).reversed();
+        } else if ("timeasc".equals(normalized)) {
+            comparator = Comparator.comparing((Map<String, Object> record) -> parseDateTime(record.get("appliedAt")), Comparator.nullsLast(Comparator.naturalOrder()));
+        } else if ("timedesc".equals(normalized)) {
+            comparator = Comparator.comparing((Map<String, Object> record) -> parseDateTime(record.get("appliedAt")), Comparator.nullsLast(Comparator.naturalOrder())).reversed();
+        } else if ("status".equals(normalized) || "statuspriority".equals(normalized)) {
             comparator = Comparator.comparingInt((Map<String, Object> record) -> statusPriority(String.valueOf(record.get("status"))))
                 .thenComparing(record -> parseDateTime(record.get("updatedAt")), Comparator.nullsLast(Comparator.reverseOrder()));
         } else if ("submitted".equals(normalized) || "recentlysubmitted".equals(normalized)) {
@@ -332,6 +346,17 @@ public class ApplicationServiceImpl implements ApplicationService {
             comparator = Comparator.comparing((Map<String, Object> record) -> parseDateTime(record.get("updatedAt")), Comparator.nullsLast(Comparator.reverseOrder()));
         }
         records.sort(comparator);
+    }
+
+    private int parseInt(Object rawValue) {
+        if (rawValue == null) {
+            return 0;
+        }
+        try {
+            return Integer.parseInt(String.valueOf(rawValue).trim());
+        } catch (NumberFormatException ex) {
+            return 0;
+        }
     }
 
     private List<Map<String, Object>> paginate(List<Map<String, Object>> records, int page, int size) {
@@ -357,13 +382,13 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     private String normalize(String value) {
-        return value == null ? "" : value.trim().toLowerCase(Locale.ROOT).replace(" ", "");
+        return value == null ? "" : value.trim().toLowerCase(Locale.ROOT).replace(" ", "").replace("_", "");
     }
 
     private int statusPriority(String status) {
         return switch (normalize(status)) {
             case "accepted" -> 0;
-            case "submitted", "underreview", "pending", "revocation_requested" -> 1;
+            case "submitted", "underreview", "pending", "revocationrequested" -> 1;
             case "rejected" -> 2;
             default -> 3;
         };
@@ -375,7 +400,7 @@ public class ApplicationServiceImpl implements ApplicationService {
             case "rejected" -> "Rejected";
             case "underreview" -> "Under Review";
             case "withdrawn" -> "Withdrawn";
-            case "revocation_requested" -> "Revocation Requested";
+            case "revocationrequested" -> "Revocation Requested";
             default -> "Pending Review";
         };
     }

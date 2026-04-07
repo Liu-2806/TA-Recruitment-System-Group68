@@ -2,6 +2,7 @@ package com.bupt.ta.controller.admin;
 
 import com.bupt.ta.controller.common.BaseServlet;
 import com.bupt.ta.service.AnalyticsService;
+import com.bupt.ta.util.ServiceRegistry;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,7 +17,7 @@ import java.util.Map;
  */
 @WebServlet("/admin/analytics/ta-workload")
 public class AdminTAWorkloadServlet extends BaseServlet {
-    private AnalyticsService analyticsService;
+    private final AnalyticsService analyticsService = ServiceRegistry.analyticsService();
 
     /**
      * 展示 TA 工作量报表。
