@@ -1,11 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
   String contextPath = request.getContextPath();
-  Object reportObj = request.getAttribute("reportPage");
-  com.bupt.ta.dto.PageResult reportPage = reportObj instanceof com.bupt.ta.dto.PageResult ? (com.bupt.ta.dto.PageResult) reportObj : null;
-  java.util.List rows = reportPage == null || reportPage.getRecords() == null ? java.util.Collections.emptyList() : reportPage.getRecords();
-  Object queryObj = request.getAttribute("query");
-  java.util.Map query = queryObj instanceof java.util.Map ? (java.util.Map) queryObj : java.util.Collections.emptyMap();
   request.setAttribute("headerBrandHref", contextPath + "/admin/dashboard");
   request.setAttribute("showHeaderBack", Boolean.TRUE);
   request.setAttribute("headerBackHref", contextPath + "/admin/dashboard");
@@ -110,7 +105,7 @@
           <h1>TA Workload Management</h1>
         </section>
 
-        <form class="admin-ta-filter" method="get" action="<%= contextPath %>/admin/analytics/ta-workload">
+        <section class="admin-ta-filter">
           <div class="admin-ta-filter__field admin-ta-filter__field--wide">
             <label for="taKeyword">Name / Student ID</label>
             <div class="admin-ta-filter__input">
@@ -119,18 +114,18 @@
                   <path d="M10.75 17a6.25 6.25 0 1 0 0-12.5 6.25 6.25 0 0 0 0 12.5Zm8.75 2.5-4.25-4.25" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </span>
-              <input id="taKeyword" name="keyword" type="text" value="<%= String.valueOf(query.getOrDefault("keyword", "")) %>" placeholder="Enter name or ID...">
+              <input id="taKeyword" type="text" placeholder="Enter name or ID...">
             </div>
           </div>
 
           <div class="admin-ta-filter__field">
             <label for="taMajorFilter">Major Filter</label>
             <div class="admin-ta-filter__select">
-              <select id="taMajorFilter" name="term">
-                <option value="" <%= String.valueOf(query.getOrDefault("term", "")).isBlank() ? "selected" : "" %>>All Majors</option>
-                <option value="Software" <%= "Software".equalsIgnoreCase(String.valueOf(query.getOrDefault("term", ""))) ? "selected" : "" %>>Software</option>
-                <option value="Computer" <%= "Computer".equalsIgnoreCase(String.valueOf(query.getOrDefault("term", ""))) ? "selected" : "" %>>Computer</option>
-                <option value="Communication" <%= "Communication".equalsIgnoreCase(String.valueOf(query.getOrDefault("term", ""))) ? "selected" : "" %>>Communication</option>
+              <select id="taMajorFilter">
+                <option>All Majors</option>
+                <option>Software Engineering</option>
+                <option>Computer Science</option>
+                <option>Communication Engineering</option>
               </select>
               <span class="admin-ta-filter__caret" aria-hidden="true">v</span>
             </div>
@@ -139,25 +134,25 @@
           <div class="admin-ta-filter__field">
             <label for="taStatusFilter">Workload Status</label>
             <div class="admin-ta-filter__select">
-              <select id="taStatusFilter" name="minHours">
-                <option value="" <%= String.valueOf(query.getOrDefault("minHours", "")).isBlank() ? "selected" : "" %>>All Status</option>
-                <option value="1" <%= "1".equals(String.valueOf(query.getOrDefault("minHours", ""))) ? "selected" : "" %>>Normal</option>
-                <option value="3" <%= "3".equals(String.valueOf(query.getOrDefault("minHours", ""))) ? "selected" : "" %>>High Alert</option>
-                <option value="0" <%= "0".equals(String.valueOf(query.getOrDefault("minHours", ""))) ? "selected" : "" %>>Not Applied</option>
+              <select id="taStatusFilter">
+                <option>All Status</option>
+                <option>Normal</option>
+                <option>High Alert</option>
+                <option>Not Applied</option>
               </select>
               <span class="admin-ta-filter__caret" aria-hidden="true">v</span>
             </div>
           </div>
 
           <div class="admin-ta-filter__actions">
-            <button class="admin-ta-filter__search" type="submit">Search</button>
-            <a class="admin-ta-filter__reset" href="<%= contextPath %>/admin/analytics/ta-workload" aria-label="Reset filters">
+            <button class="admin-ta-filter__search" type="button">Search</button>
+            <button class="admin-ta-filter__reset" type="button" aria-label="Reset filters">
               <svg viewBox="0 0 24 24" focusable="false">
                 <path d="M7 7.5V4.75m0 0H4.25M7 4.75 4.75 7M6.5 9.5a7 7 0 1 1-1.2 7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
-            </a>
+            </button>
           </div>
-        </form>
+        </section>
 
         <section class="admin-ta-table-card">
           <div class="admin-ta-table__wrap">
@@ -174,38 +169,42 @@
                 </tr>
               </thead>
               <tbody>
-                <%
-                  if (rows.isEmpty()) {
-                %>
-                <tr><td colspan="7">No TA workload records found.</td></tr>
-                <%
-                  } else {
-                    for (Object obj : rows) {
-                      java.util.Map row = obj instanceof java.util.Map ? (java.util.Map) obj : java.util.Collections.emptyMap();
-                      String fullName = String.valueOf(row.getOrDefault("fullName", ""));
-                      String studentId = String.valueOf(row.getOrDefault("studentId", ""));
-                      String major = String.valueOf(row.getOrDefault("majorProgram", row.getOrDefault("major", "")));
-                      int appCount = 0;
-                      int accepted = 0;
-                      try { appCount = Integer.parseInt(String.valueOf(row.getOrDefault("applicationCount", "0"))); } catch (Exception ignored) {}
-                      try { accepted = Integer.parseInt(String.valueOf(row.getOrDefault("acceptedCount", "0"))); } catch (Exception ignored) {}
-                      int hours = appCount * 4;
-                      String statusText = hours >= 12 ? "High Alert" : (hours == 0 ? "Not Applied" : "Normal");
-                      String statusCss = hours >= 12 ? "alert" : (hours == 0 ? "idle" : "normal");
-                %>
                 <tr>
-                  <td><strong class="admin-ta-name"><%= fullName %></strong></td>
-                  <td><span class="admin-ta-student"><%= studentId %></span></td>
-                  <td><span class="admin-ta-major"><%= major %></span></td>
-                  <td><strong class="admin-ta-count"><%= appCount %></strong></td>
-                  <td><strong class="admin-ta-hours <%= hours >= 12 ? "admin-ta-hours--alert" : "" %>"><%= hours %>h</strong></td>
-                  <td><span class="admin-ta-status admin-ta-status--<%= statusCss %>"><%= statusText %></span></td>
-                  <td class="admin-ta-table__right"><button class="admin-ta-details-button" type="button">Details</button></td>
+                  <td><strong class="admin-ta-name">Zhang San</strong></td>
+                  <td><span class="admin-ta-student">2021001234</span></td>
+                  <td><span class="admin-ta-major">Software</span></td>
+                  <td><strong class="admin-ta-count">2</strong></td>
+                  <td><strong class="admin-ta-hours">8h</strong></td>
+                  <td><span class="admin-ta-status admin-ta-status--normal">Normal</span></td>
+                  <td class="admin-ta-table__right"><button class="admin-ta-details-button" type="button" data-ta-detail="zhang-san">Details</button></td>
                 </tr>
-                <%
-                    }
-                  }
-                %>
+                <tr>
+                  <td><strong class="admin-ta-name">Li Si</strong></td>
+                  <td><span class="admin-ta-student">2021002345</span></td>
+                  <td><span class="admin-ta-major">Computer Science</span></td>
+                  <td><strong class="admin-ta-count">3</strong></td>
+                  <td><strong class="admin-ta-hours admin-ta-hours--alert">12h</strong></td>
+                  <td><span class="admin-ta-status admin-ta-status--alert">High Alert</span></td>
+                  <td class="admin-ta-table__right"><button class="admin-ta-details-button" type="button" data-ta-detail="li-si">Details</button></td>
+                </tr>
+                <tr>
+                  <td><strong class="admin-ta-name">Wang Wu</strong></td>
+                  <td><span class="admin-ta-student">2021003456</span></td>
+                  <td><span class="admin-ta-major">Software</span></td>
+                  <td><strong class="admin-ta-count">1</strong></td>
+                  <td><strong class="admin-ta-hours">4h</strong></td>
+                  <td><span class="admin-ta-status admin-ta-status--normal">Normal</span></td>
+                  <td class="admin-ta-table__right"><button class="admin-ta-details-button" type="button" data-ta-detail="wang-wu">Details</button></td>
+                </tr>
+                <tr>
+                  <td><strong class="admin-ta-name">Zhao Liu</strong></td>
+                  <td><span class="admin-ta-student">2021004567</span></td>
+                  <td><span class="admin-ta-major">Comm. Engineering</span></td>
+                  <td><strong class="admin-ta-count">0</strong></td>
+                  <td><strong class="admin-ta-hours">0h</strong></td>
+                  <td><span class="admin-ta-status admin-ta-status--idle">Not Applied</span></td>
+                  <td class="admin-ta-table__right"><button class="admin-ta-details-button" type="button" data-ta-detail="zhao-liu">Details</button></td>
+                </tr>
               </tbody>
             </table>
           </div>
