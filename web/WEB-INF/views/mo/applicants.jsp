@@ -8,15 +8,21 @@
   java.util.List applications = applicationsPage == null || applicationsPage.getRecords() == null ? java.util.Collections.emptyList() : applicationsPage.getRecords();
   Object queryObj = request.getAttribute("query");
   com.bupt.ta.dto.ApplicationQuery query = queryObj instanceof com.bupt.ta.dto.ApplicationQuery ? (com.bupt.ta.dto.ApplicationQuery) queryObj : new com.bupt.ta.dto.ApplicationQuery();
+  Object currentUserObj = request.getSession(false) == null ? null : request.getSession(false).getAttribute("currentUser");
+  com.bupt.ta.model.User currentUser = currentUserObj instanceof com.bupt.ta.model.User ? (com.bupt.ta.model.User) currentUserObj : null;
+  String currentUserName = currentUser == null || currentUser.getDisplayName() == null || currentUser.getDisplayName().trim().isEmpty()
+      ? "MO"
+      : currentUser.getDisplayName().trim();
+  String currentUserInitial = currentUserName.isEmpty() ? "M" : currentUserName.substring(0, 1).toUpperCase();
 
   request.setAttribute("headerBrandHref", contextPath + "/mo/dashboard");
   request.setAttribute("showHeaderBack", Boolean.TRUE);
   request.setAttribute("headerBackHref", contextPath + "/mo/jobs/my");
   request.setAttribute("headerBackLabel", "Back to List");
   request.setAttribute("showHeaderUser", Boolean.TRUE);
-  request.setAttribute("currentUserName", "MO");
+  request.setAttribute("currentUserName", currentUserName);
   request.setAttribute("currentUserRoleLabel", "Module Organizer");
-  request.setAttribute("currentUserInitial", "M");
+  request.setAttribute("currentUserInitial", currentUserInitial);
   request.setAttribute("notificationCount", Integer.valueOf(0));
 %>
 <!DOCTYPE html>
