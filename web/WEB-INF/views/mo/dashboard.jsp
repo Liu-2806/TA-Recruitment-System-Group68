@@ -1,12 +1,26 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
   String contextPath = request.getContextPath();
-  request.setAttribute("headerBrandHref", contextPath + "/mo-dashboard-preview.jsp");
+  Object currentUserObj = request.getSession(false) == null ? null : request.getSession(false).getAttribute("currentUser");
+  com.bupt.ta.model.User currentUser = currentUserObj instanceof com.bupt.ta.model.User ? (com.bupt.ta.model.User) currentUserObj : null;
+  String currentUserName = currentUser == null || currentUser.getDisplayName() == null || currentUser.getDisplayName().trim().isEmpty()
+      ? "MO"
+      : currentUser.getDisplayName().trim();
+  String currentUserInitial = currentUserName.isEmpty() ? "M" : currentUserName.substring(0, 1).toUpperCase();
+  Object overviewObj = request.getAttribute("overview");
+  java.util.Map overview = overviewObj instanceof java.util.Map ? (java.util.Map) overviewObj : java.util.Collections.emptyMap();
+  Object profileObj = overview.get("profileCard");
+  java.util.Map profile = profileObj instanceof java.util.Map ? (java.util.Map) profileObj : java.util.Collections.emptyMap();
+  String moName = String.valueOf(profile.getOrDefault("fullName", profile.getOrDefault("displayName", currentUserName)));
+  String moStaffId = String.valueOf(profile.getOrDefault("staffId", "-"));
+  String moDepartment = String.valueOf(profile.getOrDefault("department", "-"));
+
+  request.setAttribute("headerBrandHref", contextPath + "/mo/dashboard");
   request.setAttribute("showHeaderBack", Boolean.FALSE);
   request.setAttribute("showHeaderUser", Boolean.TRUE);
-  request.setAttribute("currentUserName", "Prof. James Wang");
+  request.setAttribute("currentUserName", currentUserName);
   request.setAttribute("currentUserRoleLabel", "Module Organizer");
-  request.setAttribute("currentUserInitial", "J");
+  request.setAttribute("currentUserInitial", currentUserInitial);
   request.setAttribute("notificationCount", Integer.valueOf(1));
 %>
 <!DOCTYPE html>
@@ -34,10 +48,10 @@
                 <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm0 1.5c-3.3 0-6 1.97-6 4.4V19h12v-1.1c0-2.43-2.7-4.4-6-4.4Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </div>
-            <h2>Prof. James Wang</h2>
-            <p class="mo-profile-card__staff-id">Staff ID: M001</p>
-            <p class="mo-profile-card__dept">School of Software Engineering</p>
-            <a class="mo-profile-card__button" href="<%= contextPath %>/mo-profile-edit-preview.jsp">
+            <h2><%= moName %></h2>
+            <p class="mo-profile-card__staff-id">Staff ID: <%= moStaffId %></p>
+            <p class="mo-profile-card__dept"><%= moDepartment %></p>
+            <a class="mo-profile-card__button" href="<%= contextPath %>/mo/profile">
               <span class="mo-profile-card__button-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" focusable="false">
                   <path d="M5.5 18.5h3l8.25-8.25-3-3L5.5 15.5Zm0 0-.75 3.25L8 21m5.75-11.75 3 3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
@@ -85,7 +99,7 @@
 
         <section class="mo-dashboard-content">
           <div class="mo-dashboard-actions">
-            <a class="mo-action-card mo-action-card--primary" href="<%= contextPath %>/mo-post-position-preview.jsp">
+            <a class="mo-action-card mo-action-card--primary" href="<%= contextPath %>/mo/jobs/create">
               <div>
                 <h2>Post New Position</h2>
                 <p>Start recruiting your next TA</p>
@@ -97,7 +111,7 @@
               </span>
             </a>
 
-            <a class="mo-action-card mo-action-card--secondary" href="<%= contextPath %>/mo-postings-preview.jsp">
+            <a class="mo-action-card mo-action-card--secondary" href="<%= contextPath %>/mo/jobs/my">
               <div>
                 <h2>My Job Postings</h2>
                 <p>Monitor and edit existing listings</p>

@@ -7,15 +7,21 @@
   java.util.Map taProfile = application.get("taProfile") instanceof java.util.Map ? (java.util.Map) application.get("taProfile") : java.util.Collections.emptyMap();
   java.util.List matchedSkills = application.get("matchedSkills") instanceof java.util.List ? (java.util.List) application.get("matchedSkills") : java.util.Collections.emptyList();
   java.util.List missingSkills = application.get("missingSkills") instanceof java.util.List ? (java.util.List) application.get("missingSkills") : java.util.Collections.emptyList();
+  Object currentUserObj = request.getSession(false) == null ? null : request.getSession(false).getAttribute("currentUser");
+  com.bupt.ta.model.User currentUser = currentUserObj instanceof com.bupt.ta.model.User ? (com.bupt.ta.model.User) currentUserObj : null;
+  String currentUserName = currentUser == null || currentUser.getDisplayName() == null || currentUser.getDisplayName().trim().isEmpty()
+      ? "MO"
+      : currentUser.getDisplayName().trim();
+  String currentUserInitial = currentUserName.isEmpty() ? "M" : currentUserName.substring(0, 1).toUpperCase();
 
   request.setAttribute("headerBrandHref", contextPath + "/mo/dashboard");
   request.setAttribute("showHeaderBack", Boolean.TRUE);
   request.setAttribute("headerBackHref", contextPath + "/mo/jobs/applicants?jobId=" + String.valueOf(job.getOrDefault("postingId", "")));
   request.setAttribute("headerBackLabel", "Back to List");
   request.setAttribute("showHeaderUser", Boolean.TRUE);
-  request.setAttribute("currentUserName", "MO");
+  request.setAttribute("currentUserName", currentUserName);
   request.setAttribute("currentUserRoleLabel", "Module Organizer");
-  request.setAttribute("currentUserInitial", "M");
+  request.setAttribute("currentUserInitial", currentUserInitial);
   request.setAttribute("notificationCount", Integer.valueOf(0));
 
   String resumeFileName = String.valueOf(taProfile.getOrDefault("resumeFileName", ""));

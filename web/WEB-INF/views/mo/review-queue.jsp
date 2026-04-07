@@ -1,14 +1,21 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
   String contextPath = request.getContextPath();
-  request.setAttribute("headerBrandHref", contextPath + "/mo-dashboard-preview.jsp");
+  Object currentUserObj = request.getSession(false) == null ? null : request.getSession(false).getAttribute("currentUser");
+  com.bupt.ta.model.User currentUser = currentUserObj instanceof com.bupt.ta.model.User ? (com.bupt.ta.model.User) currentUserObj : null;
+  String currentUserName = currentUser == null || currentUser.getDisplayName() == null || currentUser.getDisplayName().trim().isEmpty()
+      ? "MO"
+      : currentUser.getDisplayName().trim();
+  String currentUserInitial = currentUserName.isEmpty() ? "M" : currentUserName.substring(0, 1).toUpperCase();
+
+  request.setAttribute("headerBrandHref", contextPath + "/mo/dashboard");
   request.setAttribute("showHeaderBack", Boolean.TRUE);
-  request.setAttribute("headerBackHref", contextPath + "/mo-dashboard-preview.jsp");
+  request.setAttribute("headerBackHref", contextPath + "/mo/dashboard");
   request.setAttribute("headerBackLabel", "Back to Dashboard");
   request.setAttribute("showHeaderUser", Boolean.TRUE);
-  request.setAttribute("currentUserName", "Prof. James Wang");
+  request.setAttribute("currentUserName", currentUserName);
   request.setAttribute("currentUserRoleLabel", "Module Organizer");
-  request.setAttribute("currentUserInitial", "J");
+  request.setAttribute("currentUserInitial", currentUserInitial);
   request.setAttribute("notificationCount", Integer.valueOf(1));
 %>
 <!DOCTYPE html>

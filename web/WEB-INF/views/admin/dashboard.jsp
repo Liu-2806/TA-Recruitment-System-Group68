@@ -1,6 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
   String contextPath = request.getContextPath();
+  Object overviewObj = request.getAttribute("overview");
+  java.util.Map overview = overviewObj instanceof java.util.Map ? (java.util.Map) overviewObj : java.util.Collections.emptyMap();
   request.setAttribute("headerBrandHref", contextPath + "/admin/dashboard");
   request.setAttribute("showHeaderBack", Boolean.FALSE);
   request.setAttribute("showHeaderUser", Boolean.TRUE);
@@ -105,7 +107,7 @@
               </span>
               <div class="admin-stat-card__meta">
                 <p>Total TAs</p>
-                <strong>25</strong>
+                <strong><%= String.valueOf(overview.getOrDefault("totalTAs", 0)) %></strong>
               </div>
             </article>
 
@@ -117,7 +119,7 @@
               </span>
               <div class="admin-stat-card__meta">
                 <p>Total MOs</p>
-                <strong>8</strong>
+                <strong><%= String.valueOf(overview.getOrDefault("totalMOs", 0)) %></strong>
               </div>
             </article>
 
@@ -129,7 +131,7 @@
               </span>
               <div class="admin-stat-card__meta">
                 <p>Total Postings</p>
-                <strong>12</strong>
+                <strong><%= String.valueOf(overview.getOrDefault("totalPostings", 0)) %></strong>
               </div>
             </article>
           </div>
