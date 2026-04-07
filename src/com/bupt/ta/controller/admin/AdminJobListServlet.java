@@ -1,5 +1,6 @@
 package com.bupt.ta.controller.admin;
 
+import com.bupt.ta.config.ServiceRegistry;
 import com.bupt.ta.controller.common.BaseServlet;
 import com.bupt.ta.dto.JobQuery;
 import com.bupt.ta.service.JobService;
@@ -15,7 +16,7 @@ import java.io.IOException;
  */
 @WebServlet("/admin/jobs")
 public class AdminJobListServlet extends BaseServlet {
-    private JobService jobService;
+    private final JobService jobService = ServiceRegistry.jobService();
 
     /**
      * 查询并展示岗位列表。
