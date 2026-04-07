@@ -5,6 +5,9 @@ package com.bupt.ta.dto;
  */
 public class JobQuery {
     private String keyword;
+    private String moFilter;
+    private String moId;
+    private String ownerId;
     private String major;
     private String department;
     private String moduleType;
@@ -20,6 +23,30 @@ public class JobQuery {
 
     public void setKeyword(String keyword) {
         this.keyword = keyword;
+    }
+
+    public String getMoFilter() {
+        return moFilter;
+    }
+
+    public void setMoFilter(String moFilter) {
+        this.moFilter = moFilter;
+    }
+
+    public String getMoId() {
+        return moId;
+    }
+
+    public void setMoId(String moId) {
+        this.moId = moId;
+    }
+
+    public String getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
     }
 
     public String getMajor() {

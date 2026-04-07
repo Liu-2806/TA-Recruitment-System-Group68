@@ -1,6 +1,8 @@
 package com.bupt.ta.controller.admin;
 
 import com.bupt.ta.controller.common.BaseServlet;
+import com.bupt.ta.model.Role;
+import com.bupt.ta.model.User;
 import com.bupt.ta.service.UserService;
 import com.bupt.ta.util.ServiceRegistry;
 
@@ -22,6 +24,13 @@ public class AdminMOPasswordResetServlet extends BaseServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        User currentUser = currentUser(request);
+        if (currentUser == null || currentUser.getRole() != Role.ADMIN) {
+            request.setAttribute("errorMessage", "无管理员权限");
+            request.getRequestDispatcher("/WEB-INF/views/common/error.jsp").forward(request, response);
+            return;
+        }
+
         String moUserId = request.getParameter("moUserId");
         String newPassword = request.getParameter("newPassword");
         try {
