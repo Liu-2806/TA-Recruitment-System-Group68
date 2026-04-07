@@ -3,6 +3,7 @@ package com.bupt.ta.controller.auth;
 import com.bupt.ta.controller.common.BaseServlet;
 import com.bupt.ta.model.Role;
 import com.bupt.ta.model.User;
+import com.bupt.ta.util.RoleUtils;
 import com.bupt.ta.util.SessionKeys;
 
 import javax.servlet.ServletException;
@@ -29,14 +30,31 @@ public class RoleSelectServlet extends BaseServlet {
      * 提交角色选择并更新登录会话角色。
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         User user = currentUser(request);
-        Role role = Role.valueOf(request.getParameter("role"));
-        if (user != null) {
+        if (user == null) {
+            response.sendRedirect(request.getContextPath() + "/auth/login");
+            return;
+        }
+        try {
+            Role role = RoleUtils.parseRole(request.getParameter("role"));
             user.setRole(role);
             request.getSession().setAttribute(SessionKeys.CURRENT_USER, user);
             request.getSession().setAttribute(SessionKeys.ROLE, role);
+            response.sendRedirect(request.getContextPath() + homePath(role));
+        } catch (Exception ex) {
+            request.setAttribute("errorMessage", ex.getMessage());
+            request.getRequestDispatcher("/WEB-INF/views/auth/role-select.jsp").forward(request, response);
         }
-        response.sendRedirect(request.getContextPath() + "/auth/login");
+    }
+
+    private String homePath(Role role) {
+        if (role == Role.TA) {
+            return "/ta/dashboard";
+        }
+        if (role == Role.MO) {
+            return "/mo/dashboard";
+        }
+        return "/admin/dashboard";
     }
 }
