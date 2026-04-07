@@ -31,4 +31,20 @@ public interface AnalyticsService {
      * @return 分页报表
      */
     PageResult<Map<String, Object>> getTAWorkloadReport(Map<String, Object> query);
+
+    /**
+     * 获取 TA 工作量详情（详情弹窗）。
+     *
+     * @param taId TA 用户 ID
+     * @return 详情对象
+     */
+    Map<String, Object> getTAWorkloadDetail(String taId);
+
+    /**
+     * 获取 TA 工作量分布总览。
+     *
+     * @param query 查询参数
+     * @return 分布总览
+     */
+    Map<String, Object> getTAWorkloadDistributionSummary(Map<String, Object> query);
 }

@@ -20,6 +20,7 @@ import java.util.Comparator;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -123,21 +124,219 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
     @Override
     public PageResult<Map<String, Object>> getTAWorkloadReport(Map<String, Object> query) {
+        Map<String, Object> safeQuery = query == null ? new LinkedHashMap<String, Object>() : query;
+        List<Map<String, Object>> reportRows = buildTAWorkloadRows();
+
+        List<Map<String, Object>> filteredRows = new ArrayList<Map<String, Object>>();
+        for (Map<String, Object> row : reportRows) {
+            if (!matchesWorkloadKeyword(row, firstNonBlank(safeQuery, "keyword"))) {
+                continue;
+            }
+            if (!matchesWorkloadMajor(row, firstNonBlank(safeQuery, "major"))) {
+                continue;
+            }
+            if (!matchesWorkloadStatus(row, firstNonBlank(safeQuery, "status"))) {
+                continue;
+            }
+            filteredRows.add(row);
+        }
+
+        sortWorkloadRows(filteredRows, firstNonBlank(safeQuery, "sortBy"));
+
+        int page = parsePositiveInt(firstNonBlank(safeQuery, "page"), 1);
+        int size = parsePositiveInt(firstNonBlank(safeQuery, "size"), 10);
+
+        PageResult<Map<String, Object>> result = new PageResult<Map<String, Object>>();
+        result.setRecords(paginateRows(filteredRows, page, size));
+        result.setPage(page);
+        result.setSize(size);
+        result.setTotal(filteredRows.size());
+        return result;
+    }
+
+    @Override
+    public Map<String, Object> getTAWorkloadDetail(String taId) {
+        String normalizedTaId = taId == null ? null : taId.trim();
+        if (isBlank(normalizedTaId)) {
+            throw new IllegalStateException("taId is required");
+        }
+
+        Map<String, Object> taRecord = userRepository.findById(Role.TA, normalizedTaId);
+        if (taRecord == null) {
+            throw new IllegalStateException("TA profile not found: " + normalizedTaId);
+        }
+
+        List<Map<String, Object>> applications = readJsonArray(DataPaths.resolveApplicationsFile());
+        List<Map<String, Object>> postings = readJsonArray(DataPaths.resolvePostingsFile());
+        Map<String, Map<String, Object>> postingIndex = indexPostingsById(postings);
+
+        List<Map<String, Object>> workingPositions = new ArrayList<Map<String, Object>>();
+        int totalWorkloadHours = 0;
+        String peakDay = "N/A";
+        for (Map<String, Object> application : applications) {
+            if (!normalizedTaId.equals(firstNonBlank(application, "taId", "taUserId"))) {
+                continue;
+            }
+            if (!"ACCEPTED".equalsIgnoreCase(firstNonBlank(application, "status"))) {
+                continue;
+            }
+
+            String postingId = firstNonBlank(application, "postingId");
+            Map<String, Object> posting = postingIndex.get(postingId);
+            if (posting == null) {
+                continue;
+            }
+
+            int workloadHours = safeInt(posting.get("estimatedWorkloadHours"));
+            totalWorkloadHours += workloadHours;
+
+            String appliedAt = firstNonBlank(application, "appliedAt", "updatedAt");
+            peakDay = resolvePeakDay(appliedAt, peakDay);
+
+            Map<String, Object> position = new LinkedHashMap<String, Object>();
+            position.put("postingId", firstNonBlank(posting, "postingId"));
+            position.put("courseCode", firstNonBlank(posting, "courseCode"));
+            position.put("courseName", firstNonBlank(posting, "courseName"));
+            position.put("roleType", resolveRoleType(firstNonBlank(posting, "moduleType")));
+            position.put("workloadHours", workloadHours);
+            position.put("status", isOpenPosting(posting) ? "ACTIVE" : "INACTIVE");
+            workingPositions.add(position);
+        }
+
+        int activePositionCount = 0;
+        for (Map<String, Object> position : workingPositions) {
+            if ("ACTIVE".equalsIgnoreCase(firstNonBlank(position, "status"))) {
+                activePositionCount++;
+            }
+        }
+
+        Map<String, Object> taProfile = new LinkedHashMap<String, Object>();
+        taProfile.put("taId", firstNonBlank(taRecord, "taId", "id"));
+        taProfile.put("fullName", firstNonBlank(taRecord, "fullName", "displayName"));
+        taProfile.put("studentId", firstNonBlank(taRecord, "studentId"));
+        taProfile.put("majorProgram", firstNonBlank(taRecord, "majorProgram"));
+        taProfile.put("academicYear", firstNonBlank(taRecord, "academicYear"));
+        taProfile.put("email", firstNonBlank(taRecord, "email"));
+        taProfile.put("phone", firstNonBlank(taRecord, "phone"));
+
+        String riskLevel = resolveRiskLevel(totalWorkloadHours);
+        Map<String, Object> workloadAnalysis = new LinkedHashMap<String, Object>();
+        workloadAnalysis.put("totalWorkloadHours", totalWorkloadHours);
+        workloadAnalysis.put("activePositionCount", activePositionCount);
+        workloadAnalysis.put("peakDay", peakDay);
+        workloadAnalysis.put("riskLevel", riskLevel);
+        workloadAnalysis.put("statusLabel", resolveStatusLabel(riskLevel, activePositionCount));
+
+        Map<String, Object> detail = new LinkedHashMap<String, Object>();
+        detail.put("taProfile", taProfile);
+        detail.put("workingPositions", workingPositions);
+        detail.put("workloadAnalysis", workloadAnalysis);
+        detail.put("adminSuggestions", buildAdminSuggestions(riskLevel, activePositionCount));
+        return detail;
+    }
+
+    @Override
+    public Map<String, Object> getTAWorkloadDistributionSummary(Map<String, Object> query) {
+        Map<String, Object> safeQuery = query == null ? new LinkedHashMap<String, Object>() : query;
+        List<Map<String, Object>> filteredRows = new ArrayList<Map<String, Object>>();
+        for (Map<String, Object> row : buildTAWorkloadRows()) {
+            if (!matchesWorkloadKeyword(row, firstNonBlank(safeQuery, "keyword"))) {
+                continue;
+            }
+            if (!matchesWorkloadMajor(row, firstNonBlank(safeQuery, "major"))) {
+                continue;
+            }
+            if (!matchesWorkloadStatus(row, firstNonBlank(safeQuery, "status"))) {
+                continue;
+            }
+            filteredRows.add(row);
+        }
+
+        int bucket0To4 = 0;
+        int bucket4To8 = 0;
+        int bucket8To12 = 0;
+        int bucket12Plus = 0;
+        int criticalAlertCount = 0;
+        Map<String, Integer> majorHours = new LinkedHashMap<String, Integer>();
+
+        for (Map<String, Object> row : filteredRows) {
+            int totalHours = safeInt(row.get("totalWorkloadHours"));
+            if (totalHours < 4) {
+                bucket0To4++;
+            } else if (totalHours < 8) {
+                bucket4To8++;
+            } else if (totalHours < 12) {
+                bucket8To12++;
+            } else {
+                bucket12Plus++;
+            }
+
+            if ("HIGH_ALERT".equalsIgnoreCase(firstNonBlank(row, "workloadStatus"))) {
+                criticalAlertCount++;
+            }
+
+            String major = firstNonBlank(row, "majorProgram");
+            if (isBlank(major)) {
+                major = "Unknown";
+            }
+            int current = majorHours.containsKey(major) ? majorHours.get(major) : 0;
+            majorHours.put(major, current + totalHours);
+        }
+
+        String peakWorkloadGroup = "N/A";
+        int maxHours = Integer.MIN_VALUE;
+        for (Map.Entry<String, Integer> entry : majorHours.entrySet()) {
+            if (entry.getValue() > maxHours) {
+                maxHours = entry.getValue();
+                peakWorkloadGroup = entry.getKey();
+            }
+        }
+
+        List<Map<String, Object>> hourBuckets = new ArrayList<Map<String, Object>>();
+        hourBuckets.add(bucketItem("0-4h", bucket0To4));
+        hourBuckets.add(bucketItem("4-8h", bucket4To8));
+        hourBuckets.add(bucketItem("8-12h", bucket8To12));
+        hourBuckets.add(bucketItem("12h+", bucket12Plus));
+
+        Map<String, Object> summary = new LinkedHashMap<String, Object>();
+        summary.put("hourBuckets", hourBuckets);
+        summary.put("peakWorkloadGroup", peakWorkloadGroup);
+        summary.put("criticalAlertCount", criticalAlertCount);
+        return summary;
+    }
+
+    private List<Map<String, Object>> buildTAWorkloadRows() {
         List<Map<String, Object>> taRecords = userRepository.findAllByRole(Role.TA);
         List<Map<String, Object>> applications = readJsonArray(DataPaths.resolveApplicationsFile());
-        List<Map<String, Object>> reportRows = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> postings = readJsonArray(DataPaths.resolvePostingsFile());
+        Map<String, Map<String, Object>> postingIndex = indexPostingsById(postings);
+        List<Map<String, Object>> rows = new ArrayList<Map<String, Object>>();
 
         for (Map<String, Object> ta : taRecords) {
-            String taId = stringValue(ta.get("id"));
-            int applicationCount = 0;
-            int acceptedCount = 0;
+            String taId = firstNonBlank(ta, "taId", "id");
+            if (isBlank(taId)) {
+                continue;
+            }
+            int activePositionCount = 0;
+            int totalWorkloadHours = 0;
+
             for (Map<String, Object> application : applications) {
-                String applicationTaId = firstNonBlank(application, "taId", "taUserId");
-                if (taId != null && taId.equals(applicationTaId)) {
-                    applicationCount++;
-                    if ("ACCEPTED".equalsIgnoreCase(firstNonBlank(application, "status"))) {
-                        acceptedCount++;
-                    }
+                if (!taId.equals(firstNonBlank(application, "taId", "taUserId"))) {
+                    continue;
+                }
+                if (!"ACCEPTED".equalsIgnoreCase(firstNonBlank(application, "status"))) {
+                    continue;
+                }
+
+                String postingId = firstNonBlank(application, "postingId");
+                Map<String, Object> posting = postingIndex.get(postingId);
+                if (posting == null) {
+                    continue;
+                }
+
+                totalWorkloadHours += safeInt(posting.get("estimatedWorkloadHours"));
+                if (isOpenPosting(posting)) {
+                    activePositionCount++;
                 }
             }
 
@@ -145,17 +344,206 @@ public class AnalyticsServiceImpl implements AnalyticsService {
             row.put("taId", taId);
             row.put("fullName", firstNonBlank(ta, "fullName", "displayName"));
             row.put("studentId", firstNonBlank(ta, "studentId"));
-            row.put("applicationCount", applicationCount);
-            row.put("acceptedCount", acceptedCount);
-            reportRows.add(row);
+            row.put("majorProgram", firstNonBlank(ta, "majorProgram"));
+            row.put("activePositionCount", activePositionCount);
+            row.put("totalWorkloadHours", totalWorkloadHours);
+            row.put("workloadStatus", resolveWorkloadStatus(activePositionCount, totalWorkloadHours));
+            rows.add(row);
         }
+        return rows;
+    }
 
-        PageResult<Map<String, Object>> result = new PageResult<Map<String, Object>>();
-        result.setRecords(reportRows);
-        result.setPage(1);
-        result.setSize(reportRows.size());
-        result.setTotal(reportRows.size());
-        return result;
+    private Map<String, Map<String, Object>> indexPostingsById(List<Map<String, Object>> postings) {
+        Map<String, Map<String, Object>> index = new LinkedHashMap<String, Map<String, Object>>();
+        for (Map<String, Object> posting : postings) {
+            String postingId = firstNonBlank(posting, "postingId");
+            if (!isBlank(postingId)) {
+                index.put(postingId, posting);
+            }
+        }
+        return index;
+    }
+
+    private boolean matchesWorkloadKeyword(Map<String, Object> row, String keyword) {
+        if (isBlank(keyword)) {
+            return true;
+        }
+        String lowered = keyword.trim().toLowerCase(Locale.ROOT);
+        String haystack = (firstNonBlank(row, "fullName", "taId", "studentId") + " "
+            + firstNonBlank(row, "studentId") + " "
+            + firstNonBlank(row, "taId")).toLowerCase(Locale.ROOT);
+        return haystack.contains(lowered);
+    }
+
+    private boolean matchesWorkloadMajor(Map<String, Object> row, String major) {
+        if (isBlank(major)) {
+            return true;
+        }
+        String currentMajor = firstNonBlank(row, "majorProgram");
+        return currentMajor != null && currentMajor.toLowerCase(Locale.ROOT).contains(major.trim().toLowerCase(Locale.ROOT));
+    }
+
+    private boolean matchesWorkloadStatus(Map<String, Object> row, String status) {
+        if (isBlank(status)) {
+            return true;
+        }
+        String normalizedFilter = normalizeWorkloadStatus(status);
+        if (isBlank(normalizedFilter)) {
+            return true;
+        }
+        return normalizedFilter.equalsIgnoreCase(firstNonBlank(row, "workloadStatus"));
+    }
+
+    private String normalizeWorkloadStatus(String status) {
+        if (isBlank(status)) {
+            return null;
+        }
+        String normalized = status.trim().toUpperCase(Locale.ROOT).replace(' ', '_');
+        if ("NORMAL".equals(normalized) || "HIGH_ALERT".equals(normalized) || "NOT_APPLIED".equals(normalized)) {
+            return normalized;
+        }
+        return null;
+    }
+
+    private void sortWorkloadRows(List<Map<String, Object>> rows, String sortBy) {
+        String normalizedSortBy = isBlank(sortBy) ? "" : sortBy.trim().toLowerCase(Locale.ROOT).replace(" ", "");
+        Comparator<Map<String, Object>> comparator;
+        if ("fullnameasc".equals(normalizedSortBy) || "nameasc".equals(normalizedSortBy)) {
+            comparator = Comparator.comparing((Map<String, Object> row) -> firstNonBlank(row, "fullName"), Comparator.nullsLast(String::compareTo));
+        } else if ("fullnamedesc".equals(normalizedSortBy) || "namedesc".equals(normalizedSortBy)) {
+            comparator = Comparator.comparing((Map<String, Object> row) -> firstNonBlank(row, "fullName"), Comparator.nullsLast(String::compareTo)).reversed();
+        } else if ("majorasc".equals(normalizedSortBy)) {
+            comparator = Comparator.comparing((Map<String, Object> row) -> firstNonBlank(row, "majorProgram"), Comparator.nullsLast(String::compareTo));
+        } else if ("majordesc".equals(normalizedSortBy)) {
+            comparator = Comparator.comparing((Map<String, Object> row) -> firstNonBlank(row, "majorProgram"), Comparator.nullsLast(String::compareTo)).reversed();
+        } else if ("hoursasc".equals(normalizedSortBy) || "totalworkloadhoursasc".equals(normalizedSortBy)) {
+            comparator = Comparator.comparingInt((Map<String, Object> row) -> safeInt(row.get("totalWorkloadHours")));
+        } else {
+            comparator = Comparator.comparingInt((Map<String, Object> row) -> safeInt(row.get("totalWorkloadHours"))).reversed()
+                .thenComparing((Map<String, Object> row) -> firstNonBlank(row, "fullName"), Comparator.nullsLast(String::compareTo));
+        }
+        rows.sort(comparator);
+    }
+
+    private List<Map<String, Object>> paginateRows(List<Map<String, Object>> rows, int page, int size) {
+        if (rows.isEmpty()) {
+            return Collections.emptyList();
+        }
+        int safePage = Math.max(1, page);
+        int safeSize = Math.max(1, size);
+        int fromIndex = Math.min(rows.size(), (safePage - 1) * safeSize);
+        int toIndex = Math.min(rows.size(), fromIndex + safeSize);
+        return new ArrayList<Map<String, Object>>(rows.subList(fromIndex, toIndex));
+    }
+
+    private int parsePositiveInt(String value, int defaultValue) {
+        if (isBlank(value)) {
+            return defaultValue;
+        }
+        try {
+            int parsed = Integer.parseInt(value.trim());
+            return parsed > 0 ? parsed : defaultValue;
+        } catch (NumberFormatException ex) {
+            return defaultValue;
+        }
+    }
+
+    private int safeInt(Object value) {
+        if (value instanceof Number) {
+            return ((Number) value).intValue();
+        }
+        try {
+            return Integer.parseInt(String.valueOf(value).trim());
+        } catch (Exception ex) {
+            return 0;
+        }
+    }
+
+    private String resolveWorkloadStatus(int activePositionCount, int totalWorkloadHours) {
+        if (activePositionCount <= 0 || totalWorkloadHours <= 0) {
+            return "NOT_APPLIED";
+        }
+        if (totalWorkloadHours >= 12) {
+            return "HIGH_ALERT";
+        }
+        return "NORMAL";
+    }
+
+    private String resolveRoleType(String moduleType) {
+        if (isBlank(moduleType)) {
+            return "COURSE_TA";
+        }
+        String normalized = moduleType.trim().toUpperCase(Locale.ROOT);
+        if (normalized.contains("LAB")) {
+            return "LAB";
+        }
+        if (normalized.contains("INVIGILATION")) {
+            return "INVIGILATION";
+        }
+        if (normalized.contains("CHECKOFF")) {
+            return "CHECKOFF";
+        }
+        return "COURSE_TA";
+    }
+
+    private String resolvePeakDay(String timestamp, String fallback) {
+        LocalDateTime parsed = parseDateTime(timestamp);
+        if (parsed == null) {
+            return fallback == null ? "N/A" : fallback;
+        }
+        return parsed.getDayOfWeek().name().substring(0, 1) + parsed.getDayOfWeek().name().substring(1).toLowerCase(Locale.ROOT);
+    }
+
+    private String resolveRiskLevel(int totalWorkloadHours) {
+        if (totalWorkloadHours >= 12) {
+            return "HIGH";
+        }
+        if (totalWorkloadHours >= 8) {
+            return "MEDIUM";
+        }
+        return "LOW";
+    }
+
+    private String resolveStatusLabel(String riskLevel, int activePositionCount) {
+        if (activePositionCount <= 0) {
+            return "Not applied to active positions";
+        }
+        if ("HIGH".equalsIgnoreCase(riskLevel)) {
+            return "High workload pressure";
+        }
+        if ("MEDIUM".equalsIgnoreCase(riskLevel)) {
+            return "Moderate workload distribution";
+        }
+        return "Normal workload distribution";
+    }
+
+    private List<String> buildAdminSuggestions(String riskLevel, int activePositionCount) {
+        List<String> suggestions = new ArrayList<String>();
+        if (activePositionCount <= 0) {
+            suggestions.add("No active TA assignment yet. Consider recommending suitable open positions.");
+            suggestions.add("Follow up on profile readiness before urgent scheduling periods.");
+            return suggestions;
+        }
+        if ("HIGH".equalsIgnoreCase(riskLevel)) {
+            suggestions.add("Avoid assigning additional duties this week.");
+            suggestions.add("Coordinate with MO to rebalance workload if possible.");
+            return suggestions;
+        }
+        if ("MEDIUM".equalsIgnoreCase(riskLevel)) {
+            suggestions.add("Monitor workload trend before assigning new long-hour tasks.");
+            suggestions.add("Prefer short operational duties if extra support is required.");
+            return suggestions;
+        }
+        suggestions.add("Safe to keep current assignments.");
+        suggestions.add("Can absorb one short operational duty if needed.");
+        return suggestions;
+    }
+
+    private Map<String, Object> bucketItem(String label, int count) {
+        Map<String, Object> item = new LinkedHashMap<String, Object>();
+        item.put("label", label);
+        item.put("count", count);
+        return item;
     }
 
     private List<Map<String, Object>> readJsonArray(Path path) {
