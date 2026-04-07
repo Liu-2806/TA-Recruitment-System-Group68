@@ -105,6 +105,7 @@ public class TADashboardServlet extends BaseServlet {
     private Map<String, Object> buildTimetable(String taId, List<Map<String, Object>> applications) {
         LocalDate weekStart = LocalDate.now().with(java.time.temporal.TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         Map<String, Object> timetable = new LinkedHashMap<>(taTimetableDataRepository.findTimetableByTaIdAndWeek(taId, weekStart));
+        timetable = alignTimetableWithApplications(timetable, applications);
         Map<String, Object> courseAssignment = asMap(timetable.get("courseAssignment"));
         if (!courseAssignment.isEmpty() && !hasValue(courseAssignment.get("relatedApplicationId"))) {
             Map<String, Object> relatedApplication = findApplicationByPostingId(applications, valueOf(courseAssignment.get("postingId")));
@@ -114,6 +115,62 @@ public class TADashboardServlet extends BaseServlet {
             timetable.put("courseAssignment", courseAssignment);
         }
         return timetable;
+    }
+
+    private Map<String, Object> alignTimetableWithApplications(Map<String, Object> timetable, List<Map<String, Object>> applications) {
+        if (timetable == null || applications == null || applications.isEmpty()) {
+            return timetable;
+        }
+
+        List<Map<String, Object>> orderedApplications = sortRecentApplications(applications);
+        Map<String, Object> primaryApplication = orderedApplications.get(0);
+        String primaryPostingId = valueOf(primaryApplication.get("postingId"));
+        String primaryApplicationId = valueOf(primaryApplication.get("applicationId"));
+        String primaryPostingTitle = valueOf(primaryApplication.get("postingTitle"));
+
+        Map<String, Object> courseAssignment = asMap(timetable.get("courseAssignment"));
+        String assignmentPostingId = valueOf(courseAssignment.get("postingId"));
+        if (!isPostingLinkedToApplications(assignmentPostingId, orderedApplications)) {
+            courseAssignment.put("postingId", primaryPostingId);
+            courseAssignment.put("relatedApplicationId", primaryApplicationId);
+            if (!hasValue(courseAssignment.get("courseName")) && hasValue(primaryPostingTitle)) {
+                courseAssignment.put("courseName", primaryPostingTitle);
+            }
+            timetable.put("courseAssignment", courseAssignment);
+        }
+
+        Object rawEvents = timetable.get("activityEvents");
+        if (!(rawEvents instanceof List<?> rawEventList) || rawEventList.isEmpty()) {
+            return timetable;
+        }
+
+        List<Map<String, Object>> fixedEvents = new ArrayList<>();
+        int appIndex = 0;
+        for (Object eventObj : rawEventList) {
+            Map<String, Object> event = asMap(eventObj);
+            String eventPostingId = valueOf(event.get("postingId"));
+            if (!isPostingLinkedToApplications(eventPostingId, orderedApplications)) {
+                Map<String, Object> mappedApp = orderedApplications.get(appIndex % orderedApplications.size());
+                event.put("postingId", valueOf(mappedApp.get("postingId")));
+                event.put("applicationId", valueOf(mappedApp.get("applicationId")));
+                appIndex++;
+            }
+            fixedEvents.add(event);
+        }
+        timetable.put("activityEvents", fixedEvents);
+        return timetable;
+    }
+
+    private boolean isPostingLinkedToApplications(String postingId, List<Map<String, Object>> applications) {
+        if (postingId == null || postingId.isBlank() || applications == null || applications.isEmpty()) {
+            return false;
+        }
+        for (Map<String, Object> application : applications) {
+            if (postingId.equals(valueOf(application.get("postingId")))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private List<Map<String, Object>> rankRecommendedJobs(String taUserId, List<Map<String, Object>> jobs) {

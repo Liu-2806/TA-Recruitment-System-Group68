@@ -2,9 +2,10 @@ package com.bupt.ta.util;
 
 import com.bupt.ta.model.Role;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Logger;
 
 /**
  * 项目数据目录解析工具。
@@ -12,30 +13,35 @@ import java.nio.file.Paths;
 public final class DataPaths {
     private static final String DATA_DIR_PROPERTY = "ta.data.dir";
     private static final String DATA_DIR_ENV = "TA_DATA_DIR";
+    private static final Logger LOGGER = Logger.getLogger(DataPaths.class.getName());
+    private static final AtomicBoolean ROOT_LOGGED = new AtomicBoolean(false);
 
     private DataPaths() {
     }
 
     public static Path resolveDataRoot() {
+        Path root;
+        String source;
         String configuredPath = System.getProperty(DATA_DIR_PROPERTY);
         if (isBlank(configuredPath)) {
             configuredPath = System.getenv(DATA_DIR_ENV);
         }
         if (!isBlank(configuredPath)) {
-            return Paths.get(configuredPath).toAbsolutePath().normalize();
+            root = Paths.get(configuredPath).toAbsolutePath().normalize();
+            source = DATA_DIR_PROPERTY + "/" + DATA_DIR_ENV;
+        } else {
+            // Stable default for all runtime contexts (IDE/Tomcat/CLI).
+            root = Paths.get(
+                System.getProperty("user.home"),
+                ".ta-recruitment-system",
+                "data"
+            ).toAbsolutePath().normalize();
+            source = "default-user-home";
         }
-
-        Path current = Paths.get("").toAbsolutePath().normalize();
-        Path cursor = current;
-        while (cursor != null) {
-            Path candidate = cursor.resolve("data");
-            if (Files.isDirectory(candidate)) {
-                return candidate;
-            }
-            cursor = cursor.getParent();
+        if (ROOT_LOGGED.compareAndSet(false, true)) {
+            LOGGER.info("TA data root: " + root + " (source=" + source + ")");
         }
-
-        return current.resolve("data");
+        return root;
     }
 
     public static Path resolveUsersFile(Role role) {

@@ -1,7 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
   String contextPath = request.getContextPath();
-  request.setAttribute("headerBrandHref", contextPath + "/admin-dashboard-preview.jsp");
+  request.setAttribute("headerBrandHref", contextPath + "/admin/dashboard");
   request.setAttribute("showHeaderBack", Boolean.FALSE);
   request.setAttribute("showHeaderUser", Boolean.TRUE);
   request.setAttribute("currentUserName", "Super Admin");
@@ -29,7 +29,7 @@
       </div>
 
       <nav class="admin-sidebar__nav" aria-label="Admin Navigation">
-        <a class="admin-sidebar__link is-active" href="<%= contextPath %>/admin-dashboard-preview.jsp">
+        <a class="admin-sidebar__link is-active" href="<%= contextPath %>/admin/dashboard">
           <span class="admin-sidebar__icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" focusable="false">
               <path d="M4.75 4.75h6.5v6.5h-6.5Zm8 0h6.5v6.5h-6.5Zm-8 8h6.5v6.5h-6.5Zm8 0h6.5v6.5h-6.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
@@ -38,7 +38,7 @@
           <span>Dashboard</span>
         </a>
 
-        <a class="admin-sidebar__link" href="<%= contextPath %>/admin-create-mo-preview.jsp">
+        <a class="admin-sidebar__link" href="<%= contextPath %>/admin/mos/create">
           <span class="admin-sidebar__icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" focusable="false">
               <path d="M12 12a3.75 3.75 0 1 0-3.75-3.75A3.75 3.75 0 0 0 12 12Zm0 1.5c-3.17 0-5.75 1.89-5.75 4.22V19h11.5v-.28c0-2.33-2.58-4.22-5.75-4.22ZM18.5 5.5v6m-3-3h6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
@@ -47,7 +47,7 @@
           <span>Create MO Account</span>
         </a>
 
-        <a class="admin-sidebar__link" href="<%= contextPath %>/admin-all-mos-preview.jsp">
+        <a class="admin-sidebar__link" href="<%= contextPath %>/admin/mos">
           <span class="admin-sidebar__icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" focusable="false">
               <path d="M8.5 10.5a3 3 0 1 0-3-3 3 3 0 0 0 3 3Zm7 0a3 3 0 1 0-3-3 3 3 0 0 0 3 3ZM8.5 12c-2.52 0-4.5 1.37-4.5 3.06V16h9v-.94C13 13.37 11.02 12 8.5 12Zm7 0c-.87 0-1.68.14-2.4.4 1.14.65 1.9 1.62 1.9 2.66V16H20v-.94c0-1.69-1.98-3.06-4.5-3.06Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
@@ -56,7 +56,7 @@
           <span>All MOs</span>
         </a>
 
-        <a class="admin-sidebar__link" href="<%= contextPath %>/admin-all-jobs-preview.jsp">
+        <a class="admin-sidebar__link" href="<%= contextPath %>/admin/jobs">
           <span class="admin-sidebar__icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" focusable="false">
               <path d="M5.5 8h13v10h-13Zm3-2.5h7V8h-7Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
@@ -65,7 +65,7 @@
           <span>All Postings</span>
         </a>
 
-        <a class="admin-sidebar__link" href="<%= contextPath %>/admin-ta-workload-preview.jsp">
+        <a class="admin-sidebar__link" href="<%= contextPath %>/admin/analytics/ta-workload">
           <span class="admin-sidebar__icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" focusable="false">
               <path d="M12 6.25v5.5l3.25 1.75M12 20a8 8 0 1 0-8-8 8 8 0 0 0 8 8Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
@@ -138,7 +138,7 @@
         <section class="admin-section">
           <p class="admin-section__eyebrow">Quick Actions</p>
           <div class="admin-actions">
-            <a class="admin-action-card admin-action-card--primary" href="<%= contextPath %>/admin-create-mo-preview.jsp">
+            <a class="admin-action-card admin-action-card--primary" href="<%= contextPath %>/admin/mos/create">
               <div>
                 <h2>Create New MO</h2>
                 <p>Onboard new module organizers</p>
@@ -150,7 +150,7 @@
               </span>
             </a>
 
-            <a class="admin-action-card" href="<%= contextPath %>/admin-all-jobs-preview.jsp">
+            <a class="admin-action-card" href="<%= contextPath %>/admin/jobs">
               <div>
                 <h2>View All Postings</h2>
                 <p>Audit active recruitment</p>

@@ -57,7 +57,7 @@ public class LoginServlet extends BaseServlet {
             session.setAttribute(SessionKeys.ROLE, user.getRole());
             response.sendRedirect(request.getContextPath() + homePath(user.getRole()));
         } catch (Exception ex) {
-            request.setAttribute("errorMessage", "用户名、密码或角色不正确");
+            request.setAttribute("errorMessage", "Invalid username, password, or role.");
             request.setAttribute("formData", request.getParameterMap());
             request.getRequestDispatcher("/WEB-INF/views/auth/login.jsp").forward(request, response);
         }
