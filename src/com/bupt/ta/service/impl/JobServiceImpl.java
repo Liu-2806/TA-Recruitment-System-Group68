@@ -168,6 +168,9 @@ public class JobServiceImpl implements JobService {
         JobQuery safeQuery = query == null ? new JobQuery() : query;
         List<Map<String, Object>> records = new ArrayList<>();
         for (Map<String, Object> posting : postingDataRepository.findAll()) {
+            if (!matchesMoFilter(posting, safeQuery)) {
+                continue;
+            }
             if (!matchesStatus(posting, safeQuery.getStatus())) {
                 continue;
             }
@@ -184,6 +187,25 @@ public class JobServiceImpl implements JobService {
         result.setSize(safeQuery.getSize());
         result.setTotal(records.size());
         return result;
+    }
+
+    private boolean matchesMoFilter(Map<String, Object> posting, JobQuery query) {
+        String rawFilter = firstNonBlankText(query == null ? null : query.getMoFilter(),
+            query == null ? null : query.getMoId(),
+            query == null ? null : query.getOwnerId());
+        if (rawFilter == null) {
+            return true;
+        }
+
+        String normalizedFilter = rawFilter.trim().toLowerCase(Locale.ROOT);
+        String moId = String.valueOf(posting.getOrDefault("moId", "")).trim().toLowerCase(Locale.ROOT);
+        String moName = String.valueOf(posting.getOrDefault("moName", "")).trim().toLowerCase(Locale.ROOT);
+        String ownerId = String.valueOf(posting.getOrDefault("ownerId", "")).trim().toLowerCase(Locale.ROOT);
+
+        return normalizedFilter.equals(moId)
+            || normalizedFilter.equals(ownerId)
+            || moId.contains(normalizedFilter)
+            || moName.contains(normalizedFilter);
     }
 
     private void sortJobs(List<Map<String, Object>> records, String sortBy) {
@@ -368,6 +390,21 @@ public class JobServiceImpl implements JobService {
             throw new IllegalStateException("MO profile not found: " + moUserId);
         }
         return mo;
+    }
+
+    private String firstNonBlankText(String... values) {
+        if (values == null) {
+            return null;
+        }
+        for (String value : values) {
+            if (value != null) {
+                String text = value.trim();
+                if (!text.isEmpty()) {
+                    return text;
+                }
+            }
+        }
+        return null;
     }
 
     private String firstNonBlank(Map<String, Object> values, String... keys) {

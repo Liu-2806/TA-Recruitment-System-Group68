@@ -26,10 +26,13 @@ public class AdminTAWorkloadServlet extends BaseServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Map<String, Object> query = new HashMap<>();
         query.put("keyword", request.getParameter("keyword"));
-        query.put("term", request.getParameter("term"));
-        query.put("minHours", request.getParameter("minHours"));
-        query.put("maxHours", request.getParameter("maxHours"));
+        query.put("major", request.getParameter("major"));
+        query.put("status", request.getParameter("status"));
+        query.put("page", request.getParameter("page"));
+        query.put("size", request.getParameter("size"));
+        query.put("sortBy", request.getParameter("sortBy"));
         request.setAttribute("reportPage", analyticsService.getTAWorkloadReport(query));
+        request.setAttribute("distributionSummary", analyticsService.getTAWorkloadDistributionSummary(query));
         request.setAttribute("query", query);
         request.getRequestDispatcher("/WEB-INF/views/admin/ta-workload.jsp").forward(request, response);
     }
