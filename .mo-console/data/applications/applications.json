@@ -1,0 +1,89 @@
+[
+  {
+    "applicationId": "APP001",
+    "postingId": "POST001",
+    "postingTitle": "Software Engineering TA",
+    "taId": "TA001",
+    "taName": "Alex Chen",
+    "appliedAt": "2026-03-24 20:50:00",
+    "updatedAt": "2026-03-26 10:30:00",
+    "status": "ACCEPTED",
+    "statement": "I have prior lab support experience and strong Java skills.",
+    "feedback": "Strong profile with relevant Java and testing experience. Welcome aboard!",
+    "courseCode": "SE3001",
+    "moName": "Prof. Wang",
+    "skillMatchScore": 82,
+    "skillMatchExplanation": "Strong match on Java, Testing, and Communication. Missing Object-Oriented Programming as an explicit skill tag.",
+    "matchMethod": "local-rule-fallback",
+    "historyLogs": [
+      {
+        "time": "2026-03-24 20:50:00",
+        "action": "SUBMITTED",
+        "description": "Application submitted with supporting statement and resume."
+      },
+      {
+        "time": "2026-03-25 14:00:00",
+        "action": "UNDER_REVIEW",
+        "description": "Application is currently being reviewed by the module organiser."
+      },
+      {
+        "time": "2026-03-26 10:30:00",
+        "action": "ACCEPTED",
+        "description": "Application accepted by the module organiser. Feedback: Strong profile with relevant Java and testing experience. Welcome aboard!"
+      }
+    ]
+  },
+  {
+    "applicationId": "APP002",
+    "postingId": "POST003",
+    "postingTitle": "AI Foundations TA",
+    "taId": "TA001",
+    "taName": "Alex Chen",
+    "appliedAt": "2026-03-25 09:15:00",
+    "updatedAt": "2026-03-27 16:45:00",
+    "status": "REJECTED",
+    "statement": "I have experience with Python and data analysis, and I am passionate about AI.",
+    "feedback": "Thank you for your interest. We selected candidates with more direct ML research experience.",
+    "courseCode": "AI1101",
+    "moName": "Prof. Zhang",
+    "skillMatchScore": 58,
+    "skillMatchExplanation": "Matched on Python, Data Analysis, and Communication. Missing Machine Learning as an explicit skill.",
+    "matchMethod": "local-rule-fallback",
+    "historyLogs": [
+      {
+        "time": "2026-03-25 09:15:00",
+        "action": "SUBMITTED",
+        "description": "Application submitted with supporting statement and resume."
+      },
+      {
+        "time": "2026-03-27 16:45:00",
+        "action": "REJECTED",
+        "description": "Application rejected by the module organiser. Feedback: Thank you for your interest. We selected candidates with more direct ML research experience."
+      }
+    ]
+  },
+  {
+    "applicationId": "APP003",
+    "postingId": "POST002",
+    "postingTitle": "Database Systems TA",
+    "taId": "TA001",
+    "taName": "Alex Chen",
+    "appliedAt": "2026-03-28 11:20:00",
+    "updatedAt": "2026-03-28 11:20:00",
+    "status": "SUBMITTED",
+    "statement": "I have solid SQL knowledge and experience in data analysis projects.",
+    "feedback": "",
+    "courseCode": "CS2202",
+    "moName": "Prof. Li",
+    "skillMatchScore": 68,
+    "skillMatchExplanation": "Matched on Communication. Missing SQL and Data Analysis as explicit skill tags, but resume mentions related experience.",
+    "matchMethod": "local-rule-fallback",
+    "historyLogs": [
+      {
+        "time": "2026-03-28 11:20:00",
+        "action": "SUBMITTED",
+        "description": "Application submitted with supporting statement and resume."
+      }
+    ]
+  }
+]

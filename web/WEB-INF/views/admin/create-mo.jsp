@@ -1,15 +1,18 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
   String contextPath = request.getContextPath();
-  request.setAttribute("headerBrandHref", contextPath + "/admin-dashboard-preview.jsp");
+  request.setAttribute("headerBrandHref", contextPath + "/admin/dashboard");
   request.setAttribute("showHeaderBack", Boolean.TRUE);
-  request.setAttribute("headerBackHref", contextPath + "/admin-dashboard-preview.jsp");
+  request.setAttribute("headerBackHref", contextPath + "/admin/dashboard");
   request.setAttribute("headerBackLabel", "Back to Dashboard");
   request.setAttribute("showHeaderUser", Boolean.TRUE);
   request.setAttribute("currentUserName", "Super Admin");
   request.setAttribute("currentUserRoleLabel", "Online");
   request.setAttribute("currentUserInitial", "A");
   request.setAttribute("notificationCount", Integer.valueOf(1));
+  String errorMessage = String.valueOf(request.getAttribute("errorMessage") == null ? "" : request.getAttribute("errorMessage"));
+  Object formDataObj = request.getAttribute("formData");
+  java.util.Map formData = formDataObj instanceof java.util.Map ? (java.util.Map) formDataObj : java.util.Collections.emptyMap();
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -32,7 +35,7 @@
       </div>
 
       <nav class="admin-sidebar__nav" aria-label="Admin Navigation">
-        <a class="admin-sidebar__link" href="<%= contextPath %>/admin-dashboard-preview.jsp">
+        <a class="admin-sidebar__link" href="<%= contextPath %>/admin/dashboard">
           <span class="admin-sidebar__icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" focusable="false">
               <path d="M4.75 4.75h6.5v6.5h-6.5Zm8 0h6.5v6.5h-6.5Zm-8 8h6.5v6.5h-6.5Zm8 0h6.5v6.5h-6.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
@@ -41,7 +44,7 @@
           <span>Dashboard</span>
         </a>
 
-        <a class="admin-sidebar__link is-active" href="<%= contextPath %>/admin-create-mo-preview.jsp">
+        <a class="admin-sidebar__link is-active" href="<%= contextPath %>/admin/mos/create">
           <span class="admin-sidebar__icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" focusable="false">
               <path d="M12 12a3.75 3.75 0 1 0-3.75-3.75A3.75 3.75 0 0 0 12 12Zm0 1.5c-3.17 0-5.75 1.89-5.75 4.22V19h11.5v-.28c0-2.33-2.58-4.22-5.75-4.22ZM18.5 5.5v6m-3-3h6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
@@ -50,7 +53,7 @@
           <span>Create MO Account</span>
         </a>
 
-        <a class="admin-sidebar__link" href="<%= contextPath %>/admin-all-mos-preview.jsp">
+        <a class="admin-sidebar__link" href="<%= contextPath %>/admin/mos">
           <span class="admin-sidebar__icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" focusable="false">
               <path d="M8.5 10.5a3 3 0 1 0-3-3 3 3 0 0 0 3 3Zm7 0a3 3 0 1 0-3-3 3 3 0 0 0 3 3ZM8.5 12c-2.52 0-4.5 1.37-4.5 3.06V16h9v-.94C13 13.37 11.02 12 8.5 12Zm7 0c-.87 0-1.68.14-2.4.4 1.14.65 1.9 1.62 1.9 2.66V16H20v-.94c0-1.69-1.98-3.06-4.5-3.06Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
@@ -59,7 +62,7 @@
           <span>All MOs</span>
         </a>
 
-        <a class="admin-sidebar__link" href="#">
+        <a class="admin-sidebar__link" href="<%= contextPath %>/admin/jobs">
           <span class="admin-sidebar__icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" focusable="false">
               <path d="M5.5 8h13v10h-13Zm3-2.5h7V8h-7Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
@@ -68,7 +71,7 @@
           <span>All Postings</span>
         </a>
 
-        <a class="admin-sidebar__link" href="<%= contextPath %>/admin-ta-workload-preview.jsp">
+        <a class="admin-sidebar__link" href="<%= contextPath %>/admin/analytics/ta-workload">
           <span class="admin-sidebar__icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" focusable="false">
               <path d="M12 6.25v5.5l3.25 1.75M12 20a8 8 0 1 0-8-8 8 8 0 0 0 8 8Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
@@ -102,7 +105,16 @@
             <span class="admin-create-card__badge">* Required Fields</span>
           </div>
 
-          <form class="admin-create-form" action="#" method="post">
+          <%
+            if (!errorMessage.isBlank()) {
+          %>
+          <div style="margin: 12px 16px; padding: 10px 12px; border-radius: 8px; background: #fff3f3; color: #b42318; border: 1px solid #f5c2c7;">
+            <%= errorMessage %>
+          </div>
+          <%
+            }
+          %>
+          <form class="admin-create-form" action="<%= contextPath %>/admin/mos/create" method="post">
             <div class="admin-create-grid">
               <div class="admin-create-field">
                 <label for="moFullName">* Full Name</label>
@@ -112,7 +124,7 @@
                       <path d="M12 12a3.75 3.75 0 1 0-3.75-3.75A3.75 3.75 0 0 0 12 12Zm0 1.5c-3.17 0-5.75 1.89-5.75 4.22V19h11.5v-.28c0-2.33-2.58-4.22-5.75-4.22Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                   </span>
-                  <input id="moFullName" type="text" placeholder="e.g. Prof. Zhang San">
+                  <input id="moFullName" name="fullName" type="text" placeholder="e.g. Prof. Zhang San" value="<%= String.valueOf(formData.get("fullName") == null ? "" : formData.get("fullName")) %>" required>
                 </div>
               </div>
 
@@ -120,7 +132,7 @@
                 <label for="moStaffId">* Staff ID</label>
                 <div class="admin-create-input">
                   <span class="admin-create-input__icon admin-create-input__icon--text" aria-hidden="true">#</span>
-                  <input id="moStaffId" type="text" placeholder="e.g. 2024MO01">
+                  <input id="moStaffId" name="staffId" type="text" placeholder="e.g. 2024MO01" value="<%= String.valueOf(formData.get("staffId") == null ? "" : formData.get("staffId")) %>" required>
                 </div>
               </div>
 
@@ -132,7 +144,7 @@
                       <path d="M4.75 7.25h14.5a1.25 1.25 0 0 1 1.25 1.25v7a1.25 1.25 0 0 1-1.25 1.25H4.75A1.25 1.25 0 0 1 3.5 15.5v-7a1.25 1.25 0 0 1 1.25-1.25Zm0 .75L12 12.75 19.25 8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                   </span>
-                  <input id="moEmail" type="email" placeholder="e.g. zhangsan@university.edu">
+                  <input id="moEmail" name="email" type="email" placeholder="e.g. zhangsan@university.edu" value="<%= String.valueOf(formData.get("email") == null ? "" : formData.get("email")) %>" required>
                 </div>
               </div>
 
@@ -144,7 +156,7 @@
                       <path d="M7.75 10V8.5a4.25 4.25 0 0 1 8.5 0V10m-9 0h10a1.25 1.25 0 0 1 1.25 1.25v7.25a1.25 1.25 0 0 1-1.25 1.25h-10A1.25 1.25 0 0 1 6 18.5v-7.25A1.25 1.25 0 0 1 7.25 10Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                   </span>
-                  <input id="moInitialPassword" type="text" placeholder="Enter password">
+                  <input id="moInitialPassword" name="initialPassword" type="text" placeholder="Enter password" required>
                   <button class="admin-create-input__random" id="generatePassword" type="button" aria-label="Generate random password">
                     <svg viewBox="0 0 24 24" focusable="false">
                       <path d="M7 7.5V4.75m0 0H4.25M7 4.75 4.75 7M6.5 9.5a7 7 0 1 1-1.2 7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
@@ -161,7 +173,7 @@
                       <path d="M7.75 10V8.5a4.25 4.25 0 0 1 8.5 0V10m-9 0h10a1.25 1.25 0 0 1 1.25 1.25v7.25a1.25 1.25 0 0 1-1.25 1.25h-10A1.25 1.25 0 0 1 6 18.5v-7.25A1.25 1.25 0 0 1 7.25 10Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                   </span>
-                  <input id="moConfirmPassword" type="text" placeholder="Repeat password">
+                  <input id="moConfirmPassword" name="confirmPassword" type="text" placeholder="Repeat password" required>
                 </div>
               </div>
 
@@ -173,10 +185,10 @@
                       <path d="M5.5 8h13v10h-13Zm3-2.5h7V8h-7Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                   </span>
-                  <select id="moDepartment">
-                    <option>Software Engineering</option>
-                    <option>Computer Science</option>
-                    <option>Artificial Intelligence</option>
+                  <select id="moDepartment" name="department">
+                    <option value="Software Engineering" <%= "Software Engineering".equals(String.valueOf(formData.get("department"))) ? "selected" : "" %>>Software Engineering</option>
+                    <option value="Computer Science" <%= "Computer Science".equals(String.valueOf(formData.get("department"))) ? "selected" : "" %>>Computer Science</option>
+                    <option value="Artificial Intelligence" <%= "Artificial Intelligence".equals(String.valueOf(formData.get("department"))) ? "selected" : "" %>>Artificial Intelligence</option>
                   </select>
                   <span class="admin-create-input__caret" aria-hidden="true">v</span>
                 </div>
@@ -190,7 +202,7 @@
                       <path d="M6.75 4.75h2.5l1.5 4-1.75 1.75a12.2 12.2 0 0 0 4.5 4.5l1.75-1.75 4 1.5v2.5A1.75 1.75 0 0 1 17.5 19 13.5 13.5 0 0 1 4 5.5 1.75 1.75 0 0 1 5.75 3.75Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                   </span>
-                  <input id="moPhone" type="text" placeholder="e.g. +1 234 567 890">
+                  <input id="moPhone" name="phone" type="text" placeholder="e.g. +1 234 567 890" value="<%= String.valueOf(formData.get("phone") == null ? "" : formData.get("phone")) %>">
                 </div>
               </div>
             </div>
