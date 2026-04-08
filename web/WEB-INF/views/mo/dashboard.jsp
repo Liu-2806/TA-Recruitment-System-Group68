@@ -15,13 +15,20 @@
   String moStaffId = String.valueOf(profile.getOrDefault("staffId", "-"));
   String moDepartment = String.valueOf(profile.getOrDefault("department", "-"));
 
+  Object activePostingsObj = overview.get("activePostings");
+  java.util.List activePostings = activePostingsObj instanceof java.util.List ? (java.util.List) activePostingsObj : java.util.Collections.emptyList();
+  Object awaitingObj = overview.get("awaitingReviewCount");
+  int awaitingReviewCount = awaitingObj instanceof Number ? ((Number) awaitingObj).intValue() : 0;
+  Object alertsObj = overview.get("alerts");
+  java.util.List alerts = alertsObj instanceof java.util.List ? (java.util.List) alertsObj : java.util.Collections.emptyList();
+
   request.setAttribute("headerBrandHref", contextPath + "/mo/dashboard");
   request.setAttribute("showHeaderBack", Boolean.FALSE);
   request.setAttribute("showHeaderUser", Boolean.TRUE);
   request.setAttribute("currentUserName", currentUserName);
   request.setAttribute("currentUserRoleLabel", "Module Organizer");
   request.setAttribute("currentUserInitial", currentUserInitial);
-  request.setAttribute("notificationCount", Integer.valueOf(1));
+  request.setAttribute("notificationCount", Integer.valueOf(Math.max(awaitingReviewCount, 0)));
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -72,10 +79,10 @@
               </span>
             </div>
             <div class="mo-metric-card__value-row">
-              <strong>8</strong>
+              <strong><%= awaitingReviewCount %></strong>
               <span>applications found</span>
             </div>
-            <a class="mo-metric-card__button" href="<%= contextPath %>/mo-review-queue-preview.jsp">
+            <a class="mo-metric-card__button" href="<%= contextPath %>/mo/review-queue">
               <span>Manage Review</span>
               <span aria-hidden="true">-></span>
             </a>
@@ -86,14 +93,15 @@
               <h3>System Alerts</h3>
             </div>
 
+            <% if (alerts.isEmpty()) { %>
             <div class="mo-alert-card__critical">
-              <p>3 positions are closing soon. Finalize selections.</p>
+              <p>No deadline warnings for your open postings.</p>
             </div>
-
-            <div class="mo-alert-card__minor">
-              <span aria-hidden="true">+</span>
-              <a href="#">Interview scheduler updated.</a>
+            <% } else { %>
+            <div class="mo-alert-card__critical">
+              <p><%= alerts.size() %> <%= alerts.size() == 1 ? "position is" : "positions are" %> closing soon. Finalize selections.</p>
             </div>
+            <% } %>
           </section>
         </aside>
 
@@ -132,52 +140,43 @@
                     <path d="M5.5 8h13v10h-13Zm3-2.5h7V8h-7Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </span>
-                <h3>My Active Postings <span>(3)</span></h3>
+                <h3>My Active Postings <span>(<%= activePostings.size() %>)</span></h3>
               </div>
             </div>
 
             <div class="mo-postings-list">
+              <%
+                if (activePostings.isEmpty()) {
+              %>
+              <p style="margin:0;color:#5c5f6a;font-size:0.95rem;">No open postings yet. Use <strong>Post New Position</strong> to create one.</p>
+              <%
+                } else {
+                  for (Object po : activePostings) {
+                    java.util.Map posting = (java.util.Map) po;
+                    String courseName = String.valueOf(posting.getOrDefault("courseName", "Posting"));
+                    String postingId = String.valueOf(posting.getOrDefault("postingId", ""));
+                    Object ac = posting.get("applicationCount");
+                    int appCount = ac instanceof Number ? ((Number) ac).intValue() : 0;
+                    String cn = courseName.trim();
+                    String initial = cn.isEmpty() ? "?" : cn.substring(0, 1).toUpperCase();
+              %>
               <article class="mo-posting-item">
                 <div class="mo-posting-item__identity">
-                  <span class="mo-posting-item__avatar">S</span>
+                  <span class="mo-posting-item__avatar"><%= initial %></span>
                   <div>
-                    <h4>Software Engineering TA</h4>
-                    <p>Applicants: <span>5</span></p>
+                    <h4><%= courseName %></h4>
+                    <p>Applicants: <span><%= appCount %></span></p>
                   </div>
                 </div>
-                <a class="mo-posting-item__action" href="<%= contextPath %>/mo-applicants-preview.jsp">
+                <a class="mo-posting-item__action" href="<%= contextPath %>/mo/jobs/applicants?jobId=<%= postingId %>">
                   <span>Review Candidates</span>
                   <span aria-hidden="true">-></span>
                 </a>
               </article>
-
-              <article class="mo-posting-item">
-                <div class="mo-posting-item__identity">
-                  <span class="mo-posting-item__avatar">D</span>
-                  <div>
-                    <h4>Data Structures TA</h4>
-                    <p>Applicants: <span>2</span></p>
-                  </div>
-                </div>
-                <a class="mo-posting-item__action" href="<%= contextPath %>/mo-applicants-preview.jsp">
-                  <span>Review Candidates</span>
-                  <span aria-hidden="true">-></span>
-                </a>
-              </article>
-
-              <article class="mo-posting-item">
-                <div class="mo-posting-item__identity">
-                  <span class="mo-posting-item__avatar">D</span>
-                  <div>
-                    <h4>Database Systems TA</h4>
-                    <p>Applicants: <span>1</span></p>
-                  </div>
-                </div>
-                <a class="mo-posting-item__action" href="<%= contextPath %>/mo-applicants-preview.jsp">
-                  <span>Review Candidates</span>
-                  <span aria-hidden="true">-></span>
-                </a>
-              </article>
+              <%
+                  }
+                }
+              %>
             </div>
           </section>
         </section>

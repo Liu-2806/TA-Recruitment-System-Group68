@@ -1,7 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
   String contextPath = request.getContextPath();
-  request.setAttribute("headerBrandHref", contextPath + "/register-preview.jsp");
+  request.setAttribute("headerBrandHref", contextPath + "/ta/register");
   request.setAttribute("showHeaderBack", Boolean.TRUE);
   request.setAttribute("headerBackHref", contextPath + "/login-preview.jsp");
   request.setAttribute("headerBackLabel", "Back to Login");

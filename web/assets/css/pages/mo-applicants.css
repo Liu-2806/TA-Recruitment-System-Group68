@@ -124,6 +124,8 @@
   font-size: 15px;
   font-weight: 800;
   box-shadow: 0 14px 24px rgba(37, 99, 235, 0.18);
+  position: relative;
+  z-index: 1;
 }
 
 .mo-applicants-broadcast__icon {
@@ -155,6 +157,21 @@
   display: flex;
   align-items: center;
   gap: 14px;
+  position: relative;
+  z-index: 2;
+}
+
+.mo-applicants-filter-reset {
+  font-size: 14px;
+  font-weight: 700;
+  color: #2563eb;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+}
+
+.mo-applicants-filter-reset:hover {
+  color: #1d4ed8;
 }
 
 .mo-applicants-summary {
@@ -442,6 +459,41 @@
   background: #eff6ff;
 }
 
+.mo-applicant-actions--stack {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.mo-applicant-actions__row-decide {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.mo-applicant-inline-form {
+  display: inline;
+  margin: 0;
+}
+
+.mo-applicant-actions__button--accept {
+  border-color: #a7f3d0;
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.mo-applicant-actions__button--reject {
+  border-color: #fecdd3;
+  background: #fff1f2;
+  color: #be123c;
+}
+
+button.mo-applicant-actions__button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
 @media (max-width: 1200px) {
   .mo-applicants-header__inner,
   .mo-applicants-summary {
@@ -489,8 +541,13 @@
   }
 
   .mo-applicants-broadcast,
+  .mo-applicants-filter-reset,
   .mo-applicant-actions__button {
     width: 100%;
+  }
+
+  .mo-applicants-filter-reset {
+    text-align: center;
   }
 
   .mo-applicant-cell__meta strong {

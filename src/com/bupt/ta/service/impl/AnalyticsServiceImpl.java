@@ -18,10 +18,12 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 管理员统计服务实现。
@@ -30,6 +32,9 @@ public class AnalyticsServiceImpl implements AnalyticsService {
     private static final DateTimeFormatter DATE_TIME_SECONDS_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final DateTimeFormatter DATE_TIME_MINUTES_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter REVIEW_QUEUE_DAY_FORMATTER =
+            DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.ENGLISH);
+    private static final DateTimeFormatter REVIEW_QUEUE_TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
     private static final int RECENT_ACTIVITY_LIMIT = 8;
 
     private final UserRepository userRepository;
@@ -75,6 +80,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
             Map<String, Object> postingCopy = new LinkedHashMap<String, Object>(posting);
             if ("OPEN".equalsIgnoreCase(firstNonBlank(posting, "status"))) {
+                String postingId = firstNonBlank(posting, "postingId");
+                postingCopy.put("applicationCount", countApplicationsForPosting(postingId, applications));
                 activePostings.add(postingCopy);
             }
 
@@ -120,6 +127,48 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         overview.put("activePostings", activePostings);
         overview.put("recentActivity", recentActivity.size() > 5 ? recentActivity.subList(0, 5) : recentActivity);
         return overview;
+    }
+
+    @Override
+    public Map<String, Object> getMOReviewQueue(String moUserId) {
+        List<Map<String, Object>> postings = readJsonArray(DataPaths.resolvePostingsFile());
+        List<Map<String, Object>> applications = readJsonArray(DataPaths.resolveApplicationsFile());
+        Set<String> moPostingIds = new HashSet<String>();
+        for (Map<String, Object> posting : postings) {
+            if (moUserId.equals(firstNonBlank(posting, "moId"))) {
+                String pid = firstNonBlank(posting, "postingId");
+                if (!isBlank(pid)) {
+                    moPostingIds.add(pid);
+                }
+            }
+        }
+
+        List<Map<String, Object>> pendingRows = new ArrayList<Map<String, Object>>();
+        Set<String> postingIdsWithPending = new HashSet<String>();
+        for (Map<String, Object> application : applications) {
+            String postingId = firstNonBlank(application, "postingId");
+            if (isBlank(postingId) || !moPostingIds.contains(postingId)) {
+                continue;
+            }
+            if (!"SUBMITTED".equalsIgnoreCase(firstNonBlank(application, "status"))) {
+                continue;
+            }
+            postingIdsWithPending.add(postingId);
+            pendingRows.add(buildMOReviewQueueRow(application));
+        }
+
+        pendingRows.sort(
+            Comparator.comparing(
+                (Map<String, Object> row) -> parseDateTime(String.valueOf(row.get("appliedAtRaw"))),
+                Comparator.nullsLast(Comparator.naturalOrder())
+            ).reversed()
+        );
+
+        Map<String, Object> result = new LinkedHashMap<String, Object>();
+        result.put("pendingRows", pendingRows);
+        result.put("pendingCount", pendingRows.size());
+        result.put("postingsInQueueCount", postingIdsWithPending.size());
+        return result;
     }
 
     @Override
@@ -591,6 +640,68 @@ public class AnalyticsServiceImpl implements AnalyticsService {
             }
         }
         return count;
+    }
+
+    private int countApplicationsForPosting(String postingId, List<Map<String, Object>> applications) {
+        if (isBlank(postingId)) {
+            return 0;
+        }
+        int n = 0;
+        for (Map<String, Object> application : applications) {
+            if (postingId.equals(firstNonBlank(application, "postingId"))) {
+                n++;
+            }
+        }
+        return n;
+    }
+
+    private Map<String, Object> buildMOReviewQueueRow(Map<String, Object> application) {
+        String taId = firstNonBlank(application, "taId");
+        Map<String, Object> ta = userRepository.findById(Role.TA, taId);
+        String taEmail = ta == null ? "" : firstNonBlank(ta, "email");
+        String taName = firstNonBlank(
+            application.get("taName"),
+            ta == null ? null : firstNonBlank(ta, "fullName", "displayName"),
+            taId
+        );
+
+        String appliedAt = firstNonBlank(application, "appliedAt");
+        LocalDateTime dt = parseDateTime(appliedAt);
+        String submittedIso = "";
+        if (dt != null) {
+            submittedIso = DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(dt);
+        } else if (!isBlank(appliedAt)) {
+            submittedIso = appliedAt.trim().replace(' ', 'T');
+        }
+
+        int match = safeInt(application.get("skillMatchScore"));
+        String priorityKey = match >= 80 ? "high" : (match >= 60 ? "medium" : "low");
+        String priorityLabel = match >= 80 ? "High" : (match >= 60 ? "Medium" : "Low");
+
+        String courseCode = firstNonBlank(application, "courseCode");
+        String moName = firstNonBlank(application, "moName");
+        String positionSubtitle = (isBlank(courseCode) ? "" : courseCode)
+            + (isBlank(courseCode) || isBlank(moName) ? "" : " · ")
+            + (isBlank(moName) ? "" : moName);
+
+        Map<String, Object> row = new LinkedHashMap<String, Object>();
+        row.put("applicationId", firstNonBlank(application, "applicationId"));
+        row.put("taName", taName);
+        row.put("taEmail", taEmail);
+        row.put("postingTitle", firstNonBlank(application, "postingTitle", "courseName"));
+        row.put("courseCode", courseCode);
+        row.put("positionSubtitle", positionSubtitle);
+        row.put("skillMatchScore", match);
+        row.put("matchStrong", match >= 85);
+        row.put("priorityKey", priorityKey);
+        row.put("priorityLabel", priorityLabel);
+        row.put("appliedAtRaw", appliedAt);
+        row.put("submittedIso", submittedIso);
+        row.put("submittedDateDisplay", dt == null ? "" : REVIEW_QUEUE_DAY_FORMATTER.format(dt));
+        row.put("submittedTimeDisplay", dt == null ? "" : REVIEW_QUEUE_TIME_FORMATTER.format(dt));
+        row.put("courseSortKey", courseCode == null ? "" : courseCode);
+        row.put("taNameSortKey", taName == null ? "" : taName);
+        return row;
     }
 
     private long countActiveRecruitments(List<Map<String, Object>> postings) {
