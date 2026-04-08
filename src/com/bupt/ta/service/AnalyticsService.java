@@ -25,6 +25,14 @@ public interface AnalyticsService {
     Map<String, Object> getMODashboardOverview(String moUserId);
 
     /**
+     * MO 待审核队列页：当前 MO 名下岗位中状态为 SUBMITTED 的申请列表与汇总数字。
+     *
+     * @param moUserId MO 用户 ID
+     * @return pendingRows、pendingCount、postingsInQueueCount 等
+     */
+    Map<String, Object> getMOReviewQueue(String moUserId);
+
+    /**
      * 获取 TA 工作量报表。
      *
      * @param query 查询参数

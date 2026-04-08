@@ -103,7 +103,7 @@
             </div>
 
             <button class="auth-button auth-button--primary" type="submit">Login</button>
-            <a class="auth-button auth-button--secondary" href="<%= contextPath %>/register-preview.jsp">Sign up as TA</a>
+            <a class="auth-button auth-button--secondary" href="<%= contextPath %>/ta/register">Sign up as TA</a>
           </form>
 
           <div class="auth-card__footer">
