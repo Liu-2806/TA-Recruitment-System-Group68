@@ -26,12 +26,25 @@ public class AdminMOListServlet extends BaseServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Map<String, Object> query = new HashMap<>();
         query.put("keyword", request.getParameter("keyword"));
+        query.put("department", request.getParameter("department"));
         query.put("status", request.getParameter("status"));
         query.put("sortBy", request.getParameter("sortBy"));
-        query.put("page", request.getParameter("page"));
-        query.put("size", request.getParameter("size"));
+        query.put("page", parsePositiveInt(request.getParameter("page"), 1));
+        query.put("size", parsePositiveInt(request.getParameter("size"), 5));
         request.setAttribute("mosPage", userService.searchMOs(query));
         request.setAttribute("query", query);
         request.getRequestDispatcher("/WEB-INF/views/admin/all-mos.jsp").forward(request, response);
+    }
+
+    private int parsePositiveInt(String raw, int defaultValue) {
+        if (raw == null || raw.isBlank()) {
+            return defaultValue;
+        }
+        try {
+            int value = Integer.parseInt(raw.trim());
+            return value > 0 ? value : defaultValue;
+        } catch (NumberFormatException ex) {
+            return defaultValue;
+        }
     }
 }

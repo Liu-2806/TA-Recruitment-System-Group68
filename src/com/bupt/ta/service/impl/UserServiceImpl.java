@@ -251,18 +251,14 @@ public class UserServiceImpl implements UserService {
 
         Map<String, Object> record = userRepository.findById(Role.MO, userId);
         if (record == null) {
-            record = userRepository.findById(Role.ADMIN, userId);
-        }
-        if (record == null) {
-            throw new BusinessException("目标账号不存在");
+            throw new BusinessException("MO 账号不存在");
         }
 
-        Role role = Role.valueOf(String.valueOf(record.get("role")));
         record.put("password", rawPassword);
         record.remove("passwordSalt");
         record.remove("passwordHash");
         record.put("updatedAt", DATE_TIME_FORMATTER.format(LocalDateTime.now()));
-        userRepository.update(role, record);
+        userRepository.update(Role.MO, record);
     }
 
     private void validateUserUniqueness(String username, String email, String studentId) {

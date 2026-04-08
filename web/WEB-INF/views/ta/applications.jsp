@@ -101,23 +101,23 @@
         <%
           } else {
             for (Object appObj : applications) {
-              java.util.Map application = appObj instanceof java.util.Map ? (java.util.Map) appObj : java.util.Collections.emptyMap();
-              String applicationId = String.valueOf(application.getOrDefault("applicationId", ""));
-              String postingId = String.valueOf(application.getOrDefault("postingId", ""));
-              String status = String.valueOf(application.getOrDefault("statusLabel", application.getOrDefault("status", "Pending Review")));
-              String statusRaw = String.valueOf(application.getOrDefault("status", "SUBMITTED")).toLowerCase();
+              java.util.Map appRow = appObj instanceof java.util.Map ? (java.util.Map) appObj : java.util.Collections.emptyMap();
+              String applicationId = String.valueOf(appRow.getOrDefault("applicationId", ""));
+              String postingId = String.valueOf(appRow.getOrDefault("postingId", ""));
+              String status = String.valueOf(appRow.getOrDefault("statusLabel", appRow.getOrDefault("status", "Pending Review")));
+              String statusRaw = String.valueOf(appRow.getOrDefault("status", "SUBMITTED")).toLowerCase();
               String statusCss = statusRaw.contains("accept") ? "accepted" : (statusRaw.contains("reject") ? "rejected" : (statusRaw.contains("withdraw") ? "withdrawn" : (statusRaw.contains("revocation") ? "revocation" : "pending")));
               boolean canWithdraw = "submitted".equals(statusRaw) || "under_review".equals(statusRaw) || "underreview".equals(statusRaw) || "accepted".equals(statusRaw);
-              String matchExplanation = String.valueOf(application.getOrDefault("skillMatchExplanation", "No match explanation available yet."));
-              java.util.List historyLogs = application.get("historyLogs") instanceof java.util.List ? (java.util.List) application.get("historyLogs") : java.util.Collections.emptyList();
+              String matchExplanation = String.valueOf(appRow.getOrDefault("skillMatchExplanation", "No match explanation available yet."));
+              java.util.List historyLogs = appRow.get("historyLogs") instanceof java.util.List ? (java.util.List) appRow.get("historyLogs") : java.util.Collections.emptyList();
         %>
         <article id="application-<%= applicationId %>" class="ta-application-card">
           <div class="ta-application-card__top">
             <div class="ta-application-card__identity">
               <span class="ta-application-card__icon ta-application-card__icon--<%= statusCss %>" aria-hidden="true">Status</span>
               <div>
-                <h3><%= String.valueOf(application.getOrDefault("postingTitle", "")) %></h3>
-                <p><%= String.valueOf(application.getOrDefault("courseCode", "")) %> · <%= String.valueOf(application.getOrDefault("moName", "")) %> · Submitted <%= String.valueOf(application.getOrDefault("appliedAt", "")) %></p>
+                <h3><%= String.valueOf(appRow.getOrDefault("postingTitle", "")) %></h3>
+                <p><%= String.valueOf(appRow.getOrDefault("courseCode", "")) %> · <%= String.valueOf(appRow.getOrDefault("moName", "")) %> · Submitted <%= String.valueOf(appRow.getOrDefault("appliedAt", "")) %></p>
               </div>
             </div>
 
@@ -138,7 +138,7 @@
             </div>
             <div class="ta-application-info">
               <p class="ta-application-info__label">Feedback</p>
-              <p class="ta-application-info__value"><%= String.valueOf(application.getOrDefault("feedback", "")).isBlank() ? "No feedback yet." : String.valueOf(application.get("feedback")) %></p>
+              <p class="ta-application-info__value"><%= String.valueOf(appRow.getOrDefault("feedback", "")).isBlank() ? "No feedback yet." : String.valueOf(appRow.get("feedback")) %></p>
             </div>
           </div>
 
@@ -168,7 +168,7 @@
 
         <article id="history-<%= applicationId %>" class="ta-history-card">
           <div class="ta-history-card__head">
-            <h3><%= String.valueOf(application.getOrDefault("postingTitle", "")) %></h3>
+            <h3><%= String.valueOf(appRow.getOrDefault("postingTitle", "")) %></h3>
             <span class="ta-history-card__badge ta-history-card__badge--<%= statusCss %>"><%= status %></span>
           </div>
           <ul class="ta-history-card__steps">

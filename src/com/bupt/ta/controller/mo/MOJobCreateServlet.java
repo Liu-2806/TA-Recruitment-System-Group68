@@ -34,6 +34,10 @@ public class MOJobCreateServlet extends BaseServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User user = currentUser(request);
+        if (user == null) {
+            response.sendRedirect(request.getContextPath() + "/auth/login");
+            return;
+        }
         Map<String, Object> params = new HashMap<>();
         params.put("title", firstNonBlank(request.getParameter("title"), request.getParameter("courseName")));
         params.put("courseCode", request.getParameter("courseCode"));

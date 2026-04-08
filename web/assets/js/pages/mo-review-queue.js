@@ -23,7 +23,9 @@
   }
 
   function sortQueue() {
-    const rows = Array.from(queueBody.querySelectorAll("tr"));
+    const rows = Array.from(queueBody.querySelectorAll("tr")).filter(function (tr) {
+      return tr.dataset && tr.dataset.submitted;
+    });
     const sortValue = sortSelect.value;
 
     rows.sort(function (a, b) {
