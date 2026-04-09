@@ -32,13 +32,14 @@ public class TAResumeUploadServlet extends BaseServlet {
         }
         Part resumeFile = request.getPart("resumeFile");
         try {
-            if (resumeFile == null) {
+            if (resumeFile == null || resumeFile.getSubmittedFileName() == null || resumeFile.getSubmittedFileName().isBlank()) {
                 throw new IllegalStateException("Resume file is missing.");
             }
             resumeService.saveOrReplaceTAResume(user.getId(), resumeFile.getSubmittedFileName(), resumeFile.getInputStream());
             response.sendRedirect(request.getContextPath() + "/ta/profile?resumeUpdated=1");
         } catch (Exception ex) {
             request.setAttribute("errorMessage", ex.getMessage());
+            request.setAttribute("resumeUploadFailed", Boolean.TRUE);
             request.setAttribute("profile", profileService.getTAProfile(user.getId()));
             request.setAttribute("allSkillTags", profileService.listAllSkillTags());
             request.getRequestDispatcher("/WEB-INF/views/ta/profile.jsp").forward(request, response);

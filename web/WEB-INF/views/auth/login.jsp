@@ -1,7 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
   String contextPath = request.getContextPath();
-  request.setAttribute("headerBrandHref", contextPath + "/login-preview.jsp");
+  request.setAttribute("headerBrandHref", contextPath + "/auth/login");
   request.setAttribute("showHeaderBack", Boolean.FALSE);
   request.setAttribute("showHeaderUser", Boolean.FALSE);
   String errorMessage = String.valueOf(request.getAttribute("errorMessage") == null ? "" : request.getAttribute("errorMessage"));

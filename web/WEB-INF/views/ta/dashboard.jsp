@@ -356,7 +356,7 @@
                     <h3><%= postingTitle %></h3>
                     <p>Submitted <%= appliedAt %></p>
                   </div>
-                  <a class="ta-history-item__link" href="<%= contextPath %>/ta/applications/my">View History</a>
+                  <a class="ta-history-item__link" href="<%= contextPath %>/ta/applications/my#application-<%= String.valueOf(app.getOrDefault("applicationId", "")) %>">View History</a>
                 </article>
                 <%
                     }

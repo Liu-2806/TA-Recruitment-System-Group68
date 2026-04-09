@@ -24,6 +24,8 @@
   boolean hasResume = resumeFileName != null && !resumeFileName.isBlank() && !"null".equalsIgnoreCase(resumeFileName);
   boolean profileSaved = "1".equals(request.getParameter("saved"));
   boolean resumeUpdated = "1".equals(request.getParameter("resumeUpdated"));
+  boolean resumeUploadFailed = Boolean.TRUE.equals(request.getAttribute("resumeUploadFailed"));
+  boolean hasExtractedResume = !extractedResume.isEmpty();
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -47,7 +49,7 @@
         if (!errorMessage.isBlank()) {
       %>
       <section class="ta-panel">
-        <div class="ta-panel__header"><h2>Update failed</h2></div>
+        <div class="ta-panel__header"><h2><%= resumeUploadFailed ? "Resume upload failed" : "Update failed" %></h2></div>
         <p style="color:#b42318; margin: 0;"><%= errorMessage %></p>
       </section>
       <%
@@ -138,7 +140,15 @@
             <div class="ta-resume-card__file-meta">
               <p>Current Resume</p>
               <strong><%= hasResume ? resumeFileName : "No resume uploaded" %></strong>
-              <p><%= hasResume && resumeUploadedAt != null && !resumeUploadedAt.isBlank() ? "Uploaded at " + resumeUploadedAt : "Upload a PDF resume to enable extraction and matching." %></p>
+              <p><%
+                if (hasResume && resumeUploadedAt != null && !resumeUploadedAt.isBlank()) {
+                  out.print("Uploaded at " + resumeUploadedAt);
+                } else if (hasResume) {
+                  out.print("Resume linked to your profile. Upload again to refresh the extracted summary.");
+                } else {
+                  out.print("Upload a PDF resume to enable extraction and matching.");
+                }
+              %></p>
             </div>
           </div>
           <div class="ta-resume-card__actions">
@@ -162,9 +172,13 @@
       <section class="ta-panel">
         <div class="ta-panel__header"><h2>Extracted Resume Summary</h2></div>
         <%
-          if (extractedResume.isEmpty()) {
+          if (!hasResume) {
         %>
         <p style="margin: 0 0 20px; color: #475467;">No structured resume data is available yet. Upload a PDF resume to generate the extracted summary used for matching.</p>
+        <%
+          } else if (!hasExtractedResume) {
+        %>
+        <p style="margin: 0 0 20px; color: #475467;">A resume file is linked to your profile, but no structured fields are available yet. Re-upload the PDF if extraction did not finish correctly.</p>
         <%
           }
         %>
@@ -187,11 +201,11 @@
           </div>
           <div class="ta-form-field ta-form-field--full">
             <label>Extracted Skills</label>
-            <div class="ta-form-input"><input type="text" value="<%= extractedResume.get("skills") instanceof java.util.List ? String.join(", ", (java.util.List<String>) extractedResume.get("skills")) : "" %>" readonly></div>
+            <div class="ta-form-input"><input type="text" value="<%= extractedResume.get("skills") instanceof java.util.List && !((java.util.List) extractedResume.get("skills")).isEmpty() ? String.join(", ", (java.util.List<String>) extractedResume.get("skills")) : "No structured skills extracted yet" %>" readonly></div>
           </div>
           <div class="ta-form-field ta-form-field--full">
             <label>Experience Highlights</label>
-            <div class="ta-form-input"><input type="text" value="<%= extractedResume.get("experienceHighlights") instanceof java.util.List ? String.join(" | ", (java.util.List<String>) extractedResume.get("experienceHighlights")) : "" %>" readonly></div>
+            <div class="ta-form-input"><input type="text" value="<%= extractedResume.get("experienceHighlights") instanceof java.util.List && !((java.util.List) extractedResume.get("experienceHighlights")).isEmpty() ? String.join(" | ", (java.util.List<String>) extractedResume.get("experienceHighlights")) : "No experience highlights extracted yet" %>" readonly></div>
           </div>
         </div>
       </section>

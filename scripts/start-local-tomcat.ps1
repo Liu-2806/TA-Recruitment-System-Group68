@@ -10,3 +10,4 @@ if (-not (Test-Path $startupScript)) {
 
 Start-Process -FilePath $startupScript
 Write-Host "Tomcat start command sent."
+Write-Host "After Tomcat starts, open your deployed app URL in the browser."
