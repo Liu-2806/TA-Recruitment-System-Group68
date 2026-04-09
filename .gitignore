@@ -13,4 +13,5 @@ work-log.md
 src/test/
 scripts/test-*.ps1
 src/test/
+.vscode/
 

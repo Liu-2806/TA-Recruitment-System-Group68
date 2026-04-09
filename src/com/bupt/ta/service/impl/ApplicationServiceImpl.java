@@ -232,8 +232,9 @@ public class ApplicationServiceImpl implements ApplicationService {
             )
         ));
         applicationDataRepository.save(record);
-        if (!acceptedAssignment) {
-            updatePostingApplicationCount(String.valueOf(record.get("postingId")), -1);
+        updatePostingApplicationCount(String.valueOf(record.get("postingId")), -1);
+        if (acceptedAssignment) {
+            taTimetableDataRepository.releaseAssignment(taUserId, applicationId);
         }
         return enrichApplicationRecord(new LinkedHashMap<>(record));
     }
