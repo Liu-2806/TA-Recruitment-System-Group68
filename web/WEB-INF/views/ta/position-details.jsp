@@ -1,15 +1,30 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
   String contextPath = request.getContextPath();
-  request.setAttribute("headerBrandHref", contextPath + "/ta-dashboard-preview.jsp");
+  Object jobObj = request.getAttribute("job");
+  java.util.Map job = jobObj instanceof java.util.Map ? (java.util.Map) jobObj : java.util.Collections.emptyMap();
+  Object matchObj = request.getAttribute("matchAnalysis");
+  java.util.Map matchAnalysis = matchObj instanceof java.util.Map ? (java.util.Map) matchObj : java.util.Collections.emptyMap();
+  String returnHref = String.valueOf(request.getAttribute("returnHref") == null ? (contextPath + "/ta/jobs") : request.getAttribute("returnHref"));
+  String encodedReturnQuery = String.valueOf(request.getAttribute("encodedReturnQuery") == null ? "" : request.getAttribute("encodedReturnQuery"));
+
+  String currentUserName = "TA";
+  request.setAttribute("headerBrandHref", contextPath + "/ta/dashboard");
   request.setAttribute("showHeaderBack", Boolean.TRUE);
-  request.setAttribute("headerBackHref", contextPath + "/ta-positions-preview.jsp");
+  request.setAttribute("headerBackHref", returnHref);
   request.setAttribute("headerBackLabel", "Back to Listings");
   request.setAttribute("showHeaderUser", Boolean.TRUE);
-  request.setAttribute("currentUserName", "Zhang San");
+  request.setAttribute("currentUserName", currentUserName);
   request.setAttribute("currentUserRoleLabel", "TA Applicant");
-  request.setAttribute("currentUserInitial", "Z");
-  request.setAttribute("notificationCount", Integer.valueOf(1));
+  request.setAttribute("currentUserInitial", "T");
+  request.setAttribute("notificationCount", Integer.valueOf(0));
+
+  java.util.List requiredSkills = job.get("requiredSkills") instanceof java.util.List ? (java.util.List) job.get("requiredSkills") : java.util.Collections.emptyList();
+  java.util.List matchedSkills = matchAnalysis.get("matchedSkills") instanceof java.util.List ? (java.util.List) matchAnalysis.get("matchedSkills") : java.util.Collections.emptyList();
+  java.util.List missingSkills = matchAnalysis.get("missingSkills") instanceof java.util.List ? (java.util.List) matchAnalysis.get("missingSkills") : java.util.Collections.emptyList();
+  String score = String.valueOf(matchAnalysis.getOrDefault("score", 0));
+  String explanation = String.valueOf(matchAnalysis.getOrDefault("explanation", "Match analysis is unavailable."));
+  String method = String.valueOf(matchAnalysis.getOrDefault("method", "UNAVAILABLE"));
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -30,253 +45,98 @@
       <section class="ta-details-card">
         <div class="ta-details-card__header">
           <div>
-            <span class="ta-details-card__code">SE3001</span>
-            <h1>Software Engineering TA</h1>
+            <span class="ta-details-card__code"><%= String.valueOf(job.getOrDefault("courseCode", "")) %></span>
+            <h1><%= String.valueOf(job.getOrDefault("courseName", "Unknown Position")) %></h1>
           </div>
           <span class="ta-details-status">
             <span class="ta-details-status__dot"></span>
-            Open
+            <%= String.valueOf(job.getOrDefault("status", "OPEN")) %>
           </span>
         </div>
 
         <div class="ta-details-summary">
           <div class="ta-details-summary__item">
-            <p class="ta-details-summary__label">
-              <span class="ta-details-summary__icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" focusable="false">
-                  <path d="M12 12a3.75 3.75 0 1 0-3.75-3.75A3.75 3.75 0 0 0 12 12Zm0 1.5c-3.17 0-5.75 1.89-5.75 4.22V19h11.5v-.28c0-2.33-2.58-4.22-5.75-4.22Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </span>
-              Module Organizer
-            </p>
-            <p class="ta-details-summary__value">Prof. Wang</p>
+            <p class="ta-details-summary__label">Module Organizer</p>
+            <p class="ta-details-summary__value"><%= String.valueOf(job.getOrDefault("moName", "")) %></p>
           </div>
-
           <div class="ta-details-summary__item">
-            <p class="ta-details-summary__label">
-              <span class="ta-details-summary__icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" focusable="false">
-                  <path d="M5.5 8h13v10h-13Zm3-2.5h7V8h-7Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </span>
-              Vacancies
-            </p>
-            <p class="ta-details-summary__value">3 Positions</p>
+            <p class="ta-details-summary__label">Vacancies</p>
+            <p class="ta-details-summary__value"><%= String.valueOf(job.getOrDefault("vacancies", "")) %> Positions</p>
           </div>
-
           <div class="ta-details-summary__item">
-            <p class="ta-details-summary__label">
-              <span class="ta-details-summary__icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" focusable="false">
-                  <path d="M7 3.75v3.5M17 3.75v3.5M4.75 8.25h14.5m-13 1.25h11a1.75 1.75 0 0 1 1.75 1.75v6.5A1.75 1.75 0 0 1 17.25 19.5H6.75A1.75 1.75 0 0 1 5 17.75v-6.5A1.75 1.75 0 0 1 6.75 9.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </span>
-              Deadline
-            </p>
-            <p class="ta-details-summary__value ta-details-summary__value--danger">March 30, 2026</p>
+            <p class="ta-details-summary__label">Deadline</p>
+            <p class="ta-details-summary__value ta-details-summary__value--danger"><%= String.valueOf(job.getOrDefault("deadline", "")) %></p>
           </div>
         </div>
 
         <section class="ta-details-section">
-          <h2 class="ta-details-section__title">
-            <span class="ta-details-section__icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" focusable="false">
-                <path d="M7.5 4.75h6l3 3v11.5H7.5Zm6 0v3h3M10 12.25h4m-4 3h4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </span>
-            Position Description
-          </h2>
-
-          <div class="ta-details-description">
-            Assist in lab session teaching, grading student assignments and projects, and providing 2 hours of weekly Q&amp;A sessions for undergraduate students.
-          </div>
+          <h2 class="ta-details-section__title">Position Description</h2>
+          <div class="ta-details-description"><%= String.valueOf(job.getOrDefault("description", "")) %></div>
         </section>
 
         <section class="ta-details-section">
-          <h2 class="ta-details-section__title">
-            <span class="ta-details-section__icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" focusable="false">
-                <path d="M6 12.5 9.25 15.75 18 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </span>
-            Required Skills &amp; Qualifications
-          </h2>
-
+          <h2 class="ta-details-section__title">Required Skills &amp; Qualifications</h2>
           <ul class="ta-details-checklist">
-            <li>
-              <span class="ta-details-checklist__icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" focusable="false">
-                  <path d="M7.75 12.25 10.5 15l5.75-5.75M12 20a8 8 0 1 0-8-8 8 8 0 0 0 8 8Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </span>
-              <span>Proficient in Java programming</span>
-            </li>
-            <li>
-              <span class="ta-details-checklist__icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" focusable="false">
-                  <path d="M7.75 12.25 10.5 15l5.75-5.75M12 20a8 8 0 1 0-8-8 8 8 0 0 0 8 8Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </span>
-              <span>Deep understanding of Object-Oriented Design (OOD)</span>
-            </li>
-            <li>
-              <span class="ta-details-checklist__icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" focusable="false">
-                  <path d="M7.75 12.25 10.5 15l5.75-5.75M12 20a8 8 0 1 0-8-8 8 8 0 0 0 8 8Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </span>
-              <span>Previous TA experience is preferred but not required</span>
-            </li>
+            <%
+              for (Object skillObj : requiredSkills) {
+            %>
+            <li><span>Required</span> <%= String.valueOf(skillObj) %></li>
+            <%
+              }
+            %>
           </ul>
         </section>
 
         <section class="ta-details-section">
-          <h2 class="ta-details-section__title">
-            <span class="ta-details-section__icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" focusable="false">
-                <path d="M12 6.25v5.5l3.25 1.75M12 20a8 8 0 1 0-8-8 8 8 0 0 0 8 8Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </span>
-            Estimated Workload
-          </h2>
-
+          <h2 class="ta-details-section__title">Estimated Workload</h2>
           <div class="ta-details-workload">
-            <span class="ta-details-workload__icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" focusable="false">
-                <path d="M12 6.25v5.5l3.25 1.75M12 20a8 8 0 1 0-8-8 8 8 0 0 0 8 8Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </span>
-            <span>Approximately 6 hours per week</span>
+            <span>Approximately <%= String.valueOf(job.getOrDefault("estimatedWorkloadHours", "")) %> hours per week</span>
           </div>
         </section>
 
         <section class="ta-match-card">
           <div class="ta-match-card__header">
-            <span>AI Smart Match</span>
-            <span class="ta-match-card__sparkle" aria-hidden="true">
-              <svg viewBox="0 0 24 24" focusable="false">
-                <path d="M12 3.5 13.6 8l4.9.4-3.75 2.95L15.95 16 12 13.55 8.05 16l1.2-4.65L5.5 8.4 10.4 8Zm6 9.5.7 2.05L20.75 16l-2.05.95L18 19l-.7-2.05L15.25 16l2.05-.95Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </span>
+            <span>Match Analysis</span>
+            <span class="ta-match-card__sparkle"><%= method %></span>
           </div>
 
           <div class="ta-match-card__content">
             <div class="ta-match-score">
               <div class="ta-match-score__ring">
-                <span>85%</span>
+                <span><%= score %>%</span>
               </div>
               <div class="ta-match-score__meta">
-                <strong>Excellent Match!</strong>
-                <p>Based on your saved skills</p>
+                <strong>Advisory Suitability Score</strong>
+                <p>Generated from your structured resume and this job posting.</p>
               </div>
             </div>
 
             <div class="ta-match-improvement">
-              <p class="ta-match-improvement__label">Suggested Skill Improvement</p>
-              <p class="ta-match-improvement__text">Python (Optional, can be learned on the job)</p>
+              <p class="ta-match-improvement__label">Explanation</p>
+              <p class="ta-match-improvement__text"><%= explanation %></p>
+            </div>
+          </div>
+
+          <div class="ta-details-summary">
+            <div class="ta-details-summary__item">
+              <p class="ta-details-summary__label">Matched Skills</p>
+              <p class="ta-details-summary__value"><%= matchedSkills.isEmpty() ? "No direct overlaps identified" : String.join(", ", (java.util.List<String>) matchedSkills) %></p>
+            </div>
+            <div class="ta-details-summary__item">
+              <p class="ta-details-summary__label">Missing Skills</p>
+              <p class="ta-details-summary__value"><%= missingSkills.isEmpty() ? "No critical skill gaps highlighted" : String.join(", ", (java.util.List<String>) missingSkills) %></p>
             </div>
           </div>
         </section>
 
         <div class="ta-details-card__footer">
-          <p>Check all details carefully before applying.</p>
-          <button class="ta-details-apply" type="button" id="openApplyConfirm">Apply Now</button>
+          <p>Review the role requirements and your current profile before submitting.</p>
+          <a class="ta-details-apply" href="<%= contextPath %>/ta/applications/confirm?jobId=<%= String.valueOf(job.getOrDefault("postingId", "")) %><%= encodedReturnQuery.isBlank() ? "" : "&returnQuery=" + encodedReturnQuery %>">Apply Now</a>
         </div>
       </section>
     </main>
 
-    <div class="ta-apply-modal" id="applyConfirmModal" aria-hidden="true">
-      <div class="ta-apply-modal__backdrop" data-close-modal="true"></div>
-      <div class="ta-apply-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="applyConfirmTitle">
-        <button class="ta-apply-modal__close" type="button" id="closeApplyConfirm" aria-label="Close confirmation dialog">
-          <svg viewBox="0 0 24 24" focusable="false">
-            <path d="m7 7 10 10M17 7 7 17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-
-        <div class="ta-apply-modal__body">
-          <section class="ta-confirm-card">
-            <div class="ta-confirm-card__section">
-              <p class="ta-confirm-card__eyebrow">You are currently applying for:</p>
-              <div class="ta-confirm-role">
-                <span class="ta-confirm-role__icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" focusable="false">
-                    <path d="M5.5 8h13v10h-13Zm3-2.5h7V8h-7Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </span>
-                <div class="ta-confirm-role__meta">
-                  <h2 id="applyConfirmTitle">Software Engineering TA</h2>
-                  <p>Module Organizer: <strong>Prof. Wang</strong></p>
-                </div>
-              </div>
-            </div>
-
-            <div class="ta-confirm-card__section">
-              <p class="ta-confirm-card__eyebrow ta-confirm-card__eyebrow--success">Submission Checklist</p>
-
-              <div class="ta-confirm-checklist">
-                <div class="ta-confirm-item">
-                  <span class="ta-confirm-item__status" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" focusable="false">
-                      <path d="M7.75 12.25 10.5 15l5.75-5.75" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </span>
-                  <div class="ta-confirm-item__content">
-                    <strong>Personal profile completed</strong>
-                  </div>
-                  <span class="ta-confirm-item__tail" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" focusable="false">
-                      <path d="M12 12a3.5 3.5 0 1 0-3.5-3.5A3.5 3.5 0 0 0 12 12Zm0 1.5c-2.88 0-5.25 1.64-5.25 3.67V18h10.5v-.83c0-2.03-2.37-3.67-5.25-3.67Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </span>
-                </div>
-
-                <div class="ta-confirm-item">
-                  <span class="ta-confirm-item__status" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" focusable="false">
-                      <path d="M7.75 12.25 10.5 15l5.75-5.75" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </span>
-                  <div class="ta-confirm-item__content">
-                    <strong>Resume uploaded</strong>
-                    <p>resume_john_doe_2026.pdf</p>
-                  </div>
-                  <a class="ta-confirm-item__action" href="<%= contextPath %>/ta-profile-preview.jsp">Change</a>
-                </div>
-              </div>
-            </div>
-
-            <div class="ta-confirm-warning">
-              <span class="ta-confirm-warning__icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" focusable="false">
-                  <path d="M12 8.5v4.5m0 3h.01M10.1 4.96 4.56 14.2A2 2 0 0 0 6.28 17h11.44a2 2 0 0 0 1.72-2.8L13.9 4.96a2 2 0 0 0-3.8 0Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </span>
-              <div class="ta-confirm-warning__content">
-                <strong>Final Confirmation Required</strong>
-                <p>Information <span>cannot be modified</span> after submission. Please ensure all details and attached documents are accurate.</p>
-              </div>
-            </div>
-          </section>
-        </div>
-
-        <div class="ta-apply-modal__footer">
-          <button class="ta-confirm-submit" type="button">Confirm &amp; Submit</button>
-          <button class="ta-confirm-cancel" type="button" id="cancelApplyConfirm">
-            <span class="ta-confirm-cancel__icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" focusable="false">
-                <path d="m7 7 10 10M17 7 7 17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </span>
-            <span>Cancel</span>
-          </button>
-        </div>
-      </div>
-    </div>
+    <jsp:include page="/WEB-INF/views/common/footer.jsp" />
   </div>
-
-  <jsp:include page="/WEB-INF/views/common/footer.jsp" />
-
-  <script src="<%= contextPath %>/assets/js/pages/ta-position-details.js"></script>
 </body>
 </html>

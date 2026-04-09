@@ -5,6 +5,9 @@ package com.bupt.ta.model;
  */
 public enum ApplicationStatus {
     SUBMITTED,
+    UNDER_REVIEW,
     ACCEPTED,
-    REJECTED
+    REJECTED,
+    WITHDRAWN,
+    REVOCATION_REQUESTED
 }

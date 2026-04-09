@@ -1,15 +1,29 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
   String contextPath = request.getContextPath();
-  request.setAttribute("headerBrandHref", contextPath + "/ta-dashboard-preview.jsp");
+  request.setAttribute("headerBrandHref", contextPath + "/ta/dashboard");
   request.setAttribute("showHeaderBack", Boolean.TRUE);
-  request.setAttribute("headerBackHref", contextPath + "/ta-dashboard-preview.jsp");
+  request.setAttribute("headerBackHref", contextPath + "/ta/dashboard");
   request.setAttribute("headerBackLabel", "Back to Dashboard");
   request.setAttribute("showHeaderUser", Boolean.TRUE);
-  request.setAttribute("currentUserName", "Zhang San");
+  Object profileObj = request.getAttribute("profile");
+  java.util.Map profile = profileObj instanceof java.util.Map ? (java.util.Map) profileObj : java.util.Collections.emptyMap();
+  Object skillTagsObj = request.getAttribute("allSkillTags");
+  java.util.List allSkillTags = skillTagsObj instanceof java.util.List ? (java.util.List) skillTagsObj : java.util.Collections.emptyList();
+  java.util.List selectedSkills = profile.get("skills") instanceof java.util.List ? (java.util.List) profile.get("skills") : java.util.Collections.emptyList();
+  java.util.Map extractedResume = profile.get("extractedResume") instanceof java.util.Map ? (java.util.Map) profile.get("extractedResume") : java.util.Collections.emptyMap();
+
+  String currentUserName = String.valueOf(profile.getOrDefault("fullName", "TA"));
+  request.setAttribute("currentUserName", currentUserName);
   request.setAttribute("currentUserRoleLabel", "TA Applicant");
-  request.setAttribute("currentUserInitial", "Z");
-  request.setAttribute("notificationCount", Integer.valueOf(1));
+  request.setAttribute("currentUserInitial", currentUserName.isBlank() ? "T" : currentUserName.substring(0, 1).toUpperCase());
+  request.setAttribute("notificationCount", Integer.valueOf(0));
+
+  String resumeFileName = String.valueOf(profile.getOrDefault("resumeFileName", ""));
+  String resumeUploadedAt = String.valueOf(profile.getOrDefault("resumeUploadedAt", ""));
+  boolean hasResume = resumeFileName != null && !resumeFileName.isBlank() && !"null".equalsIgnoreCase(resumeFileName);
+  boolean profileSaved = "1".equals(request.getParameter("saved"));
+  boolean resumeUpdated = "1".equals(request.getParameter("resumeUpdated"));
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -27,171 +41,160 @@
     <jsp:include page="/WEB-INF/views/common/header.jsp" />
 
     <main class="ta-profile-main">
+      <%
+        Object errorObj = request.getAttribute("errorMessage");
+        String errorMessage = errorObj == null ? "" : String.valueOf(errorObj);
+        if (!errorMessage.isBlank()) {
+      %>
       <section class="ta-panel">
-        <div class="ta-panel__header">
-          <span class="ta-panel__header-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" focusable="false">
-              <path d="M12 12a3.75 3.75 0 1 0-3.75-3.75A3.75 3.75 0 0 0 12 12Zm0 1.5c-3.17 0-5.75 1.89-5.75 4.22V19h11.5v-.28c0-2.33-2.58-4.22-5.75-4.22Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-          <h2>Basic Information (Editable)</h2>
-        </div>
-
-        <div class="ta-form-grid">
-          <div class="ta-form-field">
-            <label for="profileFullName">Full Name</label>
-            <div class="ta-form-input">
-              <span class="ta-form-input__icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" focusable="false">
-                  <path d="M12 12a3.75 3.75 0 1 0-3.75-3.75A3.75 3.75 0 0 0 12 12Zm0 1.5c-3.17 0-5.75 1.89-5.75 4.22V19h11.5v-.28c0-2.33-2.58-4.22-5.75-4.22Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </span>
-              <input id="profileFullName" type="text" value="John Doe">
-            </div>
-          </div>
-
-          <div class="ta-form-field">
-            <label for="profileStudentId">Student ID (Read Only)</label>
-            <div class="ta-form-input">
-              <span class="ta-form-input__icon ta-form-input__icon--text" aria-hidden="true">#</span>
-              <input id="profileStudentId" type="text" value="2021001234" readonly>
-            </div>
-          </div>
-
-          <div class="ta-form-field">
-            <label for="profileMajor">Major / Program</label>
-            <div class="ta-form-input">
-              <span class="ta-form-input__icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" focusable="false">
-                  <path d="M4.5 9.5 12 6l7.5 3.5L12 13Zm2.5 1.17V15.5c0 1.1 2.24 2 5 2s5-.9 5-2v-4.83" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </span>
-              <input id="profileMajor" type="text" value="Software Engineering">
-            </div>
-          </div>
-
-          <div class="ta-form-field">
-            <label for="profileYear">Academic Year</label>
-            <div class="ta-form-input">
-              <span class="ta-form-input__icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" focusable="false">
-                  <path d="M7 3.75v3.5M17 3.75v3.5M4.75 8.25h14.5m-13 1.25h11a1.75 1.75 0 0 1 1.75 1.75v6.5A1.75 1.75 0 0 1 17.25 19.5H6.75A1.75 1.75 0 0 1 5 17.75v-6.5A1.75 1.75 0 0 1 6.75 9.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </span>
-              <input id="profileYear" type="text" value="Year 3">
-            </div>
-          </div>
-
-          <div class="ta-form-field ta-form-field--full">
-            <label for="profileEmail">Email Address</label>
-            <div class="ta-form-input">
-              <span class="ta-form-input__icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" focusable="false">
-                  <path d="M4.5 7.25h15a1.25 1.25 0 0 1 1.25 1.25v7A1.25 1.25 0 0 1 19.5 16.75h-15A1.25 1.25 0 0 1 3.25 15.5v-7A1.25 1.25 0 0 1 4.5 7.25Zm0 .75L12 12.75 19.5 8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </span>
-              <input id="profileEmail" type="email" value="john.doe@university.edu">
-            </div>
-          </div>
-        </div>
+        <div class="ta-panel__header"><h2>Update failed</h2></div>
+        <p style="color:#b42318; margin: 0;"><%= errorMessage %></p>
       </section>
-
+      <%
+        }
+        if (profileSaved) {
+      %>
       <section class="ta-panel">
-        <div class="ta-panel__header">
-          <span class="ta-panel__header-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" focusable="false">
-              <path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-          <h2>Skill Tags</h2>
-        </div>
-
-        <div class="ta-skill-manager">
-          <div class="ta-skill-manager__list">
-            <span class="ta-skill-pill">Java <button type="button">x</button></span>
-            <span class="ta-skill-pill">Python <button type="button">x</button></span>
-            <span class="ta-skill-pill">Project Management <button type="button">x</button></span>
-            <span class="ta-skill-pill">Communication <button type="button">x</button></span>
-          </div>
-
-          <div class="ta-skill-manager__controls">
-            <input type="text" placeholder="Add new skill...">
-            <button class="ta-skill-manager__add" type="button">
-              <span aria-hidden="true">+</span>
-              <span>Add</span>
-            </button>
-          </div>
-        </div>
+        <div class="ta-panel__header"><h2>Profile updated</h2></div>
+        <p style="color:#027a48; margin: 0;">Your TA profile details were saved successfully.</p>
       </section>
+      <%
+        }
+        if (resumeUpdated) {
+      %>
+      <section class="ta-panel">
+        <div class="ta-panel__header"><h2>Resume updated</h2></div>
+        <p style="color:#027a48; margin: 0;">Your PDF resume was uploaded, extracted, and linked to your profile.</p>
+      </section>
+      <%
+        }
+      %>
+
+      <form action="<%= contextPath %>/ta/profile" method="post">
+        <section class="ta-panel">
+          <div class="ta-panel__header"><h2>Basic Information</h2></div>
+          <div class="ta-form-grid">
+            <div class="ta-form-field">
+              <label for="profileFullName">Full Name</label>
+              <div class="ta-form-input"><input id="profileFullName" name="name" type="text" value="<%= String.valueOf(profile.getOrDefault("fullName", "")) %>"></div>
+            </div>
+            <div class="ta-form-field">
+              <label for="profileStudentId">Student ID</label>
+              <div class="ta-form-input"><input id="profileStudentId" type="text" value="<%= String.valueOf(profile.getOrDefault("studentId", "")) %>" readonly></div>
+            </div>
+            <div class="ta-form-field">
+              <label for="profileMajor">Major / Program</label>
+              <div class="ta-form-input"><input id="profileMajor" name="major" type="text" value="<%= String.valueOf(profile.getOrDefault("majorProgram", "")) %>"></div>
+            </div>
+            <div class="ta-form-field">
+              <label for="profileYear">Academic Year</label>
+              <div class="ta-form-input"><input id="profileYear" name="grade" type="text" value="<%= String.valueOf(profile.getOrDefault("academicYear", "")) %>"></div>
+            </div>
+            <div class="ta-form-field ta-form-field--full">
+              <label for="profileEmail">Email Address</label>
+              <div class="ta-form-input"><input id="profileEmail" name="email" type="email" value="<%= String.valueOf(profile.getOrDefault("email", "")) %>"></div>
+            </div>
+            <div class="ta-form-field ta-form-field--full">
+              <label for="profilePhone">Phone</label>
+              <div class="ta-form-input"><input id="profilePhone" name="phone" type="text" value="<%= String.valueOf(profile.getOrDefault("phone", "")) %>"></div>
+            </div>
+            <div class="ta-form-field ta-form-field--full">
+              <label for="profileIntro">Introduction</label>
+              <div class="ta-form-input"><input id="profileIntro" name="intro" type="text" value="<%= String.valueOf(profile.getOrDefault("intro", "")) %>"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="ta-panel">
+          <div class="ta-panel__header"><h2>Skill Tags</h2></div>
+          <div class="ta-skill-manager">
+            <div class="ta-skill-manager__list">
+              <%
+                for (Object tagObj : allSkillTags) {
+                  String tag = String.valueOf(tagObj);
+                  boolean checked = selectedSkills.contains(tag);
+              %>
+              <label class="ta-skill-pill" style="cursor:pointer;">
+                <input type="checkbox" name="skillTags" value="<%= tag %>" <%= checked ? "checked" : "" %> style="margin-right:8px;">
+                <%= tag %>
+              </label>
+              <%
+                }
+              %>
+            </div>
+          </div>
+        </section>
+
+        <div class="ta-profile-actions">
+          <button class="ta-profile-save" type="submit"><span>Save All Changes</span></button>
+        </div>
+      </form>
 
       <section class="ta-panel">
-        <div class="ta-panel__header">
-          <span class="ta-panel__header-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" focusable="false">
-              <path d="M7.5 4.75h6l3 3v11.5H7.5Zm6 0v3h3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-          <h2>Resume Management</h2>
-        </div>
+        <div class="ta-panel__header"><h2>Resume Management</h2></div>
 
         <div class="ta-resume-card">
           <div class="ta-resume-card__file">
-            <span class="ta-resume-card__file-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" focusable="false">
-                <path d="M7.5 4.75h6l3 3v11.5H7.5Zm6 0v3h3M10 12.25h4m-4 3h4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </span>
             <div class="ta-resume-card__file-meta">
               <p>Current Resume</p>
-              <strong>resume_john_doe_20260301.pdf</strong>
+              <strong><%= hasResume ? resumeFileName : "No resume uploaded" %></strong>
+              <p><%= hasResume && resumeUploadedAt != null && !resumeUploadedAt.isBlank() ? "Uploaded at " + resumeUploadedAt : "Upload a PDF resume to enable extraction and matching." %></p>
             </div>
           </div>
-
           <div class="ta-resume-card__actions">
-            <button type="button">Download</button>
-            <button type="button">Replace</button>
+            <a class="ta-mini-button ta-mini-button--primary" href="<%= hasResume ? contextPath + "/ta/resume/download" : "#" %>" <%= hasResume ? "" : "aria-disabled=\"true\" onclick=\"return false;\" style=\"opacity:0.6; pointer-events:none;\"" %>>Download</a>
+            <a class="ta-mini-button ta-mini-button--link" href="#resume-upload">Replace</a>
           </div>
         </div>
 
-        <div class="ta-upload-box" id="resume-upload">
-          <h3>
-            <span class="ta-upload-box__icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" focusable="false">
-                <path d="M12 15V7m0 0 3 3m-3-3-3 3M5.75 15.75v1.5A1.75 1.75 0 0 0 7.5 19h9a1.75 1.75 0 0 0 1.75-1.75v-1.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </span>
-            Upload New Resume
-          </h3>
-
-          <div class="ta-upload-box__controls">
-            <div class="ta-upload-box__file-input">
-              <span>No file selected</span>
-              <button type="button">Select File</button>
+        <form id="taResumeUploadForm" action="<%= contextPath %>/ta/profile/resume" method="post" enctype="multipart/form-data">
+          <div class="ta-upload-box" id="resume-upload">
+            <h3>Upload New Resume</h3>
+            <div class="ta-upload-box__controls">
+              <input type="file" name="resumeFile" accept="application/pdf" required>
+              <button class="ta-upload-box__upload" type="submit"><span>Upload</span></button>
             </div>
-            <button class="ta-upload-box__upload" type="button">
-              <span class="ta-upload-box__upload-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" focusable="false">
-                  <path d="M12 15V7m0 0 3 3m-3-3-3 3M5.75 15.75v1.5A1.75 1.75 0 0 0 7.5 19h9a1.75 1.75 0 0 0 1.75-1.75v-1.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </span>
-              <span>Upload</span>
-            </button>
+            <p class="ta-upload-box__hint">Only PDF files supported, maximum size 5MB.</p>
           </div>
-
-          <p class="ta-upload-box__hint">Only PDF files supported, maximum size 5MB.</p>
-        </div>
+        </form>
       </section>
 
-      <div class="ta-profile-actions">
-        <button class="ta-profile-save" type="button">
-          <span class="ta-profile-save__icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" focusable="false">
-              <path d="M7.5 4.75h8l3 3V19H5.5V4.75Zm2 0v4h5v-4M9.5 19v-5h5v5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-          <span>Save All Changes</span>
-        </button>
-      </div>
+      <section class="ta-panel">
+        <div class="ta-panel__header"><h2>Extracted Resume Summary</h2></div>
+        <%
+          if (extractedResume.isEmpty()) {
+        %>
+        <p style="margin: 0 0 20px; color: #475467;">No structured resume data is available yet. Upload a PDF resume to generate the extracted summary used for matching.</p>
+        <%
+          }
+        %>
+        <div class="ta-form-grid">
+          <div class="ta-form-field">
+            <label>Name</label>
+            <div class="ta-form-input"><input type="text" value="<%= String.valueOf(extractedResume.getOrDefault("name", "")) %>" readonly></div>
+          </div>
+          <div class="ta-form-field">
+            <label>Email</label>
+            <div class="ta-form-input"><input type="text" value="<%= String.valueOf(extractedResume.getOrDefault("email", "")) %>" readonly></div>
+          </div>
+          <div class="ta-form-field">
+            <label>Phone</label>
+            <div class="ta-form-input"><input type="text" value="<%= String.valueOf(extractedResume.getOrDefault("phone", "")) %>" readonly></div>
+          </div>
+          <div class="ta-form-field ta-form-field--full">
+            <label>Education</label>
+            <div class="ta-form-input"><input type="text" value="<%= String.valueOf(extractedResume.getOrDefault("education", "")) %>" readonly></div>
+          </div>
+          <div class="ta-form-field ta-form-field--full">
+            <label>Extracted Skills</label>
+            <div class="ta-form-input"><input type="text" value="<%= extractedResume.get("skills") instanceof java.util.List ? String.join(", ", (java.util.List<String>) extractedResume.get("skills")) : "" %>" readonly></div>
+          </div>
+          <div class="ta-form-field ta-form-field--full">
+            <label>Experience Highlights</label>
+            <div class="ta-form-input"><input type="text" value="<%= extractedResume.get("experienceHighlights") instanceof java.util.List ? String.join(" | ", (java.util.List<String>) extractedResume.get("experienceHighlights")) : "" %>" readonly></div>
+          </div>
+        </div>
+      </section>
     </main>
 
     <jsp:include page="/WEB-INF/views/common/footer.jsp" />

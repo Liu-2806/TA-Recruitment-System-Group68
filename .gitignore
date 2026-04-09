@@ -1,7 +1,16 @@
 .env.local
 build/
-output/
+out/
 tmp/
 *.class
+.phase1-console/
+.codex-phase1-test/
+data/users/admin.json
+data/users/mo.json
 work-log.md
+/.idea/
+*.iml
+src/test/
+scripts/test-*.ps1
+src/test/
 

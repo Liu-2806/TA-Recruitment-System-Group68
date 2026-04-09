@@ -329,6 +329,87 @@
   color: #b45309;
 }
 
+.mo-decision-panel__body {
+  padding: 18px 20px 22px;
+}
+
+.mo-decision-panel__hint {
+  margin: 0 0 14px;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.55;
+  font-weight: 600;
+}
+
+.mo-decision-panel__hint strong {
+  color: #334155;
+}
+
+.mo-decision-panel__form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mo-decision-panel__label {
+  font-size: 13px;
+  font-weight: 800;
+  color: #475569;
+}
+
+.mo-decision-panel__textarea {
+  width: 100%;
+  min-height: 88px;
+  padding: 12px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  font: inherit;
+  resize: vertical;
+  box-sizing: border-box;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.mo-decision-panel__textarea:focus {
+  outline: none;
+  border-color: #93c5fd;
+  background: #ffffff;
+}
+
+.mo-decision-panel__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.mo-decision-panel__submit {
+  min-height: 48px;
+  padding: 0 22px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.mo-decision-panel__submit--accept {
+  border: 0;
+  background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  box-shadow: 0 10px 22px rgba(5, 150, 105, 0.22);
+}
+
+.mo-decision-panel__submit--reject {
+  border: 1px solid #fecdd3;
+  background: #ffffff;
+  color: #be123c;
+}
+
+.mo-decision-panel--readonly .mo-decision-panel__body {
+  padding-bottom: 22px;
+}
+
 .mo-applicant-details-footer {
   margin-top: 28px;
   text-align: center;
@@ -415,6 +496,14 @@
   .mo-applicant-resume-card__actions button,
   .mo-applicant-decision-bar__accept,
   .mo-applicant-decision-bar__reject {
+    width: 100%;
+  }
+
+  .mo-decision-panel__actions {
+    flex-direction: column;
+  }
+
+  .mo-decision-panel__submit {
     width: 100%;
   }
 }

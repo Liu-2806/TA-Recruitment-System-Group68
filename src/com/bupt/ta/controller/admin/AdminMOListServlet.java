@@ -2,6 +2,7 @@ package com.bupt.ta.controller.admin;
 
 import com.bupt.ta.controller.common.BaseServlet;
 import com.bupt.ta.service.UserService;
+import com.bupt.ta.util.ServiceRegistry;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,7 +17,7 @@ import java.util.Map;
  */
 @WebServlet("/admin/mos")
 public class AdminMOListServlet extends BaseServlet {
-    private UserService userService;
+    private final UserService userService = ServiceRegistry.userService();
 
     /**
      * 查询并展示所有 MO。
@@ -25,10 +26,25 @@ public class AdminMOListServlet extends BaseServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Map<String, Object> query = new HashMap<>();
         query.put("keyword", request.getParameter("keyword"));
+        query.put("department", request.getParameter("department"));
         query.put("status", request.getParameter("status"));
         query.put("sortBy", request.getParameter("sortBy"));
+        query.put("page", parsePositiveInt(request.getParameter("page"), 1));
+        query.put("size", parsePositiveInt(request.getParameter("size"), 5));
         request.setAttribute("mosPage", userService.searchMOs(query));
         request.setAttribute("query", query);
         request.getRequestDispatcher("/WEB-INF/views/admin/all-mos.jsp").forward(request, response);
+    }
+
+    private int parsePositiveInt(String raw, int defaultValue) {
+        if (raw == null || raw.isBlank()) {
+            return defaultValue;
+        }
+        try {
+            int value = Integer.parseInt(raw.trim());
+            return value > 0 ? value : defaultValue;
+        } catch (NumberFormatException ex) {
+            return defaultValue;
+        }
     }
 }

@@ -1,15 +1,37 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
   String contextPath = request.getContextPath();
-  request.setAttribute("headerBrandHref", contextPath + "/mo-dashboard-preview.jsp");
+  Object appRecordObj = request.getAttribute("application");
+  java.util.Map appRecord = appRecordObj instanceof java.util.Map ? (java.util.Map) appRecordObj : java.util.Collections.emptyMap();
+  java.util.Map job = appRecord.get("job") instanceof java.util.Map ? (java.util.Map) appRecord.get("job") : java.util.Collections.emptyMap();
+  java.util.Map taProfile = appRecord.get("taProfile") instanceof java.util.Map ? (java.util.Map) appRecord.get("taProfile") : java.util.Collections.emptyMap();
+  java.util.List matchedSkills = appRecord.get("matchedSkills") instanceof java.util.List ? (java.util.List) appRecord.get("matchedSkills") : java.util.Collections.emptyList();
+  java.util.List missingSkills = appRecord.get("missingSkills") instanceof java.util.List ? (java.util.List) appRecord.get("missingSkills") : java.util.Collections.emptyList();
+
+  Object currentUserObj = request.getSession(false) == null ? null : request.getSession(false).getAttribute("currentUser");
+  com.bupt.ta.model.User currentUser = currentUserObj instanceof com.bupt.ta.model.User ? (com.bupt.ta.model.User) currentUserObj : null;
+  String currentUserName = currentUser == null || currentUser.getDisplayName() == null || currentUser.getDisplayName().trim().isEmpty()
+      ? "MO"
+      : currentUser.getDisplayName().trim();
+  String currentUserInitial = currentUserName.isEmpty() ? "M" : currentUserName.substring(0, 1).toUpperCase();
+
+  String postingIdStr = String.valueOf(job.getOrDefault("postingId", ""));
+  String applicationIdStr = String.valueOf(appRecord.getOrDefault("applicationId", ""));
+  String statusNorm = String.valueOf(appRecord.getOrDefault("status", "")).trim().toUpperCase(java.util.Locale.ROOT).replace("-", "_");
+  boolean canDecide = "SUBMITTED".equals(statusNorm) || "UNDER_REVIEW".equals(statusNorm);
+
+  request.setAttribute("headerBrandHref", contextPath + "/mo/dashboard");
   request.setAttribute("showHeaderBack", Boolean.TRUE);
-  request.setAttribute("headerBackHref", contextPath + "/mo-applicants-preview.jsp");
+  request.setAttribute("headerBackHref", contextPath + "/mo/jobs/applicants?jobId=" + postingIdStr);
   request.setAttribute("headerBackLabel", "Back to List");
   request.setAttribute("showHeaderUser", Boolean.TRUE);
-  request.setAttribute("currentUserName", "Prof. Wang");
+  request.setAttribute("currentUserName", currentUserName);
   request.setAttribute("currentUserRoleLabel", "Module Organizer");
-  request.setAttribute("currentUserInitial", "W");
-  request.setAttribute("notificationCount", Integer.valueOf(1));
+  request.setAttribute("currentUserInitial", currentUserInitial);
+  request.setAttribute("notificationCount", Integer.valueOf(0));
+
+  String resumeFileName = String.valueOf(taProfile.getOrDefault("resumeFileName", ""));
+  boolean hasResume = resumeFileName != null && !resumeFileName.isBlank() && !"null".equalsIgnoreCase(resumeFileName);
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -28,99 +50,67 @@
 
     <main class="mo-applicant-details-main">
       <section class="mo-applicant-panel">
-        <div class="mo-applicant-panel__header">
-          <h2>
-            <span class="mo-applicant-panel__icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" focusable="false">
-                <path d="M12 12a3.75 3.75 0 1 0-3.75-3.75A3.75 3.75 0 0 0 12 12Zm0 1.5c-3.17 0-5.75 1.89-5.75 4.22V19h11.5v-.28c0-2.33-2.58-4.22-5.75-4.22Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </span>
-            Basic Information
-          </h2>
-        </div>
-
+        <div class="mo-applicant-panel__header"><h2>Basic Information</h2></div>
         <div class="mo-applicant-info-grid">
-          <div class="mo-applicant-info-item">
-            <p>Name</p>
-            <strong>Zhang San</strong>
-          </div>
-          <div class="mo-applicant-info-item">
-            <p>Student ID</p>
-            <strong>2021001234</strong>
-          </div>
-          <div class="mo-applicant-info-item">
-            <p>Major</p>
-            <strong>Software Engineering</strong>
-          </div>
-          <div class="mo-applicant-info-item">
-            <p>Year</p>
-            <strong>Year 3 (Junior)</strong>
-          </div>
-          <div class="mo-applicant-info-item mo-applicant-info-item--full">
-            <p>Email</p>
-            <strong>zhangsan@bupt.edu</strong>
-          </div>
+          <div class="mo-applicant-info-item"><p>Name</p><strong><%= String.valueOf(appRecord.getOrDefault("taName", "")) %></strong></div>
+          <div class="mo-applicant-info-item"><p>Student ID</p><strong><%= String.valueOf(taProfile.getOrDefault("studentId", "")) %></strong></div>
+          <div class="mo-applicant-info-item"><p>Major</p><strong><%= String.valueOf(taProfile.getOrDefault("majorProgram", "")) %></strong></div>
+          <div class="mo-applicant-info-item"><p>Year</p><strong><%= String.valueOf(taProfile.getOrDefault("academicYear", "")) %></strong></div>
+          <div class="mo-applicant-info-item mo-applicant-info-item--full"><p>Email</p><strong><%= String.valueOf(taProfile.getOrDefault("email", "")) %></strong></div>
         </div>
       </section>
 
       <section class="mo-applicant-panel">
-        <div class="mo-applicant-panel__header">
-          <h2>Skill Tags</h2>
+        <div class="mo-applicant-panel__header"><h2>Application Summary</h2></div>
+        <div class="mo-applicant-info-grid">
+          <div class="mo-applicant-info-item"><p>Posting</p><strong><%= String.valueOf(job.getOrDefault("courseName", "")) %></strong></div>
+          <div class="mo-applicant-info-item"><p>Status</p><strong><%= String.valueOf(appRecord.getOrDefault("statusLabel", appRecord.getOrDefault("status", ""))) %></strong></div>
+          <div class="mo-applicant-info-item mo-applicant-info-item--full"><p>Statement</p><strong><%= String.valueOf(appRecord.getOrDefault("statement", "")) %></strong></div>
         </div>
+      </section>
 
+      <section class="mo-applicant-panel">
+        <div class="mo-applicant-panel__header"><h2>Skill Tags</h2></div>
         <div class="mo-applicant-skill-list">
-          <span class="mo-applicant-skill-chip">Java</span>
-          <span class="mo-applicant-skill-chip">Python</span>
-          <span class="mo-applicant-skill-chip">Project Management</span>
+          <%
+            java.util.List skills = taProfile.get("skills") instanceof java.util.List ? (java.util.List) taProfile.get("skills") : java.util.Collections.emptyList();
+            for (Object skillObj : skills) {
+          %>
+          <span class="mo-applicant-skill-chip"><%= String.valueOf(skillObj) %></span>
+          <%
+            }
+          %>
         </div>
       </section>
 
       <section class="mo-applicant-panel">
-        <div class="mo-applicant-panel__header">
-          <h2>Resume</h2>
-        </div>
-
+        <div class="mo-applicant-panel__header"><h2>Resume</h2></div>
         <div class="mo-applicant-resume-card">
           <div class="mo-applicant-resume-card__left">
-            <span class="mo-applicant-resume-card__icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" focusable="false">
-                <path d="M7.5 4.75h6l3 3v11.5H7.5Zm6 0v3h3M10 12.25h4m-4 3h4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </span>
             <div class="mo-applicant-resume-card__meta">
-              <strong>resume_zhang_san.pdf</strong>
-              <p>Uploaded on Mar 12, 2026</p>
+              <strong><%= hasResume ? resumeFileName : "No resume uploaded" %></strong>
+              <p><%= hasResume ? "Uploaded on " + String.valueOf(taProfile.getOrDefault("resumeUploadedAt", "")) : "Resume metadata not available." %></p>
             </div>
           </div>
 
           <div class="mo-applicant-resume-card__actions">
-            <button type="button">Preview</button>
-            <button type="button">Download</button>
+            <a href="<%= hasResume ? contextPath + "/mo/applicants/resume?applicationId=" + String.valueOf(appRecord.getOrDefault("applicationId", "")) : "#" %>" <%= hasResume ? "" : "aria-disabled=\"true\" onclick=\"return false;\"" %>>Download</a>
           </div>
         </div>
       </section>
 
       <section class="mo-match-panel">
         <div class="mo-match-panel__header">
-          <div class="mo-match-panel__title">
-            <span class="mo-match-panel__spark" aria-hidden="true">
-              <svg viewBox="0 0 24 24" focusable="false">
-                <path d="M12 3.5 13.6 8l4.9.4-3.75 2.95L15.95 16 12 13.55 8.05 16l1.2-4.65L5.5 8.4 10.4 8Zm6 9.5.7 2.05L20.75 16l-2.05.95L18 19l-.7-2.05L15.25 16l2.05-.95Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </span>
-            <span>AI Job Match Analysis (PB-14)</span>
-          </div>
-          <span class="mo-match-panel__badge">Verified Algorithm</span>
+          <div class="mo-match-panel__title"><span>Job Match Analysis</span></div>
+          <span class="mo-match-panel__badge"><%= String.valueOf(appRecord.getOrDefault("matchMethod", appRecord.getOrDefault("method", "N/A"))) %></span>
         </div>
 
         <div class="mo-match-panel__body">
           <div class="mo-match-score">
-            <div class="mo-match-score__ring">
-              <span>85%</span>
-            </div>
+            <div class="mo-match-score__ring"><span><%= String.valueOf(appRecord.getOrDefault("skillMatchScore", 0)) %>%</span></div>
             <div class="mo-match-score__meta">
-              <strong>Strong Candidate Match</strong>
-              <p>Based on course requirements and applicant profile.</p>
+              <strong>Advisory Match Score</strong>
+              <p><%= String.valueOf(appRecord.getOrDefault("skillMatchExplanation", "No explanation available.")) %></p>
             </div>
           </div>
 
@@ -128,45 +118,68 @@
             <div class="mo-match-breakdown__section">
               <p>Matched Skills</p>
               <div class="mo-match-breakdown__chips">
-                <span class="mo-match-breakdown__chip mo-match-breakdown__chip--good">Java</span>
-                <span class="mo-match-breakdown__chip mo-match-breakdown__chip--good">Project Management</span>
+                <%
+                  for (Object skillObj : matchedSkills) {
+                %>
+                <span class="mo-match-breakdown__chip mo-match-breakdown__chip--good"><%= String.valueOf(skillObj) %></span>
+                <%
+                  }
+                  if (matchedSkills.isEmpty()) {
+                %>
+                <span class="mo-match-breakdown__chip">No direct overlaps identified</span>
+                <%
+                  }
+                %>
               </div>
             </div>
 
             <div class="mo-match-breakdown__section">
               <p>Missing Skills</p>
               <div class="mo-match-breakdown__chips">
-                <span class="mo-match-breakdown__chip mo-match-breakdown__chip--warn">Python (Course Requirement)</span>
+                <%
+                  for (Object skillObj : missingSkills) {
+                %>
+                <span class="mo-match-breakdown__chip mo-match-breakdown__chip--warn"><%= String.valueOf(skillObj) %></span>
+                <%
+                  }
+                  if (missingSkills.isEmpty()) {
+                %>
+                <span class="mo-match-breakdown__chip">No critical missing skills highlighted</span>
+                <%
+                  }
+                %>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <footer class="mo-applicant-details-footer">
-        <p>&copy; 2025 University TA Recruitment Portal. MO Decision Interface.</p>
-      </footer>
+      <% if (canDecide) { %>
+      <section id="decision-panel" class="mo-applicant-panel mo-decision-panel" aria-labelledby="decision-heading">
+        <div class="mo-applicant-panel__header"><h2 id="decision-heading">Hiring decision</h2></div>
+        <div class="mo-decision-panel__body">
+          <p class="mo-decision-panel__hint">Accept to hire this TA for this posting, or reject with optional feedback. The applicant will see your feedback when provided.</p>
+          <form class="mo-decision-panel__form" method="post" action="<%= contextPath %>/mo/applications/status">
+            <input type="hidden" name="applicationId" value="<%= applicationIdStr %>">
+            <input type="hidden" name="postingId" value="<%= postingIdStr %>">
+            <label class="mo-decision-panel__label" for="decisionComment">Feedback to applicant</label>
+            <textarea id="decisionComment" class="mo-decision-panel__textarea" name="comment" rows="3" placeholder="Optional for accept; recommended when rejecting."></textarea>
+            <div class="mo-decision-panel__actions">
+              <button type="submit" name="newStatus" value="ACCEPTED" class="mo-decision-panel__submit mo-decision-panel__submit--accept">Accept (hire TA)</button>
+              <button type="submit" name="newStatus" value="REJECTED" class="mo-decision-panel__submit mo-decision-panel__submit--reject" onclick="return confirm('Reject this applicant?');">Reject</button>
+            </div>
+          </form>
+        </div>
+      </section>
+      <% } else { %>
+      <section class="mo-applicant-panel mo-decision-panel mo-decision-panel--readonly" aria-labelledby="decision-readonly-heading">
+        <div class="mo-applicant-panel__header"><h2 id="decision-readonly-heading">Hiring decision</h2></div>
+        <div class="mo-decision-panel__body">
+          <p class="mo-decision-panel__hint">This application is no longer pending review. Status: <strong><%= String.valueOf(appRecord.getOrDefault("statusLabel", appRecord.getOrDefault("status", ""))) %></strong>.</p>
+        </div>
+      </section>
+      <% } %>
     </main>
-
-    <div class="mo-applicant-decision-bar" id="decision-panel">
-      <button class="mo-applicant-decision-bar__accept" type="button">
-        <span class="mo-applicant-decision-bar__icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" focusable="false">
-            <path d="M7.75 12.25 10.5 15l5.75-5.75" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </span>
-        <span>Hire This TA</span>
-      </button>
-
-      <button class="mo-applicant-decision-bar__reject" type="button">
-        <span class="mo-applicant-decision-bar__icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" focusable="false">
-            <path d="m7 7 10 10M17 7 7 17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </span>
-        <span>Reject &amp; Feedback</span>
-      </button>
-    </div>
 
     <jsp:include page="/WEB-INF/views/common/footer.jsp" />
   </div>

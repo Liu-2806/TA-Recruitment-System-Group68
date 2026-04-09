@@ -54,6 +54,7 @@ public class AuthFilter implements Filter {
                 || path.startsWith("/auth/logout")
                 || path.startsWith("/dev/login-as")
                 || path.startsWith("/ta/register")
+                || path.startsWith("/register-preview")
                 || path.startsWith("/assets/")
                 || path.startsWith("/css/")
                 || path.startsWith("/js/")

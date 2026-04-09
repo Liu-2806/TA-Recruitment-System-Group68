@@ -37,6 +37,54 @@
         "Internship project building internal dashboards in Python."
       ],
       "rawText": "Alex Chen resume sample"
-    }
+    },
+    "id": "TA001",
+    "role": "TA",
+    "displayName": "Alex Chen",
+    "active": true
+  },
+  {
+    "id": "TA002",
+    "taId": "TA002",
+    "username": "111",
+    "email": "111@qmul.ac.uk",
+    "fullName": "Junyi Zhu",
+    "displayName": "Junyi Zhu",
+    "studentId": "2023213449",
+    "phone": "",
+    "intro": "",
+    "skills": [],
+    "majorProgram": "iot",
+    "academicYear": "3",
+    "role": "TA",
+    "password": "zzz123456",
+    "active": true,
+    "resumeFileName": null,
+    "resumeUploadedAt": null,
+    "extractedResume": null,
+    "createdAt": "2026-03-25 16:27:48",
+    "updatedAt": "2026-03-25 16:27:48"
+  },
+  {
+    "id": "TA003",
+    "taId": "TA003",
+    "username": "222",
+    "email": "222@qmul.ac.uk",
+    "fullName": "deer",
+    "displayName": "deer",
+    "studentId": "2023215115",
+    "phone": "",
+    "intro": "",
+    "skills": [],
+    "majorProgram": "ist",
+    "academicYear": "1",
+    "role": "TA",
+    "password": "zzz123",
+    "active": true,
+    "resumeFileName": null,
+    "resumeUploadedAt": null,
+    "extractedResume": null,
+    "createdAt": "2026-03-25 16:32:58",
+    "updatedAt": "2026-03-25 16:32:58"
   }
 ]

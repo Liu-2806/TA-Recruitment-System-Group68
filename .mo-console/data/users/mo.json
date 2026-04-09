@@ -1,0 +1,53 @@
+[
+  {
+    "id": "MO001",
+    "moId": "MO001",
+    "username": "prof.wang",
+    "email": "wang.mo@bupt.edu.cn",
+    "fullName": "Prof. Wang",
+    "displayName": "Prof. Wang",
+    "staffId": "MO-001",
+    "department": "Software Engineering",
+    "phone": "+86 10 6228 0001",
+    "description": "Module organiser for core software engineering teaching and TA coordination.",
+    "role": "MO",
+    "password": "Mo123456!",
+    "active": true,
+    "createdAt": "2026-03-25 16:56:46",
+    "updatedAt": "2026-03-25 16:56:46"
+  },
+  {
+    "id": "MO002",
+    "moId": "MO002",
+    "username": "prof.li",
+    "email": "li.mo@bupt.edu.cn",
+    "fullName": "Prof. Li",
+    "displayName": "Prof. Li",
+    "staffId": "MO-002",
+    "department": "Computer Science",
+    "phone": "+86 10 6228 0002",
+    "description": "Module organiser for database and lab-based teaching support.",
+    "role": "MO",
+    "password": "Mo123456!",
+    "active": true,
+    "createdAt": "2026-03-25 16:56:46",
+    "updatedAt": "2026-03-25 16:56:46"
+  },
+  {
+    "id": "MO003",
+    "moId": "MO003",
+    "username": "prof.zhang",
+    "email": "zhang.mo@bupt.edu.cn",
+    "fullName": "Prof. Zhang",
+    "displayName": "Prof. Zhang",
+    "staffId": "MO-003",
+    "department": "Artificial Intelligence",
+    "phone": "+86 10 6228 0003",
+    "description": "Module organiser for AI teaching activities and applicant review.",
+    "role": "MO",
+    "password": "Mo123456!",
+    "active": true,
+    "createdAt": "2026-03-25 16:56:46",
+    "updatedAt": "2026-03-25 16:56:46"
+  }
+]

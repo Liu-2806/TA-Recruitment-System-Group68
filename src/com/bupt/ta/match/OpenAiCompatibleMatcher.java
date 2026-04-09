@@ -14,6 +14,9 @@ import java.util.regex.Pattern;
 final class OpenAiCompatibleMatcher {
     private static final Pattern SCORE_PATTERN = Pattern.compile("\"score\"\\s*:\\s*(\\d{1,3})");
     private static final Pattern EXPLANATION_PATTERN = Pattern.compile("\"explanation\"\\s*:\\s*\"(.*?)\"", Pattern.DOTALL);
+    private static final Pattern MATCHED_SKILLS_PATTERN = Pattern.compile("\"matchedSkills\"\\s*:\\s*\\[(.*?)]", Pattern.DOTALL);
+    private static final Pattern MISSING_SKILLS_PATTERN = Pattern.compile("\"missingSkills\"\\s*:\\s*\\[(.*?)]", Pattern.DOTALL);
+    private static final Pattern JSON_STRING_PATTERN = Pattern.compile("\"((?:\\\\.|[^\"\\\\])*)\"");
     private static final Pattern CONTENT_PATTERN = Pattern.compile("\"content\"\\s*:\\s*\"((?:\\\\.|[^\"\\\\])*)\"", Pattern.DOTALL);
     private static final Pattern OUTPUT_TEXT_PATTERN = Pattern.compile("\"output_text\"\\s*:\\s*\"((?:\\\\.|[^\"\\\\])*)\"", Pattern.DOTALL);
 
@@ -42,14 +45,34 @@ final class OpenAiCompatibleMatcher {
         }
 
         String payload = extractRelevantPayload(response.body());
-        return new MatchResult(extractScore(payload), extractExplanation(payload), "api-llm");
+        List<String> matchedSkills = extractSkillArray(payload, MATCHED_SKILLS_PATTERN);
+        List<String> missingSkills = extractSkillArray(payload, MISSING_SKILLS_PATTERN);
+        if (matchedSkills.isEmpty() && missingSkills.isEmpty()) {
+            matchedSkills = inferMatchedSkills(resumeProfile, job);
+            missingSkills = inferMissingSkills(resumeProfile, job, matchedSkills);
+        }
+        return new MatchResult(
+            extractScore(payload),
+            extractExplanation(payload),
+            "api-llm",
+            matchedSkills,
+            missingSkills
+        );
     }
 
     private String buildRequestBody(Map<String, Object> resumeProfile, Map<String, Object> job) {
-        String prompt = "You are assisting module organisers in evaluating TA applicants. "
-            + "Return JSON only with keys score and explanation. "
-            + "score must be an integer from 0 to 100. "
-            + "explanation must be a concise but informative paragraph for MO review, covering matched strengths, clear gaps, and practical suitability.\n\n"
+        String prompt = "Evaluate the suitability of this TA candidate for the job posting below.\n\n"
+            + "Assessment criteria:\n"
+            + "1. Required skill overlap\n"
+            + "2. Relevance of education background\n"
+            + "3. Relevance of teaching, tutoring, lab, marking, or academic support experience\n"
+            + "4. Practical suitability for the stated responsibilities\n"
+            + "5. Important missing requirements or weak evidence\n\n"
+            + "Scoring guidance:\n"
+            + "- 80 to 100: strong match with clear evidence for most important requirements\n"
+            + "- 60 to 79: moderate match with some notable gaps\n"
+            + "- 40 to 59: weak-to-moderate match with limited supporting evidence\n"
+            + "- 0 to 39: low match with limited evidence for core requirements\n\n"
             + "Candidate profile:\n"
             + "Name: " + value(resumeProfile, "name") + "\n"
             + "Education: " + value(resumeProfile, "education") + "\n"
@@ -60,12 +83,22 @@ final class OpenAiCompatibleMatcher {
             + "Course code: " + value(job, "courseCode") + "\n"
             + "Description: " + value(job, "description") + "\n"
             + "Required skills: " + joinList(job.get("requiredSkills")) + "\n"
-            + "Estimated workload hours: " + value(job, "estimatedWorkloadHours");
+            + "Estimated workload hours: " + value(job, "estimatedWorkloadHours") + "\n\n"
+            + "Return JSON only with keys score, explanation, matchedSkills, and missingSkills.\n"
+            + "score must be an integer from 0 to 100.\n"
+            + "explanation must be one concise review paragraph for a module organiser.\n"
+            + "matchedSkills must be a JSON array of required skills that are clearly evidenced in the supplied candidate data.\n"
+            + "missingSkills must be a JSON array of important required skills or capability gaps that are not clearly evidenced.\n"
+            + "The explanation must explicitly cover: matched evidence, important gaps or missing evidence, and practical suitability.\n"
+            + "Base the analysis only on the supplied structured data.\n"
+            + "Do not assume facts not present in the input.\n"
+            + "Do not use external knowledge.\n"
+            + "Treat this as an advisory recommendation rather than an automatic hiring decision.";
 
         return "{"
             + "\"model\":\"" + escapeJson(model) + "\","
             + "\"messages\":["
-            + "{\"role\":\"system\",\"content\":\"You are a careful academic recruitment assistant.\"},"
+            + "{\"role\":\"system\",\"content\":\"You are an explainable academic recruitment assistant for a Teaching Assistant recruitment system. Your role is to support, not replace, human decision-making by providing a structured, evidence-based suitability analysis. You must evaluate the candidate only using the supplied structured profile and the supplied job posting. Do not assume missing facts. Do not invent qualifications, skills, or experience. Your analysis must be reviewable by a human module organiser and must explain both supporting evidence and important gaps. Return valid JSON only.\"},"
             + "{\"role\":\"user\",\"content\":\"" + escapeJson(prompt) + "\"}"
             + "],"
             + "\"response_format\":{\"type\":\"json_object\"},"
@@ -134,6 +167,23 @@ final class OpenAiCompatibleMatcher {
         return matcher.group(1).replace("\\n", " ").replace("\\\"", "\"");
     }
 
+    private List<String> extractSkillArray(String content, Pattern arrayPattern) {
+        Matcher matcher = arrayPattern.matcher(content);
+        if (!matcher.find()) {
+            return List.of();
+        }
+        String arrayContent = matcher.group(1);
+        Matcher stringMatcher = JSON_STRING_PATTERN.matcher(arrayContent);
+        java.util.LinkedHashSet<String> values = new java.util.LinkedHashSet<>();
+        while (stringMatcher.find()) {
+            String value = unescapeJsonString(stringMatcher.group(1)).trim();
+            if (!value.isEmpty()) {
+                values.add(value);
+            }
+        }
+        return List.copyOf(values);
+    }
+
     private String escapeJson(String input) {
         return input
             .replace("\\", "\\\\")
@@ -166,5 +216,45 @@ final class OpenAiCompatibleMatcher {
             return String.join(", ", ((List<?>) value).stream().map(String::valueOf).toList());
         }
         return value == null ? "" : String.valueOf(value);
+    }
+
+    private List<String> inferMatchedSkills(Map<String, Object> resumeProfile, Map<String, Object> job) {
+        List<String> resumeSkills = toStringList(resumeProfile.get("skills"));
+        List<String> requiredSkills = toStringList(job.get("requiredSkills"));
+        java.util.LinkedHashSet<String> matched = new java.util.LinkedHashSet<>();
+        for (String requiredSkill : requiredSkills) {
+            for (String resumeSkill : resumeSkills) {
+                if (requiredSkill.equalsIgnoreCase(resumeSkill)) {
+                    matched.add(requiredSkill);
+                    break;
+                }
+            }
+        }
+        return List.copyOf(matched);
+    }
+
+    private List<String> inferMissingSkills(Map<String, Object> resumeProfile, Map<String, Object> job, List<String> matchedSkills) {
+        List<String> requiredSkills = toStringList(job.get("requiredSkills"));
+        java.util.LinkedHashSet<String> missing = new java.util.LinkedHashSet<>();
+        for (String requiredSkill : requiredSkills) {
+            boolean alreadyMatched = false;
+            for (String matchedSkill : matchedSkills) {
+                if (requiredSkill.equalsIgnoreCase(matchedSkill)) {
+                    alreadyMatched = true;
+                    break;
+                }
+            }
+            if (!alreadyMatched) {
+                missing.add(requiredSkill);
+            }
+        }
+        return List.copyOf(missing);
+    }
+
+    private List<String> toStringList(Object value) {
+        if (value instanceof List<?> list) {
+            return list.stream().map(String::valueOf).toList();
+        }
+        return List.of();
     }
 }
