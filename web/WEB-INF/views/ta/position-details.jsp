@@ -104,8 +104,8 @@
 
         <section class="ta-match-card">
           <div class="ta-match-card__header">
-            <span>Match Analysis</span>
-            <span class="ta-match-card__sparkle"><%= method %></span>
+            <span>Should You Apply?</span>
+            <span class="ta-match-card__sparkle"><%= scoreBand %></span>
           </div>
 
           <div class="ta-match-card__content">
@@ -114,25 +114,47 @@
                 <span><%= score %>%</span>
               </div>
               <div class="ta-match-score__meta">
-                <strong>Advisory Suitability Score</strong>
-                <p>Generated from your structured resume and this job posting.</p>
+                <strong><%= scoreBand %></strong>
+                <p><%= nextStepSuggestion %></p>
               </div>
             </div>
 
             <div class="ta-match-improvement">
-              <p class="ta-match-improvement__label">Explanation</p>
+              <p class="ta-match-improvement__label">Why this result was generated</p>
               <p class="ta-match-improvement__text"><%= explanation %></p>
             </div>
           </div>
 
           <div class="ta-details-summary">
             <div class="ta-details-summary__item">
-              <p class="ta-details-summary__label">Matched Skills</p>
-              <p class="ta-details-summary__value"><%= matchedSkills.isEmpty() ? "No direct overlaps identified" : String.join(", ", (java.util.List<String>) matchedSkills) %></p>
+              <p class="ta-details-summary__label">Why you look suitable</p>
+              <p class="ta-details-summary__value"><%= strengthSummary %></p>
             </div>
             <div class="ta-details-summary__item">
-              <p class="ta-details-summary__label">Missing Skills</p>
-              <p class="ta-details-summary__value"><%= missingSkills.isEmpty() ? "No critical skill gaps highlighted" : String.join(", ", (java.util.List<String>) missingSkills) %></p>
+              <p class="ta-details-summary__label">What may hold you back</p>
+              <p class="ta-details-summary__value"><%= riskSummary %></p>
+            </div>
+          </div>
+
+          <div class="ta-details-summary">
+            <div class="ta-details-summary__item">
+              <p class="ta-details-summary__label">Matched Evidence</p>
+              <p class="ta-details-summary__value"><%= matchedSkills.isEmpty() ? "No direct overlaps identified from the current structured resume." : String.join(", ", (java.util.List<String>) matchedSkills) %></p>
+            </div>
+            <div class="ta-details-summary__item">
+              <p class="ta-details-summary__label">Missing or Unclear Evidence</p>
+              <p class="ta-details-summary__value"><%= missingSkills.isEmpty() ? "No critical gaps highlighted from the listed required skills." : String.join(", ", (java.util.List<String>) missingSkills) %></p>
+            </div>
+          </div>
+
+          <div class="ta-details-summary">
+            <div class="ta-details-summary__item">
+              <p class="ta-details-summary__label">Result Source</p>
+              <p class="ta-details-summary__value"><strong><%= methodLabel %></strong><br><%= methodHint %></p>
+            </div>
+            <div class="ta-details-summary__item">
+              <p class="ta-details-summary__label">Confidence Hint</p>
+              <p class="ta-details-summary__value"><%= confidenceHint %></p>
             </div>
           </div>
         </section>

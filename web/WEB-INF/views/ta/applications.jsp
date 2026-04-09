@@ -43,6 +43,39 @@
     <jsp:include page="/WEB-INF/views/common/header.jsp" />
 
     <main class="ta-applications-main">
+      <%
+        if (!createdId.isBlank()) {
+      %>
+      <section class="ta-applications-toolbar" style="margin-bottom: 16px;">
+        <div class="ta-applications-toolbar__header">
+          <h2 style="color:#027a48;">Application submitted successfully</h2>
+        </div>
+        <p style="margin:0; color:#027a48;">Your application <strong><%= createdId %></strong> is now visible in the history list below.</p>
+      </section>
+      <%
+        }
+        if (!updatedId.isBlank()) {
+      %>
+      <section class="ta-applications-toolbar" style="margin-bottom: 16px;">
+        <div class="ta-applications-toolbar__header">
+          <h2 style="color:#027a48;">Application updated</h2>
+        </div>
+        <p style="margin:0; color:#027a48;">Your latest withdrawal or revocation request for <strong><%= updatedId %></strong> has been recorded.</p>
+      </section>
+      <%
+        }
+        if (!errorMessage.isBlank()) {
+      %>
+      <section class="ta-applications-toolbar" style="margin-bottom: 16px;">
+        <div class="ta-applications-toolbar__header">
+          <h2 style="color:#b42318;">Unable to update application</h2>
+        </div>
+        <p style="margin:0; color:#b42318;"><%= errorMessage %></p>
+      </section>
+      <%
+        }
+      %>
+
       <section class="ta-applications-toolbar">
         <div class="ta-applications-toolbar__header">
           <span class="ta-applications-toolbar__icon" aria-hidden="true">Filter</span>
@@ -63,6 +96,7 @@
               <select id="applicationStatus" name="status">
                 <option value="" <%= query.getStatus() == null || query.getStatus().isBlank() ? "selected" : "" %>>All Status</option>
                 <option value="SUBMITTED" <%= "SUBMITTED".equalsIgnoreCase(query.getStatus()) ? "selected" : "" %>>Pending</option>
+                <option value="UNDER_REVIEW" <%= "UNDER_REVIEW".equalsIgnoreCase(query.getStatus()) ? "selected" : "" %>>Under Review</option>
                 <option value="ACCEPTED" <%= "ACCEPTED".equalsIgnoreCase(query.getStatus()) ? "selected" : "" %>>Accepted</option>
                 <option value="REJECTED" <%= "REJECTED".equalsIgnoreCase(query.getStatus()) ? "selected" : "" %>>Rejected</option>
                 <option value="WITHDRAWN" <%= "WITHDRAWN".equalsIgnoreCase(query.getStatus()) ? "selected" : "" %>>Withdrawn</option>

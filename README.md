@@ -591,3 +591,32 @@ javac -encoding UTF-8 -cp "lib/pdfbox-app-3.0.2.jar;lib/gson-2.11.0.jar;lib/java
 - `scripts/test-*.ps1`
 
 如果后续确实需要共享测试代码或测试脚本，应先确认是否属于正式交付范围，再决定是否调整忽略规则。
+## 2026-04 Runtime Update
+
+Current runtime conventions for the active web application:
+
+- Use `web/` as the Tomcat web root.
+- Do not use historical `src/main/webapp` paths for deployment.
+- Compile Java sources from `src/com/bupt/ta` into `WEB-INF/classes` before deploying to Tomcat.
+- Use `/dev/login-as?role=TA` and `/dev/login-as?role=MO` for demo routing after deployment.
+
+Current TA/input optimization status:
+
+- `index.jsp` now redirects to the real `/auth/login` route instead of a preview page.
+- The local Tomcat deployment scripts now stage `web/` and compiled classes together.
+- TA profile and resume flows now keep success/error feedback inside the main JSP flow.
+- TA application submit/withdraw flows now return to business pages with visible status feedback instead of raw error pages.
+
+## 2026-04 Match Experience Update
+
+The AI matching flow now keeps the existing core fields and also derives user-facing helper fields at runtime:
+
+- `scoreBand`
+- `strengthSummary`
+- `riskSummary`
+- `nextStepSuggestion`
+- `confidenceHint`
+- `methodLabel`
+- `methodHint`
+
+These helper fields are used only for JSP rendering and are not required as new stored JSON schema fields.

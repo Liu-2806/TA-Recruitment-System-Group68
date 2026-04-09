@@ -37,3 +37,4 @@ $env:TA_DATA_DIR = (Resolve-Path $DataDir).Path
 
 Start-Process -FilePath $startupScript -WorkingDirectory $tomcatBin
 Write-Host "Tomcat start command sent."
+Write-Host "After Tomcat starts, open your deployed app URL in the browser."
