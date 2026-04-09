@@ -7,6 +7,12 @@
   java.util.Map taProfile = appRecord.get("taProfile") instanceof java.util.Map ? (java.util.Map) appRecord.get("taProfile") : java.util.Collections.emptyMap();
   java.util.List matchedSkills = appRecord.get("matchedSkills") instanceof java.util.List ? (java.util.List) appRecord.get("matchedSkills") : java.util.Collections.emptyList();
   java.util.List missingSkills = appRecord.get("missingSkills") instanceof java.util.List ? (java.util.List) appRecord.get("missingSkills") : java.util.Collections.emptyList();
+  String scoreBand = String.valueOf(appRecord.getOrDefault("scoreBand", "Advisory Review"));
+  String strengthSummary = String.valueOf(appRecord.getOrDefault("strengthSummary", "No main strengths highlighted."));
+  String riskSummary = String.valueOf(appRecord.getOrDefault("riskSummary", "No main risks highlighted."));
+  String confidenceHint = String.valueOf(appRecord.getOrDefault("confidenceHint", "This result is advisory only."));
+  String methodLabel = String.valueOf(appRecord.getOrDefault("methodLabel", appRecord.getOrDefault("matchMethod", appRecord.getOrDefault("method", "N/A"))));
+  String methodHint = String.valueOf(appRecord.getOrDefault("methodHint", "Generated from the available structured data."));
 
   Object currentUserObj = request.getSession(false) == null ? null : request.getSession(false).getAttribute("currentUser");
   com.bupt.ta.model.User currentUser = currentUserObj instanceof com.bupt.ta.model.User ? (com.bupt.ta.model.User) currentUserObj : null;
@@ -102,19 +108,33 @@
       <section class="mo-match-panel">
         <div class="mo-match-panel__header">
           <div class="mo-match-panel__title"><span>Job Match Analysis</span></div>
-          <span class="mo-match-panel__badge"><%= String.valueOf(appRecord.getOrDefault("matchMethod", appRecord.getOrDefault("method", "N/A"))) %></span>
+          <span class="mo-match-panel__badge"><%= scoreBand %></span>
         </div>
 
         <div class="mo-match-panel__body">
           <div class="mo-match-score">
             <div class="mo-match-score__ring"><span><%= String.valueOf(appRecord.getOrDefault("skillMatchScore", 0)) %>%</span></div>
             <div class="mo-match-score__meta">
-              <strong>Advisory Match Score</strong>
+              <strong><%= scoreBand %></strong>
               <p><%= String.valueOf(appRecord.getOrDefault("skillMatchExplanation", "No explanation available.")) %></p>
             </div>
           </div>
 
           <div class="mo-match-breakdown">
+            <div class="mo-match-breakdown__section">
+              <p>Main strengths</p>
+              <div class="mo-match-breakdown__chips">
+                <span class="mo-match-breakdown__chip mo-match-breakdown__chip--good"><%= strengthSummary %></span>
+              </div>
+            </div>
+
+            <div class="mo-match-breakdown__section">
+              <p>Main risks</p>
+              <div class="mo-match-breakdown__chips">
+                <span class="mo-match-breakdown__chip mo-match-breakdown__chip--warn"><%= riskSummary %></span>
+              </div>
+            </div>
+
             <div class="mo-match-breakdown__section">
               <p>Matched Skills</p>
               <div class="mo-match-breakdown__chips">
@@ -148,6 +168,14 @@
                 <%
                   }
                 %>
+              </div>
+            </div>
+
+            <div class="mo-match-breakdown__section">
+              <p>Review guidance</p>
+              <div class="mo-match-breakdown__chips">
+                <span class="mo-match-breakdown__chip"><%= confidenceHint %></span>
+                <span class="mo-match-breakdown__chip"><strong><%= methodLabel %></strong>: <%= methodHint %></span>
               </div>
             </div>
           </div>

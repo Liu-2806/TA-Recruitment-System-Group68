@@ -600,3 +600,17 @@ Current TA/input optimization status:
 - The local Tomcat deployment scripts now stage `web/` and compiled classes together.
 - TA profile and resume flows now keep success/error feedback inside the main JSP flow.
 - TA application submit/withdraw flows now return to business pages with visible status feedback instead of raw error pages.
+
+## 2026-04 Match Experience Update
+
+The AI matching flow now keeps the existing core fields and also derives user-facing helper fields at runtime:
+
+- `scoreBand`
+- `strengthSummary`
+- `riskSummary`
+- `nextStepSuggestion`
+- `confidenceHint`
+- `methodLabel`
+- `methodHint`
+
+These helper fields are used only for JSP rendering and are not required as new stored JSON schema fields.
