@@ -15,8 +15,8 @@
       "Testing",
       "Communication"
     ],
-    "resumeFileName": "sample_resume.pdf",
-    "resumeUploadedAt": "2026-03-24 21:10:00",
+    "resumeFileName": "TA001_1775737304460_sample_resume.pdf",
+    "resumeUploadedAt": "2026-04-09 20:21:45",
     "extractedResume": {
       "name": "Alex Chen",
       "email": "alex.chen@example.com",
@@ -25,18 +25,19 @@
       "skills": [
         "Java",
         "Python",
-        "Git",
-        "Testing",
         "Communication",
         "Teaching",
-        "Data Analysis"
+        "Data Analysis",
+        "Machine Learning",
+        "Git",
+        "Testing"
       ],
       "experienceHighlights": [
-        "Teaching Assistant for introductory programming labs.",
-        "Research project on machine learning-based skill classification.",
-        "Internship project building internal dashboards in Python."
+        "Teaching Assistant for introductory programming labs, supporting weekly Java exercises and answering student questions.",
+        "Research project on machine learning-based skill classification for student profiles.",
+        "Internship project building internal dashboards and data analysis scripts in Python."
       ],
-      "rawText": "Alex Chen resume sample"
+      "rawText": "Alex Chen\r\nalex.chen@example.com\r\n+44 7123 456789\r\nEducation\r\nMSc Computer Science, Queen Mary University of London\r\nSkills\r\nJava, Python, Git, Testing, Communication, Teaching, Data Analysis\r\nExperience\r\nTeaching Assistant for introductory programming labs, supporting weekly Java exercises and answering student questions.\r\nResearch project on machine learning-based skill classification for student profiles.\r\nInternship project building internal dashboards and data analysis scripts in Python.\r\n"
     },
     "id": "TA001",
     "role": "TA",
@@ -59,9 +60,6 @@
     "role": "TA",
     "password": "zzz123456",
     "active": true,
-    "resumeFileName": null,
-    "resumeUploadedAt": null,
-    "extractedResume": null,
     "createdAt": "2026-03-25 16:27:48",
     "updatedAt": "2026-03-25 16:27:48"
   },
@@ -81,10 +79,65 @@
     "role": "TA",
     "password": "zzz123",
     "active": true,
-    "resumeFileName": null,
-    "resumeUploadedAt": null,
-    "extractedResume": null,
     "createdAt": "2026-03-25 16:32:58",
     "updatedAt": "2026-03-25 16:32:58"
+  },
+  {
+    "id": "TA004",
+    "taId": "TA004",
+    "username": "syy",
+    "email": "syy@qmul.ac.uk",
+    "fullName": "Yueyang Sun",
+    "displayName": "Yueyang Sun",
+    "studentId": "2023213458",
+    "phone": "",
+    "intro": "",
+    "skills": [],
+    "majorProgram": "IoT",
+    "academicYear": "Year 10086",
+    "role": "TA",
+    "password": "1234567890syy",
+    "active": true,
+    "createdAt": "2026-04-09 15:34:20",
+    "updatedAt": "2026-04-09 15:34:20",
+    "resumeFileName": "TA004_1775743944449_EBU6304_02_Agile_Software_Development.pdf",
+    "resumeUploadedAt": "2026-04-09 22:12:25",
+    "extractedResume": {
+      "name": "Software Processes",
+      "email": "",
+      "phone": "",
+      "education": "",
+      "skills": [
+        "Excel",
+        "Communication",
+        "Testing"
+      ],
+      "experienceHighlights": [
+        "– Real projects rarely follow the sequential flow.",
+        "late in the project time-span.",
+        "lifecycle of a project.",
+        "Waterfall model – suitable projects"
+      ],
+      "rawText": "School of Electronic Engineering and Computer Science EBU6304\r\nSoftware Processes\r\n• Software Development Activities\r\n• Software Development Model\r\n• Waterfall vs Agile\r\n1\r\nLecture Session\r\nSchool of Electronic Engineering and Computer Science EBU6304\r\nSoftware process\r\n• A software process is a set of structured activities that \r\nleads to the production of the software.\r\n• Many different software processes but all involve:\r\n– Requirements \r\n– Development: Analysis, Design, Implementation\r\n– Validation: Testing and Deployment\r\n– Maintenance\r\n2\r\nSchool of Electronic Engineering and Computer Science EBU6304\r\nOutcomes of each activity\r\n• Requirements: requirements specification\r\n• Analysis: a set of analysis models\r\n• Design: detailed design documentation\r\n• Implementation: executable version of the \r\nsoftware\r\n• Testing: fully tested software\r\n• Deployment: working software in real \r\nenvironment \r\n3\r\nSchool of Electronic Engineering and Computer Science EBU6304\r\nMaintenance(Evolution)\r\n• Aim: keeping the system operational after \r\ndelivery to the customer; changing the system \r\nin response to changing customer needs.\r\n– Corrective: identification and removal of faults\r\n– Adaptive: modifications needed to achieve \r\ninteroperability with other systems and platforms\r\n– Perfective: incorporation of new features, improved \r\nperformance and other modifications\r\n– Preventive: modifications to mitigate possible \r\ndegradation of usability, maintainability, etc\r\n4\r\nSchool of Electronic Engineering and Computer Science EBU6304\r\nSoftware process models\r\n• Depends on the system, the activities can be:\r\n– organised in sequence\r\n– organised as interleaved\r\n– organised concurrently\r\n• Must be modelled in order to be managed.\r\n• Software Process model\r\n– A simplified representation of a software \r\nprocess – an abstract representation.\r\n5\r\nSchool of Electronic Engineering and Computer Science EBU6304\r\n6\r\n• Waterfall model (traditional)\r\n– Separate and distinct phases\r\n• Agile model (modern)\r\n– Iterations\r\nClassic Models\r\nThere are many other software process models, e.g. \r\nEvolutionary model, Rational Unified Model, Spiral \r\nModel, V Model, Formal Model…\r\nSchool of Electronic Engineering and Computer Science EBU6304\r\n7\r\nWaterfall model and its phases \r\nDelivered\r\nLive\r\nRequirements \r\ndefinition\r\nSystem and \r\nsoftware design\r\nImplementation \r\nand unit testing\r\nIntegration and \r\nsystem testing\r\nOperation and \r\nmaintenance\r\nCascade from one phase to another:\r\nSequential approach.\r\nIn principle, one phase \r\nhas to be complete \r\nbefore moving onto the \r\nnext phase.\r\nSchool of Electronic Engineering and Computer Science EBU6304\r\nWaterfall model benefits\r\n• Easy to monitor the progress\r\n– After a small number of iterations, freeze parts of the \r\ndevelopment and continue with later phases.\r\n• Documentation is well produced at each stage.\r\n• Structured approach.\r\n• Specialised teams can be used at each stage of the \r\nlifecycle.\r\n8\r\nSchool of Electronic Engineering and Computer Science EBU6304\r\nWaterfall model problems\r\n• Inflexible\r\n– Difficulty of accommodating change after the process is \r\nunderway.\r\n• Time consuming\r\n– Real projects rarely follow the sequential flow.\r\n– A working version of the system will not be available until \r\nlate in the project time-span.\r\n• Minimises impact of global understanding over the \r\nlifecycle of a project.\r\n• Not realistic.\r\n9\r\nSchool of Electronic Engineering and Computer Science EBU6304\r\n10\r\nWaterfall model – suitable projects\r\n• This model is only appropriate when the requirements \r\nare well-understood and changes will be fairly limited \r\nduring the design process.\r\n– Few business systems have stable requirements!\r\n• Adaptation or enhancement of existing system.\r\n• In high risk, safety critical systems e.g. air traffic control, \r\nquality is key.\r\nExamples:\r\naircraft systems, space systems, nuclear power \r\nsystems, critical health systems, power and \r\ntelecommunications systems…\r\nSchool of Electronic Engineering and Computer Science EBU6304\r\n11\r\nThe Agile Process\r\n• The processes of specification, design, implementation \r\nand testing are concurrent, referred to as an iteration:\r\n– no detailed specification;\r\n– design documentation is minimised.\r\n• The system is developed in a series of increments\r\n– End users evaluate each increment and make \r\nproposals for later increments.\r\n• End users are involved\r\n– System user interfaces are usually developed using \r\nan interactive development system.\r\nSchool of Electronic Engineering and Computer Science EBU6304\r\nAgile iterations\r\n12\r\nTypically \r\n2 weeks\r\nTypically \r\n2 weeks\r\nSelect user stories \r\nfor this release\r\nBreak down \r\nstories to tasks\r\nPlan \r\nrelease\r\nEvaluate \r\nsystem\r\nRelease \r\nsoftware\r\nDevelop/integrate/\r\ntest software\r\nThe release cycle at each iteration:\r\nImage cc medium.com/\r\nSchool of Electronic Engineering and Computer Science EBU6304\r\nAgile – suitable projects\r\n• Small or medium-sized product. \r\n• Requirement is not clear and/or keep changing.\r\n• Rapid delivery.\r\n• A clear commitment from the customer to \r\nbecome involved in the development process\r\n• Not a lot of external rules and regulations that \r\naffect the software\r\n13\r\nSchool of Electronic Engineering and Computer Science EBU6304\r\n14\r\nGood News, \r\n we have completed 20% \r\nof the stories! and \r\nversion 2 is released! \r\nCurrently we have over \r\n9000 users.\r\nGood News,\r\nwe have finished \r\nthe design!\r\nAgile\r\nWaterfall\r\nWaterfall vs Agile\r\nSchool of Electronic Engineering and Computer Science EBU6304\r\nPractical Exercises Session\r\n(15-20 minutes in class)\r\n15\r\nCompare Waterfall and Agile\r\nSchool of Electronic Engineering and Computer Science EBU6304\r\nAgile Software Development\r\n• What is Agile\r\n• Agile Principles\r\n16\r\nLecture Session\r\nSchool of Electronic Engineering and Computer Science EBU6304\r\n17\r\n• Agile is a set of best practices in software \r\ndevelopment based on Scrum, Extreme \r\nProgramming, Crystal Clear, DSDM, Lean \r\nand others.\r\n• The set includes:\r\n– Iteration, Test Driven Development, \r\ncontinuous integration, refactoring, pair \r\nprogramming, story card/wall, automation \r\ntest, feedback, stand up, retrospective and \r\nshowcase.\r\nWhat is Agile?\r\nSchool of Electronic Engineering and Computer Science EBU6304\r\n18\r\nFocus of Agile\r\n• The focus of Agile:\r\n– Focus on the code rather than the analysis/design.\r\n– Are based on an iterative approach to software \r\ndevelopment.\r\n– Are intended to deliver working software quickly and \r\nevolve this quickly to meet changing requirements.\r\nLightweight, highly iterative, short iterations, \r\ntest-driven, focus on value to customer, \r\nfrequent releases, ability to cope with change\r\nSchool of Electronic Engineering and Computer Science EBU6304\r\n19\r\nIntegration and release\r\n• Frequent integration:\r\n– multiple builds per day;\r\n– everyone involved;\r\n– automated tool support.\r\n• Small \u0026 Frequent Releases:\r\n– Team releases running, tested software \r\ndelivering business value, as determined \r\nby the customer, at every iteration.\r\nSchool of Electronic Engineering and Computer Science EBU6304\r\n20\r\nThe Agile Manifesto\r\nIndividuals and interactions over processes and tools\r\nWorking software over comprehensive documentation\r\nCustomer collaboration over contract negotiation\r\nResponding to change over following a plan\r\nSchool of Electronic Engineering and Computer Science EBU6304\r\n21\r\nAgile team\r\n• Agile focuses on developers (programmers) but need \r\nother roles, e.g. business analyst, project manager, \r\ntester, …\r\n• Small, co-located, multi-disciplinary team, members \r\nare usually working around a table\r\n– Easy communication\r\n• Collective code ownership\r\n• Common vision of system\r\n• Common coding standard\r\nPictures cc Pearson\r\nSchool of Electronic Engineering and Computer Science EBU6304\r\n22\r\nDos and Do NOTs\r\n• Agile needs necessary documentation\r\n– BUT need to ensure that every document has an \r\naudience.\r\n• Agile encourages good practices\r\n– BUT need to ensure that every practice solves a \r\nproblem.\r\n• Drop anything without value.\r\n• Don’t over design the system.\r\nSchool of Electronic Engineering and Computer Science EBU6304\r\n23\r\nPrinciples of Agile (Brief)\r\n• Customer involvement\r\n– Closely involved throughout the development \r\n• Incremental delivery\r\n– Customer specifies each increment \r\n• People, not process\r\n– Skills, the own way\r\n• Embrace change\r\n– Expect change\r\n• Maintain simplicity\r\n– Both the system and the process\r\nSchool of Electronic Engineering and Computer Science EBU6304\r\n24\r\nPrinciples of Agile (more detail)\r\n1. Our highest priority is to satisfy the \r\ncustomer through early and \r\ncontinuous delivery of valuable \r\nsoftware. \r\n2. Welcome changing requirements, \r\neven late in development. Agile \r\nprocesses harness change for the \r\ncustomer\u0027s competitive advantage. \r\n3. Deliver working software frequently, \r\nfrom a couple of weeks to a couple of \r\nmonths, with a preference to the \r\nshorter timescale. \r\n4. Business people and developers must \r\nwork together daily throughout the \r\nproject. \r\n5. Build projects around motivated \r\nindividuals. Give them the environment \r\nand support they need, and trust them \r\nto get the job done. \r\n6. The most efficient and effective method of \r\nconveying information to and within a \r\ndevelopment team is face-to-face \r\nconversation. \r\n7. Working software is the primary measure of \r\nprogress. \r\n8. Agile processes promote sustainable \r\ndevelopment. The sponsors, developers, and \r\nusers should be able to maintain a constant \r\npace indefinitely. \r\n9. Continuous attention to technical excellence \r\nand good design enhances agility. \r\n10. Simplicity – the art of maximizing the amount \r\nof work not done – is essential. \r\n11. The best architectures, requirements, and \r\ndesigns emerge from self-organizing teams. \r\n12. At regular intervals, the team reflects on how \r\nto become more effective, then tunes and \r\nadjusts its behaviour accordingly. \r\nhttps://www.agilealliance.org/agile101/12-principles-behind-the-agile-manifesto/\r\nSchool of Electronic Engineering and Computer Science EBU6304\r\n25\r\nAgile Problems (1/2)\r\n• Problems\r\n– It can be difficult to keep the interest of                                                                     \r\ncustomers who are involved in the process.\r\n– Team members may be unsuited to the intense \r\ninvolvement that characterises agile methods.\r\nSchool of Electronic Engineering and Computer Science EBU6304\r\n26\r\nAgile Problems (2/2)\r\n• Problems\r\n– Prioritising changes can be difficult where there are \r\nmultiple stakeholders.\r\n– Maintaining simplicity requires extra work.\r\n– Contracts may be a problem as with other \r\napproaches to iterative development.\r\nSchool of Electronic Engineering and Computer Science EBU6304\r\nAgile requires…\r\n• Experience\r\n– Has experienced leadership\r\n– Hire an experienced team\r\n• Working environment\r\n– Motivated stable teams\r\n– Supportive management\r\n– Team dynamics is critical\r\n• Value thinking\r\n• Effective and Efficient communication\r\n• Information sharing\r\n• Tools and Automation\r\n27\r\nSchool of Electronic Engineering and Computer Science EBU6304\r\nPractical Exercises Session\r\n(15-20 minutes in class)\r\n28\r\nUnderstanding Agile\r\nSchool of Electronic Engineering and Computer Science EBU6304\r\n29\r\nSummary\r\n• Software Processes\r\n- Software Development Activities\r\n- Software Development Model\r\n- Waterfall vs Agile\r\n• Agile Software Development\r\n- What is Agile\r\n- Agile Principles\r\n"
+    }
+  },
+  {
+    "id": "TA005",
+    "taId": "TA005",
+    "username": "toast-1775737196",
+    "email": "toast-1775737196@qmul.ac.uk",
+    "fullName": "Toast Test",
+    "displayName": "Toast Test",
+    "studentId": "2023999998",
+    "phone": "",
+    "intro": "",
+    "skills": [],
+    "majorProgram": "CS",
+    "academicYear": "Year 2",
+    "role": "TA",
+    "password": "Password123!",
+    "active": true,
+    "createdAt": "2026-04-09 20:19:57",
+    "updatedAt": "2026-04-09 20:19:57"
   }
 ]

@@ -1,11 +1,18 @@
 param(
-    [string]$TomcatPath = "F:\softwareengineering\apache-tomcat-9.0.116-windows-x64\apache-tomcat-9.0.116",
+    [string]$TomcatPath = "",
     [string]$AppName = "TA-Recruitment-System-Group68"
 )
 
 $ErrorActionPreference = "Stop"
 
 $projectRoot = Split-Path -Parent $PSScriptRoot
+$defaultTomcatPath = Join-Path $projectRoot "..\apache-tomcat-9.0.116-windows-x64\apache-tomcat-9.0.116"
+
+if ([string]::IsNullOrWhiteSpace($TomcatPath)) {
+    $TomcatPath = $defaultTomcatPath
+}
+
+$TomcatPath = [System.IO.Path]::GetFullPath($TomcatPath)
 $sourceWebapp = Join-Path $projectRoot "src\main\webapp"
 $targetWebapps = Join-Path $TomcatPath "webapps"
 $targetApp = Join-Path $targetWebapps $AppName

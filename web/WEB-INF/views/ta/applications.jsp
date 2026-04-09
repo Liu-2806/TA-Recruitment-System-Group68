@@ -6,9 +6,14 @@
   request.setAttribute("headerBackHref", contextPath + "/ta/dashboard");
   request.setAttribute("headerBackLabel", "Back to Dashboard");
   request.setAttribute("showHeaderUser", Boolean.TRUE);
-  request.setAttribute("currentUserName", "TA");
+  Object currentUserObj = request.getSession(false) == null ? null : request.getSession(false).getAttribute("currentUser");
+  com.bupt.ta.model.User currentUser = currentUserObj instanceof com.bupt.ta.model.User ? (com.bupt.ta.model.User) currentUserObj : null;
+  String currentUserName = currentUser == null || currentUser.getDisplayName() == null || currentUser.getDisplayName().trim().isEmpty()
+      ? "TA"
+      : currentUser.getDisplayName().trim();
+  request.setAttribute("currentUserName", currentUserName);
   request.setAttribute("currentUserRoleLabel", "TA Applicant");
-  request.setAttribute("currentUserInitial", "T");
+  request.setAttribute("currentUserInitial", currentUserName.isBlank() ? "T" : currentUserName.substring(0, 1).toUpperCase());
   request.setAttribute("notificationCount", Integer.valueOf(0));
 
   Object queryObj = request.getAttribute("query");
@@ -16,6 +21,10 @@
   Object pageObj = request.getAttribute("applicationsPage");
   com.bupt.ta.dto.PageResult applicationsPage = pageObj instanceof com.bupt.ta.dto.PageResult ? (com.bupt.ta.dto.PageResult) pageObj : null;
   java.util.List applications = applicationsPage == null || applicationsPage.getRecords() == null ? java.util.Collections.emptyList() : applicationsPage.getRecords();
+  int currentPage = applicationsPage == null ? 1 : applicationsPage.getPage();
+  int pageSize = applicationsPage == null ? 6 : applicationsPage.getSize();
+  int total = applicationsPage == null ? applications.size() : (int) applicationsPage.getTotal();
+  int totalPages = pageSize <= 0 ? 1 : Math.max(1, (int) Math.ceil(total / (double) pageSize));
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -26,6 +35,7 @@
   <link rel="stylesheet" href="<%= contextPath %>/assets/css/base.css">
   <link rel="stylesheet" href="<%= contextPath %>/assets/css/layout.css">
   <link rel="stylesheet" href="<%= contextPath %>/assets/css/components.css">
+  <link rel="stylesheet" href="<%= contextPath %>/assets/css/pages/ta-positions.css">
   <link rel="stylesheet" href="<%= contextPath %>/assets/css/pages/ta-applications.css">
 </head>
 <body>
@@ -85,16 +95,16 @@
         <%
           if (applications.isEmpty()) {
         %>
-        <article class="ta-application-card">
-          <div class="ta-application-card__top">
-            <div class="ta-application-card__identity">
+        <article class="ta-position-card ta-position-card--application">
+          <div class="ta-position-card__top">
+            <div class="ta-position-card__identity">
               <div>
                 <h3>No applications found</h3>
                 <p>Try adjusting the filters or submit your first application.</p>
               </div>
             </div>
           </div>
-          <div class="ta-application-card__actions">
+          <div class="ta-application-card__actions ta-application-card__actions--right">
             <a class="ta-application-card__primary" href="<%= contextPath %>/ta/jobs">Browse Open Roles</a>
           </div>
         </article>
@@ -104,48 +114,110 @@
               java.util.Map appRow = appObj instanceof java.util.Map ? (java.util.Map) appObj : java.util.Collections.emptyMap();
               String applicationId = String.valueOf(appRow.getOrDefault("applicationId", ""));
               String postingId = String.valueOf(appRow.getOrDefault("postingId", ""));
+              String postingTitle = String.valueOf(appRow.getOrDefault("postingTitle", ""));
+              String courseCode = String.valueOf(appRow.getOrDefault("courseCode", ""));
+              String moName = String.valueOf(appRow.getOrDefault("moName", ""));
+              String deadline = String.valueOf(appRow.getOrDefault("deadline", ""));
+              String vacancies = String.valueOf(appRow.getOrDefault("vacancies", ""));
+              String department = String.valueOf(appRow.getOrDefault("department", ""));
+              String moduleType = String.valueOf(appRow.getOrDefault("moduleType", ""));
+              String postingType = String.valueOf(appRow.getOrDefault("postingType", "TA"));
+              String activityDate = String.valueOf(appRow.getOrDefault("activityDate", ""));
+              String activityStartTime = String.valueOf(appRow.getOrDefault("activityStartTime", ""));
+              String activityEndTime = String.valueOf(appRow.getOrDefault("activityEndTime", ""));
+              String activityLocation = String.valueOf(appRow.getOrDefault("activityLocation", ""));
               String status = String.valueOf(appRow.getOrDefault("statusLabel", appRow.getOrDefault("status", "Pending Review")));
               String statusRaw = String.valueOf(appRow.getOrDefault("status", "SUBMITTED")).toLowerCase();
               String statusCss = statusRaw.contains("accept") ? "accepted" : (statusRaw.contains("reject") ? "rejected" : (statusRaw.contains("withdraw") ? "withdrawn" : (statusRaw.contains("revocation") ? "revocation" : "pending")));
               boolean canWithdraw = "submitted".equals(statusRaw) || "under_review".equals(statusRaw) || "underreview".equals(statusRaw) || "accepted".equals(statusRaw);
-              String matchExplanation = String.valueOf(appRow.getOrDefault("skillMatchExplanation", "No match explanation available yet."));
-              java.util.List historyLogs = appRow.get("historyLogs") instanceof java.util.List ? (java.util.List) appRow.get("historyLogs") : java.util.Collections.emptyList();
+              Object requiredSkillsObj = appRow.get("requiredSkills");
+              java.util.List requiredSkillsList = requiredSkillsObj instanceof java.util.List ? (java.util.List) requiredSkillsObj : java.util.Collections.emptyList();
         %>
-        <article id="application-<%= applicationId %>" class="ta-application-card">
-          <div class="ta-application-card__top">
-            <div class="ta-application-card__identity">
-              <span class="ta-application-card__icon ta-application-card__icon--<%= statusCss %>" aria-hidden="true">Status</span>
+        <article id="application-<%= applicationId %>" class="ta-position-card ta-position-card--application">
+          <div class="ta-position-card__top">
+            <div class="ta-position-card__identity">
+              <span class="ta-position-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <path d="M5.5 8h13v10h-13Zm3-2.5h7V8h-7Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
               <div>
-                <h3><%= String.valueOf(appRow.getOrDefault("postingTitle", "")) %></h3>
-                <p><%= String.valueOf(appRow.getOrDefault("courseCode", "")) %> · <%= String.valueOf(appRow.getOrDefault("moName", "")) %> · Submitted <%= String.valueOf(appRow.getOrDefault("appliedAt", "")) %></p>
+                <h3><%= postingTitle %></h3>
+                <p><%= moName %><%= vacancies == null || vacancies.isBlank() ? "" : " " %><span><%= vacancies == null || vacancies.isBlank() ? "" : "Vacancies: " + vacancies %></span></p>
+                <p><%= department %><%= department.isBlank() || moduleType.isBlank() ? "" : " | " %><%= moduleType %></p>
               </div>
             </div>
 
-            <div class="ta-application-card__meta-actions">
+            <div class="ta-position-card__meta-actions">
               <span class="ta-application-badge ta-application-badge--<%= statusCss %>"><%= status %></span>
-              <a class="ta-application-card__details" href="<%= contextPath %>/ta/jobs/detail?jobId=<%= postingId %>">Open Position</a>
+              <a class="ta-position-card__details" href="<%= contextPath %>/ta/jobs/detail?jobId=<%= postingId %>">
+                <span>Open Position</span>
+                <span class="ta-position-card__details-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" focusable="false">
+                    <path d="M10 14 19 5m-5 0h5v5M19 13.5V18a1 1 0 0 1-1 1h-12a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h4.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </span>
+              </a>
             </div>
           </div>
 
-          <div class="ta-application-card__bottom">
-            <div class="ta-application-info">
-              <p class="ta-application-info__label">Current Stage</p>
-              <p class="ta-application-info__value"><%= status %></p>
+          <div class="ta-position-card__bottom">
+            <div class="ta-position-info">
+              <p class="ta-position-info__label"><%= "ACTIVITY".equalsIgnoreCase(postingType) ? "Activity Schedule" : "Application Deadline" %></p>
+              <p class="ta-position-info__value">
+                <span class="ta-position-info__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" focusable="false">
+                    <path d="M7 3.75v3.5M17 3.75v3.5M4.75 8.25h14.5m-13 1.25h11a1.75 1.75 0 0 1 1.75 1.75v6.5A1.75 1.75 0 0 1 17.25 19.5H6.75A1.75 1.75 0 0 1 5 17.75v-6.5A1.75 1.75 0 0 1 6.75 9.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </span>
+                <%
+                  if ("ACTIVITY".equalsIgnoreCase(postingType)) {
+                %>
+                <%= activityDate %> <%= activityStartTime %><%= activityEndTime == null || activityEndTime.isBlank() ? "" : " - " + activityEndTime %><%= activityLocation == null || activityLocation.isBlank() ? "" : " | " + activityLocation %>
+                <%
+                  } else {
+                %>
+                <%= deadline %>
+                <%
+                  }
+                %>
+              </p>
             </div>
-            <div class="ta-application-info">
-              <p class="ta-application-info__label">Match Insight</p>
-              <p class="ta-application-info__value"><%= matchExplanation %></p>
-            </div>
-            <div class="ta-application-info">
-              <p class="ta-application-info__label">Feedback</p>
-              <p class="ta-application-info__value"><%= String.valueOf(appRow.getOrDefault("feedback", "")).isBlank() ? "No feedback yet." : String.valueOf(appRow.get("feedback")) %></p>
+
+            <div class="ta-position-skills">
+              <p class="ta-position-skills__label">
+                <span class="ta-position-skills__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" focusable="false">
+                    <path d="M4.75 10.25 10.25 4.75H17l2.25 2.25v6.75L13.75 19.25 4.75 10.25Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="14.5" cy="9.5" r="1" fill="currentColor"/>
+                  </svg>
+                </span>
+                Required Skills
+              </p>
+              <div class="ta-position-skills__list">
+                <%
+                  if (requiredSkillsList.isEmpty()) {
+                %>
+                <span>No specific skills listed</span>
+                <%
+                  } else {
+                    int shown = 0;
+                    for (Object skillObj : requiredSkillsList) {
+                      if (shown >= 3) { break; }
+                      String skill = String.valueOf(skillObj);
+                      shown++;
+                %>
+                <span><%= skill %></span>
+                <%
+                    }
+                  }
+                %>
+              </div>
             </div>
           </div>
 
-          <div class="ta-application-card__actions">
-            <a class="ta-application-card__secondary" href="#history-<%= applicationId %>">View Full History</a>
-            <div class="ta-application-card__action-group">
-              <a class="ta-application-card__primary" href="<%= contextPath %>/ta/jobs/detail?jobId=<%= postingId %>">View Matching Details</a>
+          <div class="ta-application-card__actions ta-application-card__actions--right">
+            <div class="ta-application-card__action-group ta-application-card__action-group--right">
               <%
                 if (canWithdraw) {
                   String withdrawLabel = "accepted".equals(statusRaw) ? "Request Revocation" : "Withdraw";
@@ -165,28 +237,47 @@
             </div>
           </div>
         </article>
-
-        <article id="history-<%= applicationId %>" class="ta-history-card">
-          <div class="ta-history-card__head">
-            <h3><%= String.valueOf(appRow.getOrDefault("postingTitle", "")) %></h3>
-            <span class="ta-history-card__badge ta-history-card__badge--<%= statusCss %>"><%= status %></span>
-          </div>
-          <ul class="ta-history-card__steps">
-            <%
-              for (Object logObj : historyLogs) {
-                java.util.Map log = logObj instanceof java.util.Map ? (java.util.Map) logObj : java.util.Collections.emptyMap();
-            %>
-            <li><strong><%= String.valueOf(log.getOrDefault("time", "")) %></strong><span><%= String.valueOf(log.getOrDefault("description", "")) %></span></li>
-            <%
-              }
-            %>
-          </ul>
-        </article>
         <%
             }
           }
         %>
       </section>
+
+      <footer class="ta-positions-footer ta-positions-footer--applications">
+        <%
+          int startIndex = total == 0 ? 0 : ((currentPage - 1) * pageSize) + 1;
+          int endIndex = Math.min(total, currentPage * pageSize);
+          String baseParams = "keyword=" + java.net.URLEncoder.encode(query.getKeyword() == null ? "" : query.getKeyword(), "UTF-8")
+              + "&status=" + java.net.URLEncoder.encode(query.getStatus() == null ? "" : query.getStatus(), "UTF-8")
+              + "&sortBy=" + java.net.URLEncoder.encode(query.getSortBy() == null ? "" : query.getSortBy(), "UTF-8")
+              + "&size=" + pageSize;
+        %>
+        <p>Showing <%= startIndex %>-<%= endIndex %> of <%= total %> applications</p>
+        <div class="ta-pagination">
+          <a class="ta-pagination__nav <%= currentPage <= 1 ? "is-disabled" : "" %>"
+             aria-label="Previous page"
+             href="<%= currentPage <= 1 ? "#" : (contextPath + "/ta/applications/my?" + baseParams + "&page=" + (currentPage - 1)) %>">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path d="M14.5 6.5 9 12l5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+          <%
+            for (int pageNumber = 1; pageNumber <= totalPages; pageNumber++) {
+          %>
+          <a class="ta-pagination__page <%= pageNumber == currentPage ? "is-active" : "" %>"
+             href="<%= contextPath + "/ta/applications/my?" + baseParams + "&page=" + pageNumber %>"><%= pageNumber %></a>
+          <%
+            }
+          %>
+          <a class="ta-pagination__nav <%= currentPage >= totalPages ? "is-disabled" : "" %>"
+             aria-label="Next page"
+             href="<%= currentPage >= totalPages ? "#" : (contextPath + "/ta/applications/my?" + baseParams + "&page=" + (currentPage + 1)) %>">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path d="M9.5 6.5 15 12l-5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        </div>
+      </footer>
     </main>
 
     <jsp:include page="/WEB-INF/views/common/footer.jsp" />

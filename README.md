@@ -11,6 +11,12 @@
 | `skywalker11111` | `231226439` |
 | `NoveAmberic` | `231226495` |
 
+
+cd F:\softwareengineering\TA-Recruitment-System-Group68
+powershell -ExecutionPolicy Bypass -File .\scripts\run-web-app.ps1
+
+http://localhost:8080/TA-Recruitment-System-Group68/
+
 ## 项目背景与约束
 
 本项目是 EBU6304 课程的 TA Recruitment System 小组项目。当前仓库中的实现和后续开发必须遵守 handout 中的硬性要求：
