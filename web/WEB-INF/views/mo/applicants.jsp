@@ -114,6 +114,8 @@
                     String statusNorm = String.valueOf(appRecord.getOrDefault("status", "")).trim().toUpperCase(java.util.Locale.ROOT).replace("-", "_");
                     boolean rowCanDecide = "SUBMITTED".equals(statusNorm) || "UNDER_REVIEW".equals(statusNorm);
                     String rowApplicationId = String.valueOf(appRecord.getOrDefault("applicationId", ""));
+                    String scoreBand = String.valueOf(appRecord.getOrDefault("scoreBand", "Advisory Review"));
+                    String strengthSummary = String.valueOf(appRecord.getOrDefault("strengthSummary", "No quick summary available."));
               %>
               <tr>
                 <td>
@@ -132,8 +134,9 @@
                 </td>
                 <td>
                   <div class="mo-match-cell">
-                    <div class="mo-match-chip"><%= String.valueOf(appRecord.getOrDefault("skillMatchScore", 0)) %>% Match</div>
+                    <div class="mo-match-chip"><%= String.valueOf(appRecord.getOrDefault("skillMatchScore", 0)) %>% | <%= scoreBand %></div>
                     <div class="mo-match-bar"><span style="width:<%= String.valueOf(appRecord.getOrDefault("skillMatchScore", 0)) %>%"></span></div>
+                    <p style="margin:6px 0 0; color:#475467; font-size:12px;"><%= strengthSummary %></p>
                   </div>
                 </td>
                 <td>
