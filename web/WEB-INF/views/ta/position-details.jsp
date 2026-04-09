@@ -8,7 +8,11 @@
   String returnHref = String.valueOf(request.getAttribute("returnHref") == null ? (contextPath + "/ta/jobs") : request.getAttribute("returnHref"));
   String encodedReturnQuery = String.valueOf(request.getAttribute("encodedReturnQuery") == null ? "" : request.getAttribute("encodedReturnQuery"));
 
-  String currentUserName = "TA";
+  Object currentUserObj = request.getSession(false) == null ? null : request.getSession(false).getAttribute("currentUser");
+  com.bupt.ta.model.User currentUser = currentUserObj instanceof com.bupt.ta.model.User ? (com.bupt.ta.model.User) currentUserObj : null;
+  String currentUserName = currentUser == null || currentUser.getDisplayName() == null || currentUser.getDisplayName().trim().isEmpty()
+      ? "TA"
+      : currentUser.getDisplayName().trim();
   request.setAttribute("headerBrandHref", contextPath + "/ta/dashboard");
   request.setAttribute("showHeaderBack", Boolean.TRUE);
   request.setAttribute("headerBackHref", returnHref);
@@ -16,7 +20,7 @@
   request.setAttribute("showHeaderUser", Boolean.TRUE);
   request.setAttribute("currentUserName", currentUserName);
   request.setAttribute("currentUserRoleLabel", "TA Applicant");
-  request.setAttribute("currentUserInitial", "T");
+  request.setAttribute("currentUserInitial", currentUserName.isBlank() ? "T" : currentUserName.substring(0, 1).toUpperCase());
   request.setAttribute("notificationCount", Integer.valueOf(0));
 
   java.util.List requiredSkills = job.get("requiredSkills") instanceof java.util.List ? (java.util.List) job.get("requiredSkills") : java.util.Collections.emptyList();
@@ -25,13 +29,10 @@
   String score = String.valueOf(matchAnalysis.getOrDefault("score", 0));
   String explanation = String.valueOf(matchAnalysis.getOrDefault("explanation", "Match analysis is unavailable."));
   String method = String.valueOf(matchAnalysis.getOrDefault("method", "UNAVAILABLE"));
-  String scoreBand = String.valueOf(matchAnalysis.getOrDefault("scoreBand", "Advisory Review"));
-  String strengthSummary = String.valueOf(matchAnalysis.getOrDefault("strengthSummary", "No key strengths were highlighted."));
-  String riskSummary = String.valueOf(matchAnalysis.getOrDefault("riskSummary", "No key risks were highlighted."));
-  String nextStepSuggestion = String.valueOf(matchAnalysis.getOrDefault("nextStepSuggestion", "Review the role carefully before deciding whether to apply."));
-  String confidenceHint = String.valueOf(matchAnalysis.getOrDefault("confidenceHint", "This result is advisory only."));
-  String methodLabel = String.valueOf(matchAnalysis.getOrDefault("methodLabel", method));
-  String methodHint = String.valueOf(matchAnalysis.getOrDefault("methodHint", "Generated from the available structured data."));
+  Object eligibilityObj = request.getAttribute("eligibilityResult");
+  java.util.Map eligibility = eligibilityObj instanceof java.util.Map ? (java.util.Map) eligibilityObj : java.util.Collections.emptyMap();
+  boolean canApply = Boolean.TRUE.equals(eligibility.get("eligible"));
+  boolean alreadyApplied = Boolean.TRUE.equals(eligibility.get("alreadyApplied"));
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -159,8 +160,18 @@
         </section>
 
         <div class="ta-details-card__footer">
-          <p>Review the role requirements and your current profile before submitting.</p>
+          <p><%= alreadyApplied ? "You have already submitted an application for this role." : "Review the role requirements and your current profile before submitting." %></p>
+          <%
+            if (canApply) {
+          %>
           <a class="ta-details-apply" href="<%= contextPath %>/ta/applications/confirm?jobId=<%= String.valueOf(job.getOrDefault("postingId", "")) %><%= encodedReturnQuery.isBlank() ? "" : "&returnQuery=" + encodedReturnQuery %>">Apply Now</a>
+          <%
+            } else {
+          %>
+          <span class="ta-details-apply" style="opacity:0.6; pointer-events:none;"><%= alreadyApplied ? "Applied" : "Unavailable" %></span>
+          <%
+            }
+          %>
         </div>
       </section>
     </main>

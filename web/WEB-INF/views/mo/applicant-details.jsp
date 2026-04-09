@@ -76,20 +76,6 @@
       </section>
 
       <section class="mo-applicant-panel">
-        <div class="mo-applicant-panel__header"><h2>Skill Tags</h2></div>
-        <div class="mo-applicant-skill-list">
-          <%
-            java.util.List skills = taProfile.get("skills") instanceof java.util.List ? (java.util.List) taProfile.get("skills") : java.util.Collections.emptyList();
-            for (Object skillObj : skills) {
-          %>
-          <span class="mo-applicant-skill-chip"><%= String.valueOf(skillObj) %></span>
-          <%
-            }
-          %>
-        </div>
-      </section>
-
-      <section class="mo-applicant-panel">
         <div class="mo-applicant-panel__header"><h2>Resume</h2></div>
         <div class="mo-applicant-resume-card">
           <div class="mo-applicant-resume-card__left">

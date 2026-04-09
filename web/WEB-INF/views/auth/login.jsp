@@ -4,7 +4,6 @@
   request.setAttribute("headerBrandHref", contextPath + "/auth/login");
   request.setAttribute("showHeaderBack", Boolean.FALSE);
   request.setAttribute("showHeaderUser", Boolean.FALSE);
-  String errorMessage = String.valueOf(request.getAttribute("errorMessage") == null ? "" : request.getAttribute("errorMessage"));
   String selectedRole = request.getParameter("role");
   if (selectedRole == null || selectedRole.isBlank()) {
     selectedRole = "applicant";
@@ -34,15 +33,6 @@
         </div>
 
         <div class="auth-card__body">
-          <%
-            if (!errorMessage.isBlank()) {
-          %>
-          <div style="margin-bottom: 12px; padding: 10px 12px; border-radius: 8px; background: #fff3f3; color: #b42318; border: 1px solid #f5c2c7;">
-            <%= errorMessage %>
-          </div>
-          <%
-            }
-          %>
           <form class="auth-form" action="<%= contextPath %>/auth/login" method="post">
             <input id="selectedRole" type="hidden" name="role" value="<%= selectedRole %>">
 

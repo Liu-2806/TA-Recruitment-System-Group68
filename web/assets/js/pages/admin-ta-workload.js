@@ -1,7 +1,7 @@
 (function () {
   const modal = document.getElementById("adminTaModal");
   const closeButton = document.getElementById("closeAdminTaModal");
-  const detailButtons = document.querySelectorAll("[data-ta-detail]");
+  const detailButtons = document.querySelectorAll("[data-ta-id]");
   const personalInfo = document.getElementById("adminTaPersonalInfo");
   const positionList = document.getElementById("adminTaPositionList");
   const analysisList = document.getElementById("adminTaAnalysisList");
@@ -13,104 +13,6 @@
     return;
   }
 
-  const dataset = {
-    "zhang-san": {
-      name: "Zhang San",
-      subtitle: "Balanced workload across two active TA assignments.",
-      personal: [
-        ["Student ID", "2021001234"],
-        ["Major", "Software Engineering"],
-        ["Email", "zhang.san@univ.edu"],
-        ["Current Load", "8h / week"]
-      ],
-      positions: [
-        ["Software Engineering TA", "Weekly lab support · 6h"],
-        ["Project Check-off", "Friday acceptance sessions · 2h"]
-      ],
-      analysis: [
-        ["Current Status", "Normal workload distribution"],
-        ["Peak Day", "Friday afternoon"],
-        ["Risk Level", "Low"]
-      ],
-      suggestions: [
-        "Safe to keep current assignments without redistribution.",
-        "Suitable backup candidate for one short invigilation duty if needed.",
-        "Continue monitoring only if new tasks are added this week."
-      ]
-    },
-    "li-si": {
-      name: "Li Si",
-      subtitle: "Heavy workload concentration with multiple active positions.",
-      personal: [
-        ["Student ID", "2021002345"],
-        ["Major", "Computer Science"],
-        ["Email", "li.si@univ.edu"],
-        ["Current Load", "12h / week"]
-      ],
-      positions: [
-        ["Data Structures TA", "Tutorial + marking · 6h"],
-        ["Database Systems TA", "Lab support · 4h"],
-        ["Exam Invigilation", "Assessment duty · 2h"]
-      ],
-      analysis: [
-        ["Current Status", "High alert"],
-        ["Peak Day", "Tuesday and Friday"],
-        ["Risk Level", "High"]
-      ],
-      suggestions: [
-        "Avoid assigning new duties this week.",
-        "Rebalance at least one short operational task to another TA.",
-        "MO should confirm whether the exam duty can be shared."
-      ]
-    },
-    "wang-wu": {
-      name: "Wang Wu",
-      subtitle: "Light workload with room for additional academic support.",
-      personal: [
-        ["Student ID", "2021003456"],
-        ["Major", "Software Engineering"],
-        ["Email", "wang.wu@univ.edu"],
-        ["Current Load", "4h / week"]
-      ],
-      positions: [
-        ["Software Engineering TA", "One lab block · 4h"]
-      ],
-      analysis: [
-        ["Current Status", "Normal"],
-        ["Peak Day", "Wednesday"],
-        ["Risk Level", "Low"]
-      ],
-      suggestions: [
-        "Candidate can absorb one extra short task if needed.",
-        "Good option for replacing urgent temporary absence.",
-        "Keep skill growth aligned with software lab duties."
-      ]
-    },
-    "zhao-liu": {
-      name: "Zhao Liu",
-      subtitle: "No current TA assignment, available for future matching.",
-      personal: [
-        ["Student ID", "2021004567"],
-        ["Major", "Communication Engineering"],
-        ["Email", "zhao.liu@univ.edu"],
-        ["Current Load", "0h / week"]
-      ],
-      positions: [
-        ["No active positions", "Available for future assignment"]
-      ],
-      analysis: [
-        ["Current Status", "Not applied"],
-        ["Peak Day", "None"],
-        ["Risk Level", "None"]
-      ],
-      suggestions: [
-        "Can be recommended to modules with low applicant coverage.",
-        "Priority outreach candidate for upcoming postings.",
-        "Consider matching based on communication-heavy support roles."
-      ]
-    }
-  };
-
   function renderPairs(container, items, itemClass) {
     container.innerHTML = "";
     items.forEach(function (item) {
@@ -121,12 +23,7 @@
     });
   }
 
-  function openModal(key) {
-    const payload = dataset[key];
-    if (!payload) {
-      return;
-    }
-
+  function openModal(payload) {
     modalTitle.textContent = payload.name;
     modalSubtitle.textContent = payload.subtitle;
     renderPairs(personalInfo, payload.personal, "admin-ta-detail-item");
@@ -151,9 +48,78 @@
     document.body.style.overflow = "";
   }
 
+  function buildPayload(detail) {
+    const taProfile = detail.taProfile || {};
+    const workloadAnalysis = detail.workloadAnalysis || {};
+    const workingPositions = Array.isArray(detail.workingPositions) ? detail.workingPositions : [];
+    const suggestions = Array.isArray(detail.adminSuggestions) ? detail.adminSuggestions : [];
+    const name = taProfile.fullName || taProfile.taId || "TA Detail";
+    const totalHours = workloadAnalysis.totalWorkloadHours || 0;
+
+    return {
+      name: name,
+      subtitle: "Current workload: " + totalHours + "h across " + (workloadAnalysis.activePositionCount || 0) + " accepted position(s).",
+      personal: [
+        ["TA ID", taProfile.taId || "-"],
+        ["Student ID", taProfile.studentId || "-"],
+        ["Major", taProfile.majorProgram || "-"],
+        ["Academic Year", taProfile.academicYear || "-"],
+        ["Email", taProfile.email || "-"],
+        ["Phone", taProfile.phone || "-"]
+      ],
+      positions: workingPositions.length === 0 ? [["No accepted positions", "This TA currently has no accepted assignments."]] : workingPositions.map(function (position) {
+        return [
+          position.courseName || position.courseCode || "Position",
+          (position.roleType || "TA Duty") + " | " + (position.workloadHours || 0) + "h | " + (position.status || "UNKNOWN")
+        ];
+      }),
+      analysis: [
+        ["Current Status", workloadAnalysis.statusLabel || "-"],
+        ["Risk Level", workloadAnalysis.riskLevel || "-"],
+        ["Peak Day", workloadAnalysis.peakDay || "-"],
+        ["Active Positions", String(workloadAnalysis.activePositionCount || 0)],
+        ["Total Hours", String(totalHours) + "h"]
+      ],
+      suggestions: suggestions.length === 0 ? ["No additional admin suggestions were generated."] : suggestions
+    };
+  }
+
+  function fetchJson(url) {
+    return fetch(url, { headers: { Accept: "application/json" } }).then(function (response) {
+      return response.json().then(function (payload) {
+        if (!response.ok || payload.errorMessage) {
+          throw new Error(payload.errorMessage || "Failed to load TA detail.");
+        }
+        return payload;
+      });
+    });
+  }
+
   detailButtons.forEach(function (button) {
     button.addEventListener("click", function () {
-      openModal(button.getAttribute("data-ta-detail"));
+      const taId = button.getAttribute("data-ta-id");
+      if (!taId) {
+        return;
+      }
+
+      button.disabled = true;
+      fetchJson(window.location.origin + window.location.pathname.replace(/\/admin\/analytics\/ta-workload.*$/, "") + "/admin/analytics/ta-workload/detail?taId=" + encodeURIComponent(taId))
+        .then(function (payload) {
+          openModal(buildPayload(payload.detail || {}));
+        })
+        .catch(function (error) {
+          openModal({
+            name: "Unable to load details",
+            subtitle: error.message,
+            personal: [],
+            positions: [],
+            analysis: [],
+            suggestions: ["Please refresh the page and try again."]
+          });
+        })
+        .finally(function () {
+          button.disabled = false;
+        });
     });
   });
 

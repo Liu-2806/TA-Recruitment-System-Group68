@@ -18,10 +18,14 @@
   int total = jobsPage == null ? jobs.size() : (int) jobsPage.getTotal();
   int totalPages = pageSize <= 0 ? 1 : Math.max(1, (int) Math.ceil(total / (double) pageSize));
 
-  String currentUserName = "TA";
+  Object currentUserObj = request.getSession(false) == null ? null : request.getSession(false).getAttribute("currentUser");
+  com.bupt.ta.model.User currentUser = currentUserObj instanceof com.bupt.ta.model.User ? (com.bupt.ta.model.User) currentUserObj : null;
+  String currentUserName = currentUser == null || currentUser.getDisplayName() == null || currentUser.getDisplayName().trim().isEmpty()
+      ? "TA"
+      : currentUser.getDisplayName().trim();
   request.setAttribute("currentUserName", currentUserName);
   request.setAttribute("currentUserRoleLabel", "TA Applicant");
-  request.setAttribute("currentUserInitial", "T");
+  request.setAttribute("currentUserInitial", currentUserName.isBlank() ? "T" : currentUserName.substring(0, 1).toUpperCase());
   request.setAttribute("notificationCount", Integer.valueOf(0));
 %>
 <!DOCTYPE html>
@@ -65,25 +69,22 @@
 
           <div class="ta-filter-field">
             <label for="positionMajor">Major</label>
-            <div class="ta-filter-select">
+            <div class="ta-filter-input ta-filter-input--plain">
               <input id="positionMajor" name="major" type="text" placeholder="e.g. Software Engineering" value="<%= query.getMajor() == null ? "" : query.getMajor() %>">
-              <span class="ta-filter-select__caret" aria-hidden="true">v</span>
             </div>
           </div>
 
           <div class="ta-filter-field">
             <label for="positionDepartment">Department</label>
-            <div class="ta-filter-select">
+            <div class="ta-filter-input ta-filter-input--plain">
               <input id="positionDepartment" name="department" type="text" placeholder="e.g. Computer Science" value="<%= query.getDepartment() == null ? "" : query.getDepartment() %>">
-              <span class="ta-filter-select__caret" aria-hidden="true">v</span>
             </div>
           </div>
 
           <div class="ta-filter-field">
             <label for="positionModuleType">Module Type</label>
-            <div class="ta-filter-select">
+            <div class="ta-filter-input ta-filter-input--plain">
               <input id="positionModuleType" name="moduleType" type="text" placeholder="e.g. Lab Module" value="<%= query.getModuleType() == null ? "" : query.getModuleType() %>">
-              <span class="ta-filter-select__caret" aria-hidden="true">v</span>
             </div>
           </div>
 
@@ -149,7 +150,9 @@
               String status = String.valueOf(job.getOrDefault("status", "OPEN"));
               String department = String.valueOf(job.getOrDefault("department", ""));
               String moduleType = String.valueOf(job.getOrDefault("moduleType", ""));
-              String statusCss = "open";
+              boolean alreadyApplied = Boolean.TRUE.equals(job.get("alreadyApplied"));
+              boolean canApply = Boolean.TRUE.equals(job.get("canApply"));
+              String statusCss = alreadyApplied ? "pending" : "open";
               Object requiredSkillsObj = job.get("requiredSkills");
               java.util.List requiredSkillsList = requiredSkillsObj instanceof java.util.List ? (java.util.List) requiredSkillsObj : java.util.Collections.emptyList();
         %>
@@ -171,7 +174,7 @@
             <div class="ta-position-card__meta-actions">
               <span class="ta-position-status ta-position-status--<%= statusCss %>">
                 <span class="ta-position-status__dot"></span>
-                <%= status %>
+                <%= alreadyApplied ? "Applied" : status %>
               </span>
               <a href="<%= contextPath %>/ta/jobs/detail?jobId=<%= postingId %><%= encodedReturnQuery.isBlank() ? "" : "&returnQuery=" + encodedReturnQuery %>" class="ta-position-card__details">
                 <span>View Details</span>
@@ -221,6 +224,10 @@
                 %>
               </div>
             </div>
+            <div class="ta-position-info">
+              <p class="ta-position-info__label">Application</p>
+              <p class="ta-position-info__value"><%= alreadyApplied ? "Already submitted" : (canApply ? "Available" : "Unavailable") %></p>
+            </div>
           </div>
         </article>
         <%
@@ -250,9 +257,14 @@
               <path d="M14.5 6.5 9 12l5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </a>
-          <span class="ta-pagination__page is-active"><%= currentPage %></span>
-          <span class="ta-pagination__dots">/</span>
-          <span class="ta-pagination__page"><%= totalPages %></span>
+          <%
+            for (int pageNumber = 1; pageNumber <= totalPages; pageNumber++) {
+          %>
+          <a class="ta-pagination__page <%= pageNumber == currentPage ? "is-active" : "" %>"
+             href="<%= contextPath + "/ta/jobs?" + baseParams + "&page=" + pageNumber %>"><%= pageNumber %></a>
+          <%
+            }
+          %>
           <a class="ta-pagination__nav <%= currentPage >= totalPages ? "is-disabled" : "" %>"
              aria-label="Next page"
              href="<%= currentPage >= totalPages ? "#" : (contextPath + "/ta/jobs?" + baseParams + "&page=" + (currentPage + 1)) %>">

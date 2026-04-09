@@ -1,6 +1,5 @@
 package com.bupt.ta.service;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -45,5 +44,4 @@ public interface ProfileService {
      *
      * @return 技能标签列表
      */
-    List<String> listAllSkillTags();
 }

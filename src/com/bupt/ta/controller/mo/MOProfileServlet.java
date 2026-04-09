@@ -4,6 +4,7 @@ import com.bupt.ta.config.ServiceRegistry;
 import com.bupt.ta.controller.common.BaseServlet;
 import com.bupt.ta.model.User;
 import com.bupt.ta.service.ProfileService;
+import com.bupt.ta.util.FlashMessages;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -26,6 +27,10 @@ public class MOProfileServlet extends BaseServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User user = currentUser(request);
+        if (user == null) {
+            response.sendRedirect(request.getContextPath() + "/auth/login");
+            return;
+        }
         request.setAttribute("profile", profileService.getMOProfile(user.getId()));
         request.getRequestDispatcher("/WEB-INF/views/mo/profile-edit.jsp").forward(request, response);
     }
@@ -36,6 +41,10 @@ public class MOProfileServlet extends BaseServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User user = currentUser(request);
+        if (user == null) {
+            response.sendRedirect(request.getContextPath() + "/auth/login");
+            return;
+        }
         Map<String, Object> params = new HashMap<>();
         params.put("name", firstNonBlank(request.getParameter("name"), request.getParameter("fullName")));
         params.put("fullName", request.getParameter("fullName"));
@@ -45,6 +54,7 @@ public class MOProfileServlet extends BaseServlet {
         params.put("description", request.getParameter("description"));
         try {
             profileService.updateMOProfile(user.getId(), params);
+            FlashMessages.success(request, "Your MO profile changes were saved successfully.");
             response.sendRedirect(request.getContextPath() + "/mo/profile");
         } catch (Exception ex) {
             request.setAttribute("errorMessage", ex.getMessage());

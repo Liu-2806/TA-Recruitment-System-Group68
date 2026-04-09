@@ -100,6 +100,7 @@ public class JobServiceImpl implements JobService {
     @Override
     public Map<String, Object> createJob(String moUserId, Map<String, Object> params) {
         Map<String, Object> mo = requireMO(moUserId);
+        String postingType = normalizePostingType(firstNonBlank(params, "postingType"));
         String courseCode = requireText(firstNonBlank(params, "courseCode"), "Course code is required.");
         String courseName = requireText(firstNonBlank(params, "courseName", "title"), "Course name is required.");
         String deadline = normalizeDate(requireText(firstNonBlank(params, "deadline"), "Application deadline is required."));
@@ -129,8 +130,20 @@ public class JobServiceImpl implements JobService {
         posting.put("deadline", deadline);
         posting.put("description", description);
         posting.put("requiredSkills", requiredSkills);
+        posting.put("postingType", postingType);
         posting.put("estimatedWorkloadHours", estimatedWorkloadHours);
         posting.put("status", normalizePostingStatus(firstNonBlank(params, "status")));
+        if ("ACTIVITY".equals(postingType)) {
+            String activityDate = normalizeDate(requireText(firstNonBlank(params, "activityDate"), "Activity date is required."));
+            String activityStartTime = normalizeTime(requireText(firstNonBlank(params, "activityStartTime"), "Activity start time is required."));
+            String activityEndTime = normalizeTime(requireText(firstNonBlank(params, "activityEndTime"), "Activity end time is required."));
+            posting.put("activityType", normalizeActivityType(firstNonBlank(params, "activityType")));
+            posting.put("activityDate", activityDate);
+            posting.put("activityStartTime", activityStartTime);
+            posting.put("activityEndTime", activityEndTime);
+            posting.put("activityLocation", firstNonBlankText(firstNonBlank(params, "activityLocation"), "Assigned venue"));
+            posting.put("moduleType", "Activity");
+        }
         posting.put("createdAt", now);
         posting.put("updatedAt", now);
         postingDataRepository.save(posting);
@@ -346,9 +359,35 @@ public class JobServiceImpl implements JobService {
         return normalized;
     }
 
+    private String normalizePostingType(String postingType) {
+        if (postingType == null || postingType.isBlank()) {
+            return "TA";
+        }
+        String normalized = postingType.trim().toUpperCase(Locale.ROOT);
+        if (!"TA".equals(normalized) && !"ACTIVITY".equals(normalized)) {
+            throw new IllegalStateException("Unsupported posting type: " + postingType);
+        }
+        return normalized;
+    }
+
+    private String normalizeActivityType(String activityType) {
+        if (activityType == null || activityType.isBlank()) {
+            return "lab";
+        }
+        return activityType.trim().toLowerCase(Locale.ROOT);
+    }
+
     private String normalizeDate(String rawDate) {
         String candidate = rawDate.trim().replace('/', '-').replace('.', '-');
         return LocalDate.parse(candidate).toString();
+    }
+
+    private String normalizeTime(String rawTime) {
+        String value = rawTime == null ? "" : rawTime.trim();
+        if (!value.matches("^\\d{2}:\\d{2}$")) {
+            throw new IllegalStateException("Time must use HH:mm format.");
+        }
+        return value;
     }
 
     private String nextPostingId() {

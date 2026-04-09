@@ -49,18 +49,20 @@
           </div>
           <span class="mo-post-card__badge">* Required Fields</span>
         </div>
-
-        <%
-          if (!errorMessage.isBlank()) {
-        %>
-        <div class="mo-post-error"><%= errorMessage %></div>
-        <%
-          }
-        %>
         <form class="mo-post-form" action="<%= contextPath %>/mo/jobs/create" method="post">
           <div class="mo-post-grid">
             <div class="mo-post-field">
-              <label for="courseName">* Course Name</label>
+              <label for="postingType">* Position Type</label>
+              <div class="mo-post-input">
+                <select id="postingType" name="postingType">
+                  <option value="TA" <%= !"ACTIVITY".equalsIgnoreCase(String.valueOf(formData.getOrDefault("postingType", "TA"))) ? "selected" : "" %>>TA Position</option>
+                  <option value="ACTIVITY" <%= "ACTIVITY".equalsIgnoreCase(String.valueOf(formData.getOrDefault("postingType", ""))) ? "selected" : "" %>>Activity</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mo-post-field">
+              <label for="courseName">* Position Name</label>
               <div class="mo-post-input">
                 <span class="mo-post-input__icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" focusable="false">
@@ -72,7 +74,7 @@
             </div>
 
             <div class="mo-post-field">
-              <label for="courseCode">* Course Code</label>
+              <label for="courseCode">* Reference Code</label>
               <div class="mo-post-input">
                 <span class="mo-post-input__icon mo-post-input__icon--text" aria-hidden="true">#</span>
                 <input id="courseCode" name="courseCode" type="text" value="<%= String.valueOf(formData.getOrDefault("courseCode", "")) %>" placeholder="e.g. SE3001">
@@ -91,6 +93,53 @@
               <label for="deadline">* Application Deadline</label>
               <div class="mo-post-input mo-post-input--picker" id="deadlinePickerField">
                 <input id="deadline" name="deadline" type="date" value="<%= String.valueOf(formData.getOrDefault("deadline", "")) %>">
+              </div>
+            </div>
+
+            <div class="mo-post-field mo-post-field--full" id="activityFields" <%= "ACTIVITY".equalsIgnoreCase(String.valueOf(formData.getOrDefault("postingType", ""))) ? "" : "hidden" %>>
+              <div class="mo-post-field__label-row">
+                <label>Activity Schedule</label>
+                <span>Required for one-off activities</span>
+              </div>
+              <div class="mo-post-grid">
+                <div class="mo-post-field">
+                  <label for="activityType">Activity Type</label>
+                  <div class="mo-post-input">
+                    <select id="activityType" name="activityType">
+                      <option value="exam" <%= "exam".equalsIgnoreCase(String.valueOf(formData.getOrDefault("activityType", ""))) ? "selected" : "" %>>Invigilation</option>
+                      <option value="checkoff" <%= "checkoff".equalsIgnoreCase(String.valueOf(formData.getOrDefault("activityType", ""))) ? "selected" : "" %>>Lab Acceptance</option>
+                      <option value="lab" <%= (!formData.containsKey("activityType") || "lab".equalsIgnoreCase(String.valueOf(formData.getOrDefault("activityType", "")))) ? "selected" : "" %>>Lab Support</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="mo-post-field">
+                  <label for="activityDate">Activity Date</label>
+                  <div class="mo-post-input">
+                    <input id="activityDate" name="activityDate" type="date" value="<%= String.valueOf(formData.getOrDefault("activityDate", "")) %>">
+                  </div>
+                </div>
+
+                <div class="mo-post-field">
+                  <label for="activityStartTime">Start Time</label>
+                  <div class="mo-post-input">
+                    <input id="activityStartTime" name="activityStartTime" type="time" value="<%= String.valueOf(formData.getOrDefault("activityStartTime", "")) %>">
+                  </div>
+                </div>
+
+                <div class="mo-post-field">
+                  <label for="activityEndTime">End Time</label>
+                  <div class="mo-post-input">
+                    <input id="activityEndTime" name="activityEndTime" type="time" value="<%= String.valueOf(formData.getOrDefault("activityEndTime", "")) %>">
+                  </div>
+                </div>
+
+                <div class="mo-post-field mo-post-field--full">
+                  <label for="activityLocation">Location</label>
+                  <div class="mo-post-input">
+                    <input id="activityLocation" name="activityLocation" type="text" value="<%= String.valueOf(formData.getOrDefault("activityLocation", "")) %>" placeholder="e.g. Central Exam Hall">
+                  </div>
+                </div>
               </div>
             </div>
 

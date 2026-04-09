@@ -4,6 +4,7 @@ import com.bupt.ta.config.ServiceRegistry;
 import com.bupt.ta.controller.common.BaseServlet;
 import com.bupt.ta.model.User;
 import com.bupt.ta.service.JobService;
+import com.bupt.ta.util.FlashMessages;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -40,6 +41,7 @@ public class MOJobCreateServlet extends BaseServlet {
         }
         Map<String, Object> params = new HashMap<>();
         params.put("title", firstNonBlank(request.getParameter("title"), request.getParameter("courseName")));
+        params.put("postingType", request.getParameter("postingType"));
         params.put("courseCode", request.getParameter("courseCode"));
         params.put("courseName", request.getParameter("courseName"));
         params.put("description", request.getParameter("description"));
@@ -50,9 +52,15 @@ public class MOJobCreateServlet extends BaseServlet {
         params.put("vacancies", firstNonBlank(request.getParameter("vacancies"), request.getParameter("headcount")));
         params.put("headcount", request.getParameter("headcount"));
         params.put("deadline", request.getParameter("deadline"));
+        params.put("activityType", request.getParameter("activityType"));
+        params.put("activityDate", request.getParameter("activityDate"));
+        params.put("activityStartTime", request.getParameter("activityStartTime"));
+        params.put("activityEndTime", request.getParameter("activityEndTime"));
+        params.put("activityLocation", request.getParameter("activityLocation"));
         params.put("status", request.getParameter("status"));
         try {
             jobService.createJob(user.getId(), params);
+            FlashMessages.success(request, "The position has been posted successfully.");
             response.sendRedirect(request.getContextPath() + "/mo/jobs/my");
         } catch (Exception ex) {
             request.setAttribute("errorMessage", ex.getMessage());

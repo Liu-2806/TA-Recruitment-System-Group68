@@ -14,24 +14,7 @@
     "moName": "Prof. Wang",
     "skillMatchScore": 82,
     "skillMatchExplanation": "Strong match on Java, Testing, and Communication. Missing Object-Oriented Programming as an explicit skill tag.",
-    "matchMethod": "local-rule-fallback",
-    "historyLogs": [
-      {
-        "time": "2026-03-24 20:50:00",
-        "action": "SUBMITTED",
-        "description": "Application submitted with supporting statement and resume."
-      },
-      {
-        "time": "2026-03-25 14:00:00",
-        "action": "UNDER_REVIEW",
-        "description": "Application is currently being reviewed by the module organiser."
-      },
-      {
-        "time": "2026-03-26 10:30:00",
-        "action": "ACCEPTED",
-        "description": "Application accepted by the module organiser. Feedback: Strong profile with relevant Java and testing experience. Welcome aboard!"
-      }
-    ]
+    "matchMethod": "local-rule-fallback"
   },
   {
     "applicationId": "APP002",
@@ -48,19 +31,7 @@
     "moName": "Prof. Zhang",
     "skillMatchScore": 58,
     "skillMatchExplanation": "Matched on Python, Data Analysis, and Communication. Missing Machine Learning as an explicit skill.",
-    "matchMethod": "local-rule-fallback",
-    "historyLogs": [
-      {
-        "time": "2026-03-25 09:15:00",
-        "action": "SUBMITTED",
-        "description": "Application submitted with supporting statement and resume."
-      },
-      {
-        "time": "2026-03-27 16:45:00",
-        "action": "REJECTED",
-        "description": "Application rejected by the module organiser. Feedback: Thank you for your interest. We selected candidates with more direct ML research experience."
-      }
-    ]
+    "matchMethod": "local-rule-fallback"
   },
   {
     "applicationId": "APP003",
@@ -77,13 +48,57 @@
     "moName": "Prof. Li",
     "skillMatchScore": 68,
     "skillMatchExplanation": "Matched on Communication. Missing SQL and Data Analysis as explicit skill tags, but resume mentions related experience.",
-    "matchMethod": "local-rule-fallback",
-    "historyLogs": [
-      {
-        "time": "2026-03-28 11:20:00",
-        "action": "SUBMITTED",
-        "description": "Application submitted with supporting statement and resume."
-      }
-    ]
+    "matchMethod": "local-rule-fallback"
+  },
+  {
+    "applicationId": "APP004",
+    "postingId": "POST004",
+    "postingTitle": "Introduction to Programming TA",
+    "taId": "TA004",
+    "taName": "Yueyang Sun",
+    "appliedAt": "2026-04-07 09:00:00",
+    "updatedAt": "2026-04-08 18:00:00",
+    "status": "ACCEPTED",
+    "statement": "I can support first-year programming labs and explain fundamental concepts clearly.",
+    "feedback": "Accepted for weekly programming lab support and office hour assistance.",
+    "courseCode": "CS1101",
+    "moName": "Prof. Wang",
+    "skillMatchScore": 76,
+    "skillMatchExplanation": "Strong alignment with programming support duties and introductory teaching assistance.",
+    "matchMethod": "local-rule-fallback"
+  },
+  {
+    "applicationId": "APP005",
+    "postingId": "POST005",
+    "postingTitle": "Digital Electronics Lab Acceptance",
+    "taId": "TA004",
+    "taName": "Yueyang Sun",
+    "appliedAt": "2026-04-07 11:20:00",
+    "updatedAt": "2026-04-08 18:20:00",
+    "status": "ACCEPTED",
+    "statement": "I am available for lab acceptance and assessment support throughout the week.",
+    "feedback": "Accepted for the lab acceptance activity.",
+    "courseCode": "ACT-LAB-01",
+    "moName": "Prof. Li",
+    "skillMatchScore": 71,
+    "skillMatchExplanation": "Good fit for practical support, invigilation, and follow-up review tasks.",
+    "matchMethod": "local-rule-fallback"
+  },
+  {
+    "applicationId": "APP006",
+    "postingId": "POST007",
+    "postingTitle": "Final Exam Invigilation",
+    "taId": "TA004",
+    "taName": "Yueyang Sun",
+    "appliedAt": "2026-04-08 08:45:00",
+    "updatedAt": "2026-04-08 18:40:00",
+    "status": "ACCEPTED",
+    "statement": "I am available to support the final exam session and handle invigilation logistics.",
+    "feedback": "Accepted for the Friday exam invigilation activity.",
+    "courseCode": "ACT-EXAM-01",
+    "moName": "Prof. Wang",
+    "skillMatchScore": 73,
+    "skillMatchExplanation": "Strong fit for assessment support, attendance checks, and invigilation tasks.",
+    "matchMethod": "local-rule-fallback"
   }
 ]

@@ -8,10 +8,6 @@
   request.setAttribute("showHeaderUser", Boolean.TRUE);
   Object profileObj = request.getAttribute("profile");
   java.util.Map profile = profileObj instanceof java.util.Map ? (java.util.Map) profileObj : java.util.Collections.emptyMap();
-  Object skillTagsObj = request.getAttribute("allSkillTags");
-  java.util.List allSkillTags = skillTagsObj instanceof java.util.List ? (java.util.List) skillTagsObj : java.util.Collections.emptyList();
-  java.util.List selectedSkills = profile.get("skills") instanceof java.util.List ? (java.util.List) profile.get("skills") : java.util.Collections.emptyList();
-  java.util.Map extractedResume = profile.get("extractedResume") instanceof java.util.Map ? (java.util.Map) profile.get("extractedResume") : java.util.Collections.emptyMap();
 
   String currentUserName = String.valueOf(profile.getOrDefault("fullName", "TA"));
   request.setAttribute("currentUserName", currentUserName);
@@ -22,10 +18,6 @@
   String resumeFileName = String.valueOf(profile.getOrDefault("resumeFileName", ""));
   String resumeUploadedAt = String.valueOf(profile.getOrDefault("resumeUploadedAt", ""));
   boolean hasResume = resumeFileName != null && !resumeFileName.isBlank() && !"null".equalsIgnoreCase(resumeFileName);
-  boolean profileSaved = "1".equals(request.getParameter("saved"));
-  boolean resumeUpdated = "1".equals(request.getParameter("resumeUpdated"));
-  boolean resumeUploadFailed = Boolean.TRUE.equals(request.getAttribute("resumeUploadFailed"));
-  boolean hasExtractedResume = !extractedResume.isEmpty();
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -43,35 +35,6 @@
     <jsp:include page="/WEB-INF/views/common/header.jsp" />
 
     <main class="ta-profile-main">
-      <%
-        Object errorObj = request.getAttribute("errorMessage");
-        String errorMessage = errorObj == null ? "" : String.valueOf(errorObj);
-        if (!errorMessage.isBlank()) {
-      %>
-      <section class="ta-panel">
-        <div class="ta-panel__header"><h2><%= resumeUploadFailed ? "Resume upload failed" : "Update failed" %></h2></div>
-        <p style="color:#b42318; margin: 0;"><%= errorMessage %></p>
-      </section>
-      <%
-        }
-        if (profileSaved) {
-      %>
-      <section class="ta-panel">
-        <div class="ta-panel__header"><h2>Profile updated</h2></div>
-        <p style="color:#027a48; margin: 0;">Your TA profile details were saved successfully.</p>
-      </section>
-      <%
-        }
-        if (resumeUpdated) {
-      %>
-      <section class="ta-panel">
-        <div class="ta-panel__header"><h2>Resume updated</h2></div>
-        <p style="color:#027a48; margin: 0;">Your PDF resume was uploaded, extracted, and linked to your profile.</p>
-      </section>
-      <%
-        }
-      %>
-
       <form action="<%= contextPath %>/ta/profile" method="post">
         <section class="ta-panel">
           <div class="ta-panel__header"><h2>Basic Information</h2></div>
@@ -107,111 +70,85 @@
           </div>
         </section>
 
-        <section class="ta-panel">
-          <div class="ta-panel__header"><h2>Skill Tags</h2></div>
-          <div class="ta-skill-manager">
-            <div class="ta-skill-manager__list">
-              <%
-                for (Object tagObj : allSkillTags) {
-                  String tag = String.valueOf(tagObj);
-                  boolean checked = selectedSkills.contains(tag);
-              %>
-              <label class="ta-skill-pill" style="cursor:pointer;">
-                <input type="checkbox" name="skillTags" value="<%= tag %>" <%= checked ? "checked" : "" %> style="margin-right:8px;">
-                <%= tag %>
-              </label>
-              <%
-                }
-              %>
-            </div>
-          </div>
-        </section>
-
         <div class="ta-profile-actions">
           <button class="ta-profile-save" type="submit"><span>Save All Changes</span></button>
         </div>
       </form>
 
-      <section class="ta-panel">
-        <div class="ta-panel__header"><h2>Resume Management</h2></div>
-
-        <div class="ta-resume-card">
-          <div class="ta-resume-card__file">
-            <div class="ta-resume-card__file-meta">
-              <p>Current Resume</p>
-              <strong><%= hasResume ? resumeFileName : "No resume uploaded" %></strong>
-              <p><%
-                if (hasResume && resumeUploadedAt != null && !resumeUploadedAt.isBlank()) {
-                  out.print("Uploaded at " + resumeUploadedAt);
-                } else if (hasResume) {
-                  out.print("Resume linked to your profile. Upload again to refresh the extracted summary.");
-                } else {
-                  out.print("Upload a PDF resume to enable extraction and matching.");
-                }
-              %></p>
-            </div>
+      <section class="ta-panel ta-panel--resume">
+        <div class="ta-panel__header ta-panel__header--resume">
+          <div class="ta-panel__title-group">
+            <p class="ta-panel__eyebrow">Resume</p>
+            <h2>Resume Management</h2>
           </div>
-          <div class="ta-resume-card__actions">
-            <a class="ta-mini-button ta-mini-button--primary" href="<%= hasResume ? contextPath + "/ta/resume/download" : "#" %>" <%= hasResume ? "" : "aria-disabled=\"true\" onclick=\"return false;\" style=\"opacity:0.6; pointer-events:none;\"" %>>Download</a>
-            <a class="ta-mini-button ta-mini-button--link" href="#resume-upload">Replace</a>
-          </div>
+          <span class="ta-resume-status <%= hasResume ? "ta-resume-status--ready" : "ta-resume-status--missing" %>">
+            <%= hasResume ? "Ready for matching" : "Upload required" %>
+          </span>
         </div>
 
-        <form id="taResumeUploadForm" action="<%= contextPath %>/ta/profile/resume" method="post" enctype="multipart/form-data">
-          <div class="ta-upload-box" id="resume-upload">
-            <h3>Upload New Resume</h3>
+        <div class="ta-resume-layout">
+          <article class="ta-resume-summary-card">
+            <div class="ta-resume-summary-card__top">
+              <span class="ta-resume-summary-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <path d="M7.5 4.75h6l3 3v11.5H7.5Zm6 0v3h3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+              <div class="ta-resume-summary-card__meta">
+                <p class="ta-resume-summary-card__label">Current file</p>
+                <strong><%= hasResume ? resumeFileName : "No resume uploaded yet" %></strong>
+                <p class="ta-resume-summary-card__description">
+                  <%= hasResume && resumeUploadedAt != null && !resumeUploadedAt.isBlank()
+                      ? "Last updated on " + resumeUploadedAt
+                      : "Upload a PDF resume so the system can use it for screening and matching." %>
+                </p>
+              </div>
+            </div>
+
+            <div class="ta-resume-summary-card__details">
+              <div class="ta-resume-summary-card__detail">
+                <span>Format</span>
+                <strong>PDF only</strong>
+              </div>
+              <div class="ta-resume-summary-card__detail">
+                <span>Limit</span>
+                <strong>Up to 5 MB</strong>
+              </div>
+            </div>
+
+            <div class="ta-resume-summary-card__actions">
+              <a class="ta-mini-button ta-mini-button--primary" href="<%= hasResume ? contextPath + "/ta/resume/download" : "#" %>" <%= hasResume ? "" : "aria-disabled=\"true\" onclick=\"return false;\" style=\"opacity:0.6; pointer-events:none;\"" %>>Download Resume</a>
+              <a class="ta-mini-button ta-mini-button--link" href="#resume-upload">Replace file</a>
+            </div>
+          </article>
+
+          <form id="taResumeUploadForm" class="ta-upload-box" action="<%= contextPath %>/ta/profile/resume" method="post" enctype="multipart/form-data">
+            <div class="ta-upload-box__header" id="resume-upload">
+              <h3>Upload a new PDF</h3>
+              <p>Choose a single PDF file and submit it to replace the currently stored resume.</p>
+            </div>
+
             <div class="ta-upload-box__controls">
-              <input type="file" name="resumeFile" accept="application/pdf" required>
-              <button class="ta-upload-box__upload" type="submit"><span>Upload</span></button>
+              <input class="ta-upload-box__native-input" id="resumeFileInput" type="file" name="resumeFile" accept="application/pdf" required>
+              <div class="ta-upload-box__file-picker" aria-live="polite">
+                <label class="ta-upload-box__browse" for="resumeFileInput">Choose PDF</label>
+                <div class="ta-upload-box__selected-file">
+                  <span class="ta-upload-box__selected-label">Selected file</span>
+                  <strong id="resumeFileNameDisplay">No file chosen</strong>
+                </div>
+              </div>
+              <button class="ta-upload-box__upload" type="submit"><span>Upload Resume</span></button>
             </div>
-            <p class="ta-upload-box__hint">Only PDF files supported, maximum size 5MB.</p>
-          </div>
-        </form>
-      </section>
 
-      <section class="ta-panel">
-        <div class="ta-panel__header"><h2>Extracted Resume Summary</h2></div>
-        <%
-          if (!hasResume) {
-        %>
-        <p style="margin: 0 0 20px; color: #475467;">No structured resume data is available yet. Upload a PDF resume to generate the extracted summary used for matching.</p>
-        <%
-          } else if (!hasExtractedResume) {
-        %>
-        <p style="margin: 0 0 20px; color: #475467;">A resume file is linked to your profile, but no structured fields are available yet. Re-upload the PDF if extraction did not finish correctly.</p>
-        <%
-          }
-        %>
-        <div class="ta-form-grid">
-          <div class="ta-form-field">
-            <label>Name</label>
-            <div class="ta-form-input"><input type="text" value="<%= String.valueOf(extractedResume.getOrDefault("name", "")) %>" readonly></div>
-          </div>
-          <div class="ta-form-field">
-            <label>Email</label>
-            <div class="ta-form-input"><input type="text" value="<%= String.valueOf(extractedResume.getOrDefault("email", "")) %>" readonly></div>
-          </div>
-          <div class="ta-form-field">
-            <label>Phone</label>
-            <div class="ta-form-input"><input type="text" value="<%= String.valueOf(extractedResume.getOrDefault("phone", "")) %>" readonly></div>
-          </div>
-          <div class="ta-form-field ta-form-field--full">
-            <label>Education</label>
-            <div class="ta-form-input"><input type="text" value="<%= String.valueOf(extractedResume.getOrDefault("education", "")) %>" readonly></div>
-          </div>
-          <div class="ta-form-field ta-form-field--full">
-            <label>Extracted Skills</label>
-            <div class="ta-form-input"><input type="text" value="<%= extractedResume.get("skills") instanceof java.util.List && !((java.util.List) extractedResume.get("skills")).isEmpty() ? String.join(", ", (java.util.List<String>) extractedResume.get("skills")) : "No structured skills extracted yet" %>" readonly></div>
-          </div>
-          <div class="ta-form-field ta-form-field--full">
-            <label>Experience Highlights</label>
-            <div class="ta-form-input"><input type="text" value="<%= extractedResume.get("experienceHighlights") instanceof java.util.List && !((java.util.List) extractedResume.get("experienceHighlights")).isEmpty() ? String.join(" | ", (java.util.List<String>) extractedResume.get("experienceHighlights")) : "No experience highlights extracted yet" %>" readonly></div>
-          </div>
+            <p class="ta-upload-box__hint">English labels are custom here, so the browser's default localised file button will not appear.</p>
+          </form>
         </div>
       </section>
+
     </main>
 
     <jsp:include page="/WEB-INF/views/common/footer.jsp" />
   </div>
+  <script src="<%= contextPath %>/assets/js/pages/ta-profile.js"></script>
 </body>
 </html>

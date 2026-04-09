@@ -5,6 +5,7 @@ import com.bupt.ta.controller.common.BaseServlet;
 import com.bupt.ta.model.User;
 import com.bupt.ta.service.ProfileService;
 import com.bupt.ta.service.ResumeService;
+import com.bupt.ta.util.FlashMessages;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -36,12 +37,12 @@ public class TAResumeUploadServlet extends BaseServlet {
                 throw new IllegalStateException("Resume file is missing.");
             }
             resumeService.saveOrReplaceTAResume(user.getId(), resumeFile.getSubmittedFileName(), resumeFile.getInputStream());
-            response.sendRedirect(request.getContextPath() + "/ta/profile?resumeUpdated=1");
+            FlashMessages.success(request, "Your PDF resume was uploaded, extracted, and linked to your profile.");
+            response.sendRedirect(request.getContextPath() + "/ta/profile");
         } catch (Exception ex) {
             request.setAttribute("errorMessage", ex.getMessage());
             request.setAttribute("resumeUploadFailed", Boolean.TRUE);
             request.setAttribute("profile", profileService.getTAProfile(user.getId()));
-            request.setAttribute("allSkillTags", profileService.listAllSkillTags());
             request.getRequestDispatcher("/WEB-INF/views/ta/profile.jsp").forward(request, response);
         }
     }

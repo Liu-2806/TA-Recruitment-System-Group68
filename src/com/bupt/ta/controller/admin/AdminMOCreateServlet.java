@@ -2,6 +2,7 @@ package com.bupt.ta.controller.admin;
 
 import com.bupt.ta.controller.common.BaseServlet;
 import com.bupt.ta.service.UserService;
+import com.bupt.ta.util.FlashMessages;
 import com.bupt.ta.util.ServiceRegistry;
 
 import javax.servlet.ServletException;
@@ -46,6 +47,7 @@ public class AdminMOCreateServlet extends BaseServlet {
         params.put("confirmPassword", request.getParameter("confirmPassword"));
         try {
             userService.createMO(params);
+            FlashMessages.success(request, "The MO account has been created successfully.");
             response.sendRedirect(request.getContextPath() + "/admin/mos");
         } catch (Exception ex) {
             request.setAttribute("errorMessage", ex.getMessage());

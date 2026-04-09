@@ -39,7 +39,7 @@ public class MOJobApplicantsServlet extends BaseServlet {
         query.setStatus(request.getParameter("status"));
         query.setSortBy(request.getParameter("sortBy"));
         query.setPage(parsePositiveInt(request.getParameter("page"), 1));
-        query.setSize(parsePositiveInt(request.getParameter("size"), 10));
+        query.setSize(parsePositiveInt(request.getParameter("size"), 6));
         request.setAttribute("job", job);
         request.setAttribute("applicationsPage", applicationService.listApplicationsByJob(jobId, query));
         request.setAttribute("query", query);

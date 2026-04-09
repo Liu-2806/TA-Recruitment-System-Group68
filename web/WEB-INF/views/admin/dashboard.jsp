@@ -3,6 +3,7 @@
   String contextPath = request.getContextPath();
   Object overviewObj = request.getAttribute("overview");
   java.util.Map overview = overviewObj instanceof java.util.Map ? (java.util.Map) overviewObj : java.util.Collections.emptyMap();
+  java.util.List recentActivities = overview.get("recentActivities") instanceof java.util.List ? (java.util.List) overview.get("recentActivities") : java.util.Collections.emptyList();
   request.setAttribute("headerBrandHref", contextPath + "/admin/dashboard");
   request.setAttribute("showHeaderBack", Boolean.FALSE);
   request.setAttribute("showHeaderUser", Boolean.TRUE);
@@ -164,10 +165,10 @@
               </span>
             </a>
 
-            <a class="admin-action-card" href="#">
+            <a class="admin-action-card" href="<%= contextPath %>/admin/analytics/ta-workload">
               <div>
-                <h2>Export Report</h2>
-                <p>Download system summary</p>
+                <h2>Open Workload Report</h2>
+                <p>Review TA allocation and alerts</p>
               </div>
               <span class="admin-action-card__icon admin-action-card__icon--muted" aria-hidden="true">
                 <svg viewBox="0 0 24 24" focusable="false">
@@ -181,66 +182,46 @@
         <section class="admin-section">
           <div class="admin-section__header">
             <p class="admin-section__eyebrow">Recent Activity</p>
-            <a class="admin-section__link" href="#">View All Logs</a>
+            <a class="admin-section__link" href="<%= contextPath %>/admin/jobs">View Postings</a>
           </div>
 
           <div class="admin-activity-card">
+            <%
+              if (recentActivities.isEmpty()) {
+            %>
             <article class="admin-activity-item">
-              <span class="admin-activity-item__icon admin-activity-item__icon--blue" aria-hidden="true">
+              <span class="admin-activity-item__icon admin-activity-item__icon--gray" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <path d="M12 6.25v5.5l3.25 1.75M12 20a8 8 0 1 0-8-8 8 8 0 0 0 8 8Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+              <div class="admin-activity-item__content">
+                <strong>No recent activity</strong>
+                <p>System events will appear here once users begin interacting with the platform.</p>
+              </div>
+            </article>
+            <%
+              } else {
+                for (Object activityObj : recentActivities) {
+                  java.util.Map activity = activityObj instanceof java.util.Map ? (java.util.Map) activityObj : java.util.Collections.emptyMap();
+                  String activityType = String.valueOf(activity.getOrDefault("activityType", ""));
+                  String iconCss = activityType.contains("APPLICATION") ? "green" : (activityType.contains("POST") ? "blue" : "gray");
+            %>
+            <article class="admin-activity-item">
+              <span class="admin-activity-item__icon admin-activity-item__icon--<%= iconCss %>" aria-hidden="true">
                 <svg viewBox="0 0 24 24" focusable="false">
                   <path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </span>
               <div class="admin-activity-item__content">
-                <strong>Prof. Wang posted 'Software Engineering TA'</strong>
-                <p>Just now</p>
+                <strong><%= String.valueOf(activity.getOrDefault("message", "")) %></strong>
+                <p><%= String.valueOf(activity.getOrDefault("timeLabel", "")) %></p>
               </div>
-              <button class="admin-activity-item__more" type="button" aria-label="More">
-                <svg viewBox="0 0 24 24" focusable="false">
-                  <circle cx="12" cy="5.5" r="1.5" fill="currentColor"/>
-                  <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
-                  <circle cx="12" cy="18.5" r="1.5" fill="currentColor"/>
-                </svg>
-              </button>
             </article>
-
-            <article class="admin-activity-item">
-              <span class="admin-activity-item__icon admin-activity-item__icon--green" aria-hidden="true">
-                <svg viewBox="0 0 24 24" focusable="false">
-                  <path d="M7.75 12.25 10.5 15l5.75-5.75M12 20a8 8 0 1 0-8-8 8 8 0 0 0 8 8Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </span>
-              <div class="admin-activity-item__content">
-                <strong>Prof. Li hired Zhang San</strong>
-                <p>2 hours ago</p>
-              </div>
-              <button class="admin-activity-item__more" type="button" aria-label="More">
-                <svg viewBox="0 0 24 24" focusable="false">
-                  <circle cx="12" cy="5.5" r="1.5" fill="currentColor"/>
-                  <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
-                  <circle cx="12" cy="18.5" r="1.5" fill="currentColor"/>
-                </svg>
-              </button>
-            </article>
-
-            <article class="admin-activity-item">
-              <span class="admin-activity-item__icon admin-activity-item__icon--gray" aria-hidden="true">
-                <svg viewBox="0 0 24 24" focusable="false">
-                  <path d="m8 8 8 8m0-8-8 8M12 20a8 8 0 1 0-8-8 8 8 0 0 0 8 8Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </span>
-              <div class="admin-activity-item__content">
-                <strong>Prof. Zhang closed 'Database Systems TA' position</strong>
-                <p>5 hours ago</p>
-              </div>
-              <button class="admin-activity-item__more" type="button" aria-label="More">
-                <svg viewBox="0 0 24 24" focusable="false">
-                  <circle cx="12" cy="5.5" r="1.5" fill="currentColor"/>
-                  <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
-                  <circle cx="12" cy="18.5" r="1.5" fill="currentColor"/>
-                </svg>
-              </button>
-            </article>
+            <%
+                }
+              }
+            %>
           </div>
         </section>
       </main>

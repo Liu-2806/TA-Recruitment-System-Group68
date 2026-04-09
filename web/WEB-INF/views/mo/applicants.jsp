@@ -8,6 +8,10 @@
   java.util.List applications = applicationsPage == null || applicationsPage.getRecords() == null ? java.util.Collections.emptyList() : applicationsPage.getRecords();
   Object queryObj = request.getAttribute("query");
   com.bupt.ta.dto.ApplicationQuery query = queryObj instanceof com.bupt.ta.dto.ApplicationQuery ? (com.bupt.ta.dto.ApplicationQuery) queryObj : new com.bupt.ta.dto.ApplicationQuery();
+  int currentPage = applicationsPage == null ? 1 : applicationsPage.getPage();
+  int pageSize = applicationsPage == null ? 6 : applicationsPage.getSize();
+  int total = applicationsPage == null ? applications.size() : (int) applicationsPage.getTotal();
+  int totalPages = pageSize <= 0 ? 1 : Math.max(1, (int) Math.ceil(total / (double) pageSize));
   Object currentUserObj = request.getSession(false) == null ? null : request.getSession(false).getAttribute("currentUser");
   com.bupt.ta.model.User currentUser = currentUserObj instanceof com.bupt.ta.model.User ? (com.bupt.ta.model.User) currentUserObj : null;
   String currentUserName = currentUser == null || currentUser.getDisplayName() == null || currentUser.getDisplayName().trim().isEmpty()
@@ -170,6 +174,42 @@
               %>
             </tbody>
           </table>
+        </div>
+        <div class="mo-applicants-table__footer">
+          <%
+            String baseParams = "jobId=" + java.net.URLEncoder.encode(String.valueOf(job.getOrDefault("postingId", "")), "UTF-8")
+                + "&keyword=" + java.net.URLEncoder.encode(query.getKeyword() == null ? "" : query.getKeyword(), "UTF-8")
+                + "&status=" + java.net.URLEncoder.encode(query.getStatus() == null ? "" : query.getStatus(), "UTF-8")
+                + "&sortBy=" + java.net.URLEncoder.encode(query.getSortBy() == null ? "" : query.getSortBy(), "UTF-8")
+                + "&size=" + pageSize;
+            int startIndex = total == 0 ? 0 : ((currentPage - 1) * pageSize) + 1;
+            int endIndex = Math.min(total, currentPage * pageSize);
+          %>
+          <p>Showing <%= startIndex %>-<%= endIndex %> of <%= total %> applicants</p>
+          <div class="mo-pagination">
+            <a class="mo-pagination__nav <%= currentPage <= 1 ? "is-disabled" : "" %>"
+               href="<%= currentPage <= 1 ? "#" : (contextPath + "/mo/jobs/applicants?" + baseParams + "&page=" + (currentPage - 1)) %>"
+               aria-label="Previous page">
+              <svg viewBox="0 0 24 24" focusable="false">
+                <path d="M14.5 6.5 9 12l5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+            <%
+              for (int pageNumber = 1; pageNumber <= totalPages; pageNumber++) {
+            %>
+            <a class="mo-pagination__page <%= pageNumber == currentPage ? "is-active" : "" %>"
+               href="<%= contextPath + "/mo/jobs/applicants?" + baseParams + "&page=" + pageNumber %>"><%= pageNumber %></a>
+            <%
+              }
+            %>
+            <a class="mo-pagination__nav <%= currentPage >= totalPages ? "is-disabled" : "" %>"
+               href="<%= currentPage >= totalPages ? "#" : (contextPath + "/mo/jobs/applicants?" + baseParams + "&page=" + (currentPage + 1)) %>"
+               aria-label="Next page">
+              <svg viewBox="0 0 24 24" focusable="false">
+                <path d="M9.5 6.5 15 12l-5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </div>
         </div>
       </section>
     </main>
