@@ -16,6 +16,7 @@
   int pageSize = jobsPage == null ? 6 : jobsPage.getSize();
   int total = jobsPage == null ? jobs.size() : (int) jobsPage.getTotal();
   int totalPages = pageSize <= 0 ? 1 : Math.max(1, (int) Math.ceil(total / (double) pageSize));
+  String assetVersion = "20260410-mo-postings-sort-1";
 
   request.setAttribute("headerBrandHref", contextPath + "/mo/dashboard");
   request.setAttribute("showHeaderBack", Boolean.TRUE);
@@ -36,7 +37,7 @@
   <link rel="stylesheet" href="<%= contextPath %>/assets/css/base.css">
   <link rel="stylesheet" href="<%= contextPath %>/assets/css/layout.css">
   <link rel="stylesheet" href="<%= contextPath %>/assets/css/components.css">
-  <link rel="stylesheet" href="<%= contextPath %>/assets/css/pages/mo-postings.css">
+  <link rel="stylesheet" href="<%= contextPath %>/assets/css/pages/mo-postings.css?v=<%= assetVersion %>">
 </head>
 <body>
   <div class="mo-postings-shell">
@@ -70,12 +71,15 @@
         </div>
 
         <div class="mo-postings-filter__actions">
-          <select name="sortBy">
-            <option value="postingId" <%= query.getSortBy() == null || query.getSortBy().isBlank() || "postingId".equalsIgnoreCase(query.getSortBy()) ? "selected" : "" %>>Newest</option>
-            <option value="deadlineAsc" <%= "deadlineAsc".equalsIgnoreCase(query.getSortBy()) ? "selected" : "" %>>Upcoming Deadline</option>
-            <option value="applicationsDesc" <%= "applicationsDesc".equalsIgnoreCase(query.getSortBy()) ? "selected" : "" %>>Most Applications</option>
-            <option value="vacancies" <%= "vacancies".equalsIgnoreCase(query.getSortBy()) ? "selected" : "" %>>Most Vacancies</option>
-          </select>
+          <div class="mo-postings-filter__sort">
+            <select name="sortBy">
+              <option value="postingId" <%= query.getSortBy() == null || query.getSortBy().isBlank() || "postingId".equalsIgnoreCase(query.getSortBy()) ? "selected" : "" %>>Newest</option>
+              <option value="deadlineAsc" <%= "deadlineAsc".equalsIgnoreCase(query.getSortBy()) ? "selected" : "" %>>Upcoming Deadline</option>
+              <option value="applicationsDesc" <%= "applicationsDesc".equalsIgnoreCase(query.getSortBy()) ? "selected" : "" %>>Most Applications</option>
+              <option value="vacancies" <%= "vacancies".equalsIgnoreCase(query.getSortBy()) ? "selected" : "" %>>Most Vacancies</option>
+            </select>
+            <span class="mo-postings-filter__sort-caret" aria-hidden="true"></span>
+          </div>
           <button class="mo-postings-filter__apply" type="submit">Apply Filter</button>
           <a class="mo-postings-filter__reset" href="<%= contextPath %>/mo/jobs/my" aria-label="Reset filters">
             <svg viewBox="0 0 24 24" focusable="false">
