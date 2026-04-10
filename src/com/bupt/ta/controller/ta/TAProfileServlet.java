@@ -11,6 +11,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +27,7 @@ public class TAProfileServlet extends BaseServlet {
             return;
         }
         request.setAttribute("profile", profileService.getTAProfile(user.getId()));
+        request.setAttribute("allSkillTags", profileService.listAllSkillTags());
         request.getRequestDispatcher("/WEB-INF/views/ta/profile.jsp").forward(request, response);
     }
 
@@ -43,6 +45,8 @@ public class TAProfileServlet extends BaseServlet {
         params.put("major", request.getParameter("major"));
         params.put("grade", request.getParameter("grade"));
         params.put("intro", request.getParameter("intro"));
+        String[] skillTags = request.getParameterValues("skillTags");
+        params.put("skillTags", Arrays.asList(skillTags == null ? new String[0] : skillTags));
 
         try {
             profileService.updateTAProfile(user.getId(), params);
@@ -56,8 +60,10 @@ public class TAProfileServlet extends BaseServlet {
             profile.put("majorProgram", params.get("major"));
             profile.put("academicYear", params.get("grade"));
             profile.put("intro", params.get("intro"));
+            profile.put("skills", params.get("skillTags"));
             request.setAttribute("errorMessage", ex.getMessage());
             request.setAttribute("profile", profile);
+            request.setAttribute("allSkillTags", profileService.listAllSkillTags());
             request.getRequestDispatcher("/WEB-INF/views/ta/profile.jsp").forward(request, response);
         }
     }

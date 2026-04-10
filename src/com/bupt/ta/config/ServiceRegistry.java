@@ -5,6 +5,7 @@ import com.bupt.ta.repository.UserRepository;
 import com.bupt.ta.repository.file.ApplicationDataRepository;
 import com.bupt.ta.repository.file.JsonUserRepository;
 import com.bupt.ta.repository.file.PostingDataRepository;
+import com.bupt.ta.repository.file.SystemDataRepository;
 import com.bupt.ta.repository.file.TADataRepository;
 import com.bupt.ta.repository.file.TATimetableDataRepository;
 import com.bupt.ta.resume.PdfResumeExtractor;
@@ -27,6 +28,7 @@ public final class ServiceRegistry {
     private static final PostingDataRepository POSTING_DATA_REPOSITORY = new PostingDataRepository();
     private static final ApplicationDataRepository APPLICATION_DATA_REPOSITORY = new ApplicationDataRepository();
     private static final TATimetableDataRepository TA_TIMETABLE_DATA_REPOSITORY = new TATimetableDataRepository();
+    private static final SystemDataRepository SYSTEM_DATA_REPOSITORY = new SystemDataRepository();
 
     private static final ResumeService RESUME_SERVICE = new ResumeServiceImpl(
         TA_DATA_REPOSITORY,
@@ -44,7 +46,8 @@ public final class ServiceRegistry {
 
     private static final ProfileService PROFILE_SERVICE = new ProfileServiceImpl(
         TA_DATA_REPOSITORY,
-        USER_REPOSITORY
+        USER_REPOSITORY,
+        SYSTEM_DATA_REPOSITORY
     );
 
     private static final JobService JOB_SERVICE = new JobServiceImpl(
