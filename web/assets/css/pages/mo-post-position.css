@@ -162,6 +162,7 @@
 }
 
 .mo-post-input input,
+.mo-post-input select,
 .mo-post-field textarea {
   width: 100%;
   border: 1px solid #e2e8f0;
@@ -173,7 +174,8 @@
   font-weight: 600;
 }
 
-.mo-post-input input {
+.mo-post-input input,
+.mo-post-input select {
   height: 44px;
   padding: 0 16px;
 }
@@ -195,13 +197,15 @@
 }
 
 .mo-post-input input:focus,
+.mo-post-input select:focus,
 .mo-post-field textarea:focus {
   border-color: #60a5fa;
   box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
 }
 
 .mo-post-input__icon,
-.mo-post-input__calendar {
+.mo-post-input__calendar,
+.mo-post-input__caret {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -218,7 +222,8 @@
 }
 
 .mo-post-input__icon svg,
-.mo-post-input__calendar svg {
+.mo-post-input__calendar svg,
+.mo-post-input__caret svg {
   width: 16px;
   height: 16px;
 }
@@ -230,6 +235,14 @@
 
 .mo-post-input input {
   padding-left: 40px;
+}
+
+.mo-post-input select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 42px;
+  cursor: pointer;
 }
 
 .mo-post-input__suffix {
@@ -246,6 +259,20 @@
 .mo-post-input__calendar {
   right: 14px;
   pointer-events: none;
+}
+
+.mo-post-input__caret {
+  right: 14px;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.mo-post-input--select select::-ms-expand {
+  display: none;
+}
+
+.mo-post-field[hidden] {
+  display: none !important;
 }
 
 .mo-post-actions {

@@ -10,6 +10,7 @@
   String errorMessage = String.valueOf(request.getAttribute("errorMessage") == null ? "" : request.getAttribute("errorMessage"));
   Object formDataObj = request.getAttribute("formData");
   java.util.Map formData = formDataObj instanceof java.util.Map ? (java.util.Map) formDataObj : java.util.Collections.emptyMap();
+  String assetVersion = "20260410-selectfix-3";
 
   request.setAttribute("headerBrandHref", contextPath + "/mo/dashboard");
   request.setAttribute("showHeaderBack", Boolean.TRUE);
@@ -30,7 +31,59 @@
   <link rel="stylesheet" href="<%= contextPath %>/assets/css/base.css">
   <link rel="stylesheet" href="<%= contextPath %>/assets/css/layout.css">
   <link rel="stylesheet" href="<%= contextPath %>/assets/css/components.css">
-  <link rel="stylesheet" href="<%= contextPath %>/assets/css/pages/mo-post-position.css">
+  <link rel="stylesheet" href="<%= contextPath %>/assets/css/pages/mo-post-position.css?v=<%= assetVersion %>">
+  <style>
+    .mo-post-input--select select {
+      display: block;
+      width: 100%;
+      height: 44px;
+      padding: 0 40px 0 16px;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      background: #ffffff;
+      color: #334155;
+      font-size: 14px;
+      font-weight: 600;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      cursor: pointer;
+    }
+
+    .mo-post-input--select select:focus {
+      border-color: #60a5fa;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
+    }
+
+    .mo-post-input--select select::-ms-expand {
+      display: none;
+    }
+
+    .mo-post-input input[type="number"] {
+      appearance: textfield;
+      -moz-appearance: textfield;
+    }
+
+    .mo-post-input input[type="number"]::-webkit-outer-spin-button,
+    .mo-post-input input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .mo-post-select__caret {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 7px solid #94a3b8;
+      pointer-events: none;
+    }
+  </style>
 </head>
 <body>
   <div class="mo-post-shell">
@@ -53,11 +106,12 @@
           <div class="mo-post-grid">
             <div class="mo-post-field">
               <label for="postingType">* Position Type</label>
-              <div class="mo-post-input">
+              <div class="mo-post-input mo-post-input--select">
                 <select id="postingType" name="postingType">
                   <option value="TA" <%= !"ACTIVITY".equalsIgnoreCase(String.valueOf(formData.getOrDefault("postingType", "TA"))) ? "selected" : "" %>>TA Position</option>
                   <option value="ACTIVITY" <%= "ACTIVITY".equalsIgnoreCase(String.valueOf(formData.getOrDefault("postingType", ""))) ? "selected" : "" %>>Activity</option>
                 </select>
+                <span class="mo-post-select__caret" aria-hidden="true"></span>
               </div>
             </div>
 
@@ -104,12 +158,13 @@
               <div class="mo-post-grid">
                 <div class="mo-post-field">
                   <label for="activityType">Activity Type</label>
-                  <div class="mo-post-input">
+                  <div class="mo-post-input mo-post-input--select">
                     <select id="activityType" name="activityType">
                       <option value="exam" <%= "exam".equalsIgnoreCase(String.valueOf(formData.getOrDefault("activityType", ""))) ? "selected" : "" %>>Invigilation</option>
                       <option value="checkoff" <%= "checkoff".equalsIgnoreCase(String.valueOf(formData.getOrDefault("activityType", ""))) ? "selected" : "" %>>Lab Acceptance</option>
                       <option value="lab" <%= (!formData.containsKey("activityType") || "lab".equalsIgnoreCase(String.valueOf(formData.getOrDefault("activityType", "")))) ? "selected" : "" %>>Lab Support</option>
                     </select>
+                    <span class="mo-post-select__caret" aria-hidden="true"></span>
                   </div>
                 </div>
 
