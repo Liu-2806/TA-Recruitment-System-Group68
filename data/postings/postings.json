@@ -181,5 +181,49 @@
     "status": "OPEN",
     "createdAt": "2026-04-09 15:41:33",
     "updatedAt": "2026-04-09 15:41:33"
+  },
+  {
+    "postingId": "POST008",
+    "courseCode": "SE0003",
+    "courseName": "Eating",
+    "moId": "MO001",
+    "moName": "Prof. Wang",
+    "vacancies": 2.0,
+    "applicationCount": 0.0,
+    "deadline": "2026-04-26",
+    "description": "Eating",
+    "requiredSkills": [
+      "Java"
+    ],
+    "postingType": "TA",
+    "estimatedWorkloadHours": 24.0,
+    "status": "OPEN",
+    "createdAt": "2026-04-10 11:13:02",
+    "updatedAt": "2026-04-10 11:13:02"
+  },
+  {
+    "postingId": "POST009",
+    "courseCode": "SE0006",
+    "courseName": "sleep",
+    "moId": "MO001",
+    "moName": "Prof. Wang",
+    "vacancies": 3,
+    "applicationCount": 0,
+    "deadline": "2026-05-29",
+    "description": "sleep",
+    "requiredSkills": [
+      "Java"
+    ],
+    "postingType": "ACTIVITY",
+    "estimatedWorkloadHours": 6,
+    "status": "OPEN",
+    "activityType": "exam",
+    "activityDate": "2026-04-30",
+    "activityStartTime": "09:13",
+    "activityEndTime": "21:18",
+    "activityLocation": "dorm",
+    "moduleType": "Activity",
+    "createdAt": "2026-04-10 11:15:09",
+    "updatedAt": "2026-04-10 11:15:09"
   }
 ]

@@ -12,6 +12,7 @@
   int pageSize = applicationsPage == null ? 6 : applicationsPage.getSize();
   int total = applicationsPage == null ? applications.size() : (int) applicationsPage.getTotal();
   int totalPages = pageSize <= 0 ? 1 : Math.max(1, (int) Math.ceil(total / (double) pageSize));
+  String assetVersion = "20260410-mo-applicants-sort-1";
   Object currentUserObj = request.getSession(false) == null ? null : request.getSession(false).getAttribute("currentUser");
   com.bupt.ta.model.User currentUser = currentUserObj instanceof com.bupt.ta.model.User ? (com.bupt.ta.model.User) currentUserObj : null;
   String currentUserName = currentUser == null || currentUser.getDisplayName() == null || currentUser.getDisplayName().trim().isEmpty()
@@ -40,7 +41,7 @@
   <link rel="stylesheet" href="<%= contextPath %>/assets/css/base.css">
   <link rel="stylesheet" href="<%= contextPath %>/assets/css/layout.css">
   <link rel="stylesheet" href="<%= contextPath %>/assets/css/components.css">
-  <link rel="stylesheet" href="<%= contextPath %>/assets/css/pages/mo-applicants.css">
+  <link rel="stylesheet" href="<%= contextPath %>/assets/css/pages/mo-applicants.css?v=<%= assetVersion %>">
 </head>
 <body>
   <div class="mo-applicants-shell">
@@ -59,13 +60,14 @@
             <label class="sr-only" for="moApplicantsKeyword">Search applicants by name or keyword</label>
             <input id="moApplicantsKeyword" type="search" name="keyword" placeholder="Search name..." autocomplete="off" value="<%= query.getKeyword() == null ? "" : query.getKeyword() %>">
           </div>
-          <div class="mo-applicants-search">
+          <div class="mo-applicants-sort">
             <label class="sr-only" for="moApplicantsSort">Sort applicants</label>
             <select id="moApplicantsSort" name="sortBy">
               <option value="updated" <%= query.getSortBy() == null || query.getSortBy().isBlank() || "updated".equalsIgnoreCase(query.getSortBy()) ? "selected" : "" %>>Latest Updated</option>
               <option value="submitted" <%= "submitted".equalsIgnoreCase(query.getSortBy()) ? "selected" : "" %>>Recently Submitted</option>
               <option value="status" <%= "status".equalsIgnoreCase(query.getSortBy()) ? "selected" : "" %>>Status Priority</option>
             </select>
+            <span class="mo-applicants-sort__caret" aria-hidden="true"></span>
           </div>
           <button class="mo-applicants-broadcast" type="submit" title="Search and sort this applicant list"><span>Apply filters</span></button>
           <a class="mo-applicants-filter-reset" href="<%= contextPath %>/mo/jobs/applicants?jobId=<%= String.valueOf(job.getOrDefault("postingId", "")) %>">Reset</a>
