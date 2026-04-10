@@ -25,6 +25,54 @@ final class OpenAiCompatibleMatcher {
     private final String apiKey;
     private final String model;
 
+    /**
+     * IMPORTANT: Keep the output keys stable because the response parser and UI rely on them:
+     * score, explanation, matchedSkills, missingSkills.
+     */
+    private static final String EXPLANATION_TEMPLATE = ""
+        + "Explanation template (MUST be a single paragraph, no line breaks): "
+        + "\"Score=<score>/100. Breakdown: D1(skill overlap)=<0-40>, D2(education relevance)=<0-15>, D3(teaching/academic support)=<0-20>, D4(responsibility fit)=<0-15>, D5(evidence quality & risk)=<0-10>, Deductions=<0..-35>. "
+        + "Top evidence: <2-3 short evidence points from the supplied candidate data>. "
+        + "Key gaps / missing evidence: <1-3 gaps based on requiredSkills and role requirements>. "
+        + "Practical suitability: <1 sentence about fit to responsibilities and workload>. "
+        + "Advisory note: This is a screening aid based only on the provided structured data.\"";
+
+    private static final String SCORING_RUBRIC = ""
+        + "Scoring rubric (0-100, evidence-based, no external knowledge):\n"
+        + "- Overall score is a weighted sum of five dimensions. If evidence is missing for a dimension, treat it as weak (near 0) rather than guessing.\n"
+        + "  D1 Skill overlap (weight 40): compare REQUIRED SKILLS vs candidate evidence. Consider both direct skill tags and explicit experience evidence. Partial overlap is allowed.\n"
+        + "    - 40: strong evidence for most required skills (or the most critical ones) with relevant usage evidence.\n"
+        + "    - 25: evidence for some required skills, but missing several or limited usage evidence.\n"
+        + "    - 10: minimal overlap or only generic claims without supporting evidence.\n"
+        + "    - 0: no clear overlap evidence.\n"
+        + "  D2 Education relevance (weight 15): relevance of education to the course/module.\n"
+        + "    - 15: directly relevant subject area or modules clearly aligned.\n"
+        + "    - 8: adjacent relevance.\n"
+        + "    - 3: weak/unclear relevance.\n"
+        + "    - 0: no education evidence.\n"
+        + "  D3 Teaching/TA/academic support experience (weight 20): labs, tutoring, marking, mentoring, support desk, etc.\n"
+        + "    - 20: strong, directly relevant teaching support experience with clear responsibilities.\n"
+        + "    - 12: some relevant experience but not clearly aligned to the role.\n"
+        + "    - 5: minimal/indirect evidence.\n"
+        + "    - 0: no evidence.\n"
+        + "  D4 Responsibility fit (weight 15): fit to stated responsibilities from the job description (e.g., lab support, grading, student support, tools).\n"
+        + "    - 15: clear alignment with multiple responsibilities.\n"
+        + "    - 8: partial alignment.\n"
+        + "    - 3: weak alignment.\n"
+        + "    - 0: no evidence.\n"
+        + "  D5 Evidence quality & risk (weight 10): penalize thin/unclear evidence and highlight key gaps.\n"
+        + "    - 10: evidence is specific, consistent, and reviewable.\n"
+        + "    - 5: evidence exists but is generic or weakly supported.\n"
+        + "    - 0: evidence is extremely thin or mostly missing.\n"
+        + "Deductions (apply after weighted sum; do not go below 0):\n"
+        + "- Missing critical required skills: -5 to -25 depending on how central they are (use job requiredSkills list).\n"
+        + "- Education/experience fields are empty/unknown: -0 to -10 depending on impact.\n"
+        + "Score bands:\n"
+        + "- 80-100: strong match with clear evidence for core requirements.\n"
+        + "- 60-79: moderate match with notable gaps.\n"
+        + "- 40-59: weak-to-moderate match with limited supporting evidence.\n"
+        + "- 0-39: low match; core evidence missing.\n";
+
     OpenAiCompatibleMatcher(String endpoint, String apiKey, String model) {
         this.endpoint = normalizeEndpoint(endpoint);
         this.apiKey = apiKey;
@@ -68,11 +116,8 @@ final class OpenAiCompatibleMatcher {
             + "3. Relevance of teaching, tutoring, lab, marking, or academic support experience\n"
             + "4. Practical suitability for the stated responsibilities\n"
             + "5. Important missing requirements or weak evidence\n\n"
-            + "Scoring guidance:\n"
-            + "- 80 to 100: strong match with clear evidence for most important requirements\n"
-            + "- 60 to 79: moderate match with some notable gaps\n"
-            + "- 40 to 59: weak-to-moderate match with limited supporting evidence\n"
-            + "- 0 to 39: low match with limited evidence for core requirements\n\n"
+            + SCORING_RUBRIC + "\n"
+            + EXPLANATION_TEMPLATE + "\n\n"
             + "Candidate profile:\n"
             + "Name: " + value(resumeProfile, "name") + "\n"
             + "Education: " + value(resumeProfile, "education") + "\n"
@@ -86,7 +131,7 @@ final class OpenAiCompatibleMatcher {
             + "Estimated workload hours: " + value(job, "estimatedWorkloadHours") + "\n\n"
             + "Return JSON only with keys score, explanation, matchedSkills, and missingSkills.\n"
             + "score must be an integer from 0 to 100.\n"
-            + "explanation must be one concise review paragraph for a module organiser.\n"
+            + "explanation MUST follow the explanation template exactly and MUST be a single paragraph (no line breaks).\n"
             + "matchedSkills must be a JSON array of required skills that are clearly evidenced in the supplied candidate data.\n"
             + "missingSkills must be a JSON array of important required skills or capability gaps that are not clearly evidenced.\n"
             + "The explanation must explicitly cover: matched evidence, important gaps or missing evidence, and practical suitability.\n"
@@ -98,7 +143,7 @@ final class OpenAiCompatibleMatcher {
         return "{"
             + "\"model\":\"" + escapeJson(model) + "\","
             + "\"messages\":["
-            + "{\"role\":\"system\",\"content\":\"You are an explainable academic recruitment assistant for a Teaching Assistant recruitment system. Your role is to support, not replace, human decision-making by providing a structured, evidence-based suitability analysis. You must evaluate the candidate only using the supplied structured profile and the supplied job posting. Do not assume missing facts. Do not invent qualifications, skills, or experience. Your analysis must be reviewable by a human module organiser and must explain both supporting evidence and important gaps. Return valid JSON only.\"},"
+            + "{\"role\":\"system\",\"content\":\"You are an explainable academic recruitment assistant for a Teaching Assistant recruitment system. Your role is to support, not replace, human decision-making by providing a structured, evidence-based suitability analysis. You must evaluate the candidate only using the supplied structured profile and the supplied job posting. Do not assume missing facts. Do not invent qualifications, skills, or experience. You must follow the provided scoring rubric and treat missing evidence as unknown (do not guess). Your analysis must be reviewable by a human module organiser and must explain both supporting evidence and important gaps. Return valid JSON only.\"},"
             + "{\"role\":\"user\",\"content\":\"" + escapeJson(prompt) + "\"}"
             + "],"
             + "\"response_format\":{\"type\":\"json_object\"},"

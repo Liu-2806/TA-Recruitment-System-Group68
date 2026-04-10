@@ -9,6 +9,18 @@
   Object profileObj = request.getAttribute("profile");
   java.util.Map profile = profileObj instanceof java.util.Map ? (java.util.Map) profileObj : java.util.Collections.emptyMap();
 
+  Object allTagsObj = request.getAttribute("allSkillTags");
+  java.util.List<?> allSkillTags = allTagsObj instanceof java.util.List ? (java.util.List<?>) allTagsObj : java.util.Collections.emptyList();
+  Object skillsObj = profile.get("skills");
+  java.util.Set<String> selectedSkills = new java.util.HashSet<>();
+  if (skillsObj instanceof java.util.List) {
+    for (Object s : (java.util.List<?>) skillsObj) {
+      if (s != null) {
+        selectedSkills.add(String.valueOf(s));
+      }
+    }
+  }
+
   String currentUserName = String.valueOf(profile.getOrDefault("fullName", "TA"));
   request.setAttribute("currentUserName", currentUserName);
   request.setAttribute("currentUserRoleLabel", "TA Applicant");
@@ -66,6 +78,19 @@
             <div class="ta-form-field ta-form-field--full">
               <label for="profileIntro">Introduction</label>
               <div class="ta-form-input"><input id="profileIntro" name="intro" type="text" value="<%= String.valueOf(profile.getOrDefault("intro", "")) %>"></div>
+            </div>
+            <div class="ta-form-field ta-form-field--full">
+              <span class="ta-form-field__label">Skills</span>
+              <p class="ta-form-hint">Select tags that match your profile. Only tags from the system list are saved.</p>
+              <div class="ta-skill-picker" role="group" aria-label="Skill tags">
+                <% for (Object tagObj : allSkillTags) {
+                  String tag = String.valueOf(tagObj);
+                  String safe = tag.replace("&", "&amp;").replace("\"", "&quot;").replace("<", "&lt;");
+                  boolean on = selectedSkills.contains(tag);
+                %>
+                <label class="ta-skill-chip"><input type="checkbox" name="skillTags" value="<%= safe %>" <%= on ? "checked" : "" %>><span><%= safe %></span></label>
+                <% } %>
+              </div>
             </div>
           </div>
         </section>
