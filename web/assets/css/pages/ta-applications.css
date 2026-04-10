@@ -421,11 +421,20 @@
   gap: 14px;
 }
 
+.ta-application-card__actions--right {
+  justify-content: flex-end;
+}
+
 .ta-application-card__action-group {
   display: flex;
   align-items: flex-start;
   gap: 12px;
   flex-wrap: wrap;
+}
+
+.ta-application-card__action-group--right {
+  justify-content: flex-end;
+  width: 100%;
 }
 
 .ta-application-card__secondary,
@@ -459,7 +468,7 @@
 }
 
 .ta-withdraw-panel {
-  min-width: min(360px, 100%);
+  min-width: 200px;
 }
 
 .ta-withdraw-panel summary {

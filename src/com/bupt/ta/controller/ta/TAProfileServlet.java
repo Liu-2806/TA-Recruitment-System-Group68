@@ -4,6 +4,7 @@ import com.bupt.ta.config.ServiceRegistry;
 import com.bupt.ta.controller.common.BaseServlet;
 import com.bupt.ta.model.User;
 import com.bupt.ta.service.ProfileService;
+import com.bupt.ta.util.FlashMessages;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -25,7 +26,6 @@ public class TAProfileServlet extends BaseServlet {
             return;
         }
         request.setAttribute("profile", profileService.getTAProfile(user.getId()));
-        request.setAttribute("allSkillTags", profileService.listAllSkillTags());
         request.getRequestDispatcher("/WEB-INF/views/ta/profile.jsp").forward(request, response);
     }
 
@@ -43,11 +43,11 @@ public class TAProfileServlet extends BaseServlet {
         params.put("major", request.getParameter("major"));
         params.put("grade", request.getParameter("grade"));
         params.put("intro", request.getParameter("intro"));
-        params.put("skillTags", request.getParameterValues("skillTags"));
 
         try {
             profileService.updateTAProfile(user.getId(), params);
-            response.sendRedirect(request.getContextPath() + "/ta/profile?saved=1");
+            FlashMessages.success(request, "Your TA profile details were saved successfully.");
+            response.sendRedirect(request.getContextPath() + "/ta/profile");
         } catch (Exception ex) {
             Map<String, Object> profile = new HashMap<>(profileService.getTAProfile(user.getId()));
             profile.put("fullName", params.get("name"));
@@ -56,13 +56,8 @@ public class TAProfileServlet extends BaseServlet {
             profile.put("majorProgram", params.get("major"));
             profile.put("academicYear", params.get("grade"));
             profile.put("intro", params.get("intro"));
-            Object skillTags = params.get("skillTags");
-            if (skillTags instanceof String[] tags) {
-                profile.put("skills", java.util.List.of(tags));
-            }
             request.setAttribute("errorMessage", ex.getMessage());
             request.setAttribute("profile", profile);
-            request.setAttribute("allSkillTags", profileService.listAllSkillTags());
             request.getRequestDispatcher("/WEB-INF/views/ta/profile.jsp").forward(request, response);
         }
     }

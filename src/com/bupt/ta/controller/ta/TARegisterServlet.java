@@ -2,6 +2,7 @@ package com.bupt.ta.controller.ta;
 
 import com.bupt.ta.controller.common.BaseServlet;
 import com.bupt.ta.service.UserService;
+import com.bupt.ta.util.FlashMessages;
 import com.bupt.ta.util.ServiceRegistry;
 
 import javax.servlet.ServletException;
@@ -46,6 +47,7 @@ public class TARegisterServlet extends BaseServlet {
 
         try {
             userService.registerTA(params);
+            FlashMessages.success(request, "Your TA account has been created. Please sign in with your email and password.");
             response.sendRedirect(request.getContextPath() + "/auth/login");
         } catch (Exception ex) {
             request.setAttribute("errorMessage", ex.getMessage());

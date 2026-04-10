@@ -2,30 +2,25 @@ package com.bupt.ta.service.impl;
 
 import com.bupt.ta.model.Role;
 import com.bupt.ta.repository.UserRepository;
-import com.bupt.ta.repository.file.SystemDataRepository;
 import com.bupt.ta.repository.file.TADataRepository;
 import com.bupt.ta.service.ProfileService;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ProfileServiceImpl implements ProfileService {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private final TADataRepository taDataRepository;
-    private final SystemDataRepository systemDataRepository;
     private final UserRepository userRepository;
 
     public ProfileServiceImpl(
         TADataRepository taDataRepository,
-        SystemDataRepository systemDataRepository,
         UserRepository userRepository
     ) {
         this.taDataRepository = taDataRepository;
-        this.systemDataRepository = systemDataRepository;
         this.userRepository = userRepository;
     }
 
@@ -58,12 +53,6 @@ public class ProfileServiceImpl implements ProfileService {
         }
         if (hasValue(params.get("intro"))) {
             ta.put("intro", params.get("intro"));
-        }
-        Object skillTags = params.get("skillTags");
-        if (skillTags instanceof String[] tags) {
-            ta.put("skills", List.of(tags));
-        } else if (skillTags == null) {
-            ta.put("skills", List.of());
         }
         taDataRepository.save(ta);
     }
@@ -109,11 +98,6 @@ public class ProfileServiceImpl implements ProfileService {
         applyTextUpdate(mo, "description", params == null ? null : params.get("description"));
         mo.put("updatedAt", LocalDateTime.now().format(FORMATTER));
         userRepository.update(Role.MO, mo);
-    }
-
-    @Override
-    public List<String> listAllSkillTags() {
-        return systemDataRepository.listSkillTags();
     }
 
     private boolean hasValue(Object value) {

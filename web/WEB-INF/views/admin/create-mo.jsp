@@ -104,16 +104,6 @@
             </div>
             <span class="admin-create-card__badge">* Required Fields</span>
           </div>
-
-          <%
-            if (!errorMessage.isBlank()) {
-          %>
-          <div style="margin: 12px 16px; padding: 10px 12px; border-radius: 8px; background: #fff3f3; color: #b42318; border: 1px solid #f5c2c7;">
-            <%= errorMessage %>
-          </div>
-          <%
-            }
-          %>
           <form class="admin-create-form" action="<%= contextPath %>/admin/mos/create" method="post">
             <div class="admin-create-grid">
               <div class="admin-create-field">

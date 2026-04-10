@@ -40,7 +40,7 @@ Examples:
 ## Role entry structure
 
 - Public entry: `index.jsp`
-- Login preview entry: `login-preview.jsp`
+- Login route: `/auth/login`
 - Auth pages: `WEB-INF/views/auth`
 - TA pages: `WEB-INF/views/ta`
 - MO pages: `WEB-INF/views/mo`

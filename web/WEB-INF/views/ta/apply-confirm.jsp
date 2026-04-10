@@ -25,6 +25,8 @@
   boolean profileCompleted = Boolean.TRUE.equals(eligibility.get("profileCompleted"));
   boolean resumeUploaded = Boolean.TRUE.equals(eligibility.get("resumeUploaded"));
   java.util.List reasons = eligibility.get("reasons") instanceof java.util.List ? (java.util.List) eligibility.get("reasons") : java.util.Collections.emptyList();
+  String errorMessage = String.valueOf(request.getAttribute("errorMessage") == null ? "" : request.getAttribute("errorMessage"));
+  String statementDraft = String.valueOf(request.getAttribute("statementDraft") == null ? "" : request.getAttribute("statementDraft"));
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -54,6 +56,17 @@
           </span>
         </div>
 
+        <%
+          if (!errorMessage.isBlank()) {
+        %>
+        <section class="ta-details-section">
+          <h2 class="ta-details-section__title">Submission blocked</h2>
+          <div class="ta-details-description" style="color:#b42318;"><%= errorMessage %></div>
+        </section>
+        <%
+          }
+        %>
+
         <section class="ta-details-section">
           <h2 class="ta-details-section__title">You are applying for</h2>
           <div class="ta-details-description">
@@ -68,6 +81,7 @@
             <li><span><%= profileCompleted ? "Completed" : "Incomplete" %></span> Profile completed</li>
             <li><span><%= resumeUploaded ? "Uploaded" : "Missing" %></span> Resume uploaded</li>
             <li><span><%= String.valueOf(eligibility.getOrDefault("alreadyApplied", false)).equals("true") ? "Duplicate" : "OK" %></span> Duplicate application check</li>
+            <li><span><%= String.valueOf(eligibility.getOrDefault("jobOpen", false)).equals("true") ? "Open" : "Closed" %></span> Posting status check</li>
             <li><span><%= String.valueOf(eligibility.getOrDefault("beforeDeadline", false)).equals("true") ? "Open" : "Closed" %></span> Deadline check</li>
             <li><span><%= String.valueOf(eligibility.getOrDefault("scheduleConflictFree", false)).equals("true") ? "Clear" : "Conflict" %></span> Timetable conflict check</li>
           </ul>
@@ -97,7 +111,7 @@
           <form action="<%= contextPath %>/ta/applications" method="post">
             <input type="hidden" name="jobId" value="<%= String.valueOf(job.getOrDefault("postingId", "")) %>">
             <input type="hidden" name="returnQuery" value="<%= encodedReturnQuery %>">
-            <textarea name="statement" rows="6" style="width:100%; padding:12px; border-radius:16px; border:1px solid #d0d5dd; resize:vertical;" placeholder="Briefly explain why you are a good fit for this role."></textarea>
+            <textarea name="statement" rows="6" style="width:100%; padding:12px; border-radius:16px; border:1px solid #d0d5dd; resize:vertical;" placeholder="Briefly explain why you are a good fit for this role."><%= statementDraft %></textarea>
             <div class="ta-details-card__footer" style="padding-left:0; padding-right:0;">
               <p><%= eligible ? "Check your statement carefully before submitting." : "Resolve the checklist items before submitting this application." %></p>
               <button class="ta-details-apply" type="submit" <%= eligible ? "" : "disabled" %>>Confirm &amp; Submit</button>

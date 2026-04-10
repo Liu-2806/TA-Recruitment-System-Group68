@@ -3,6 +3,7 @@ package com.bupt.ta.controller.ta;
 import com.bupt.ta.config.ServiceRegistry;
 import com.bupt.ta.controller.common.BaseServlet;
 import com.bupt.ta.model.User;
+import com.bupt.ta.service.ApplicationService;
 import com.bupt.ta.service.JobService;
 import com.bupt.ta.service.RecommendationService;
 
@@ -21,6 +22,7 @@ import java.util.Map;
 public class TAJobDetailServlet extends BaseServlet {
     private final JobService jobService = ServiceRegistry.jobService();
     private final RecommendationService recommendationService = ServiceRegistry.recommendationService();
+    private final ApplicationService applicationService = ServiceRegistry.applicationService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -46,6 +48,14 @@ public class TAJobDetailServlet extends BaseServlet {
         request.setAttribute("job", job);
         request.setAttribute("returnHref", buildReturnHref(request, returnQuery));
         request.setAttribute("encodedReturnQuery", request.getParameter("returnQuery") == null ? "" : request.getParameter("returnQuery"));
+        try {
+            request.setAttribute("eligibilityResult", applicationService.checkEligibility(user.getId(), jobId.trim()));
+        } catch (Exception ex) {
+            Map<String, Object> fallback = new LinkedHashMap<>();
+            fallback.put("eligible", Boolean.FALSE);
+            fallback.put("alreadyApplied", Boolean.FALSE);
+            request.setAttribute("eligibilityResult", fallback);
+        }
 
         Map<String, Object> matchAnalysis;
         try {

@@ -3,6 +3,7 @@ package com.bupt.ta.controller.admin;
 import com.bupt.ta.controller.common.BaseServlet;
 import com.bupt.ta.model.User;
 import com.bupt.ta.service.UserService;
+import com.bupt.ta.util.FlashMessages;
 import com.bupt.ta.util.ServiceRegistry;
 
 import javax.servlet.ServletException;
@@ -40,11 +41,13 @@ public class AdminMODetailServlet extends BaseServlet {
         params.put("fullName", firstNonBlank(request.getParameter("fullName"), request.getParameter("name")));
         params.put("name", firstNonBlank(request.getParameter("name"), request.getParameter("fullName")));
         params.put("email", request.getParameter("email"));
+        params.put("department", request.getParameter("department"));
         params.put("phone", request.getParameter("phone"));
         params.put("description", request.getParameter("description"));
         params.put("status", request.getParameter("status"));
         try {
             userService.updateMOByAdmin(params);
+            FlashMessages.success(request, "The MO profile has been updated successfully.");
             response.sendRedirect(request.getContextPath() + "/admin/mos/detail?moUserId=" + request.getParameter("moUserId"));
         } catch (Exception ex) {
             request.setAttribute("errorMessage", ex.getMessage());
@@ -72,6 +75,7 @@ public class AdminMODetailServlet extends BaseServlet {
         mo.setFullName(firstNonBlank(trimToNull(params.get("fullName")), trimToNull(params.get("name"))));
         mo.setDisplayName(mo.getFullName());
         mo.setEmail(trimToNull(params.get("email")));
+        mo.setDepartment(trimToNull(params.get("department")));
         mo.setPhone(trimToNull(params.get("phone")));
         mo.setDescription(trimToNull(params.get("description")));
         if (trimToNull(params.get("status")) != null) {

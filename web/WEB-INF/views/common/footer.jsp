@@ -16,3 +16,5 @@
     </div>
   </div>
 </footer>
+<script src="${pageContext.request.contextPath}/assets/js/common.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/toast.js"></script>
