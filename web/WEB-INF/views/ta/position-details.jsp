@@ -29,6 +29,13 @@
   String score = String.valueOf(matchAnalysis.getOrDefault("score", 0));
   String explanation = String.valueOf(matchAnalysis.getOrDefault("explanation", "Match analysis is unavailable."));
   String method = String.valueOf(matchAnalysis.getOrDefault("method", "UNAVAILABLE"));
+  String scoreBand = String.valueOf(matchAnalysis.getOrDefault("scoreBand", "Advisory Review"));
+  String nextStepSuggestion = String.valueOf(matchAnalysis.getOrDefault("nextStepSuggestion", "Review the role requirements carefully before deciding whether to apply."));
+  String strengthSummary = String.valueOf(matchAnalysis.getOrDefault("strengthSummary", "No main strengths highlighted."));
+  String riskSummary = String.valueOf(matchAnalysis.getOrDefault("riskSummary", "No main risks highlighted."));
+  String confidenceHint = String.valueOf(matchAnalysis.getOrDefault("confidenceHint", "This result is advisory only."));
+  String methodLabel = String.valueOf(matchAnalysis.getOrDefault("methodLabel", method));
+  String methodHint = String.valueOf(matchAnalysis.getOrDefault("methodHint", "Generated from the available structured data."));
   Object eligibilityObj = request.getAttribute("eligibilityResult");
   java.util.Map eligibility = eligibilityObj instanceof java.util.Map ? (java.util.Map) eligibilityObj : java.util.Collections.emptyMap();
   boolean canApply = Boolean.TRUE.equals(eligibility.get("eligible"));
