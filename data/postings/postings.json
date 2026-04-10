@@ -83,7 +83,7 @@
     "moId": "MO001",
     "moName": "Prof. Wang",
     "vacancies": 4.0,
-    "applicationCount": 1.0,
+    "applicationCount": 2.0,
     "deadline": "2026-04-28",
     "description": "Help first-year students with basic programming concepts, assist with lab exercises, and provide feedback on coding assignments.",
     "requiredSkills": [
@@ -171,7 +171,7 @@
     "moId": "MO001",
     "moName": "Prof. Wang",
     "vacancies": 5.0,
-    "applicationCount": 0.0,
+    "applicationCount": 1,
     "deadline": "2026-04-17",
     "description": "training lol ad and sup",
     "requiredSkills": [
@@ -189,7 +189,7 @@
     "moId": "MO001",
     "moName": "Prof. Wang",
     "vacancies": 2.0,
-    "applicationCount": 0.0,
+    "applicationCount": 1.0,
     "deadline": "2026-04-26",
     "description": "Eating",
     "requiredSkills": [
@@ -207,15 +207,15 @@
     "courseName": "sleep",
     "moId": "MO001",
     "moName": "Prof. Wang",
-    "vacancies": 3,
-    "applicationCount": 0,
+    "vacancies": 3.0,
+    "applicationCount": 1.0,
     "deadline": "2026-05-29",
     "description": "sleep",
     "requiredSkills": [
       "Java"
     ],
     "postingType": "ACTIVITY",
-    "estimatedWorkloadHours": 6,
+    "estimatedWorkloadHours": 6.0,
     "status": "OPEN",
     "activityType": "exam",
     "activityDate": "2026-04-30",

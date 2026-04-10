@@ -25,6 +25,11 @@
   int pageSize = applicationsPage == null ? 6 : applicationsPage.getSize();
   int total = applicationsPage == null ? applications.size() : (int) applicationsPage.getTotal();
   int totalPages = pageSize <= 0 ? 1 : Math.max(1, (int) Math.ceil(total / (double) pageSize));
+  String createdId = String.valueOf(request.getParameter("created") == null ? "" : request.getParameter("created"));
+  String updatedId = String.valueOf(request.getParameter("updated") == null ? "" : request.getParameter("updated"));
+  String errorMessage = String.valueOf(request.getAttribute("errorMessage") == null
+      ? (request.getParameter("error") == null ? "" : request.getParameter("error"))
+      : request.getAttribute("errorMessage"));
 %>
 <!DOCTYPE html>
 <html lang="en">
