@@ -60,10 +60,7 @@ public class JobServiceImpl implements JobService {
                 }
             }
             if (safeQuery.getMajor() != null && !safeQuery.getMajor().isBlank()) {
-                String major = safeQuery.getMajor().toLowerCase(Locale.ROOT).trim();
-                String haystack = (String.valueOf(posting.get("courseName")) + " " + String.valueOf(posting.get("description")) + " " + requiredSkillsText)
-                    .toLowerCase(Locale.ROOT);
-                if (!haystack.contains(major)) {
+                if (!matchesMajorFilter(posting, safeQuery.getMajor().trim(), requiredSkillsText)) {
                     continue;
                 }
             }
@@ -460,5 +457,33 @@ public class JobServiceImpl implements JobService {
             }
         }
         return null;
+    }
+
+    /**
+     * If posting defines {@code targetMajor}, the filter must match one comma/semicolon/pipe-separated token (case-insensitive).
+     * Otherwise fall back to substring match on course name, description, and required skills.
+     */
+    private boolean matchesMajorFilter(Map<String, Object> posting, String majorFilterRaw, String requiredSkillsText) {
+        String majorNorm = majorFilterRaw.toLowerCase(Locale.ROOT).trim();
+        Object targetMajorObj = posting.get("targetMajor");
+        if (targetMajorObj != null) {
+            String targetStr = String.valueOf(targetMajorObj).trim();
+            if (!targetStr.isEmpty()) {
+                return targetMajorWhitelistContains(targetStr, majorNorm);
+            }
+        }
+        String haystack = (String.valueOf(posting.get("courseName")) + " " + String.valueOf(posting.get("description")) + " " + requiredSkillsText)
+            .toLowerCase(Locale.ROOT);
+        return haystack.contains(majorNorm);
+    }
+
+    private boolean targetMajorWhitelistContains(String targetMajorField, String majorFilterLower) {
+        for (String token : targetMajorField.split("[,;|]")) {
+            String t = token.trim().toLowerCase(Locale.ROOT);
+            if (!t.isEmpty() && t.equals(majorFilterLower)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

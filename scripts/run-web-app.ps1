@@ -8,10 +8,16 @@ param(
 $ErrorActionPreference = "Stop"
 
 $projectRoot = Split-Path -Parent $PSScriptRoot
-$defaultTomcatPath = Join-Path $projectRoot "..\apache-tomcat-9.0.116-windows-x64\apache-tomcat-9.0.116"
+# Official zip is sometimes extracted with an extra nested folder; try both layouts.
+$tomcatCandidateA = Join-Path $projectRoot "..\apache-tomcat-9.0.116-windows-x64\apache-tomcat-9.0.116"
+$tomcatCandidateB = Join-Path $projectRoot "..\apache-tomcat-9.0.116-windows-x64\apache-tomcat-9.0.116-windows-x64\apache-tomcat-9.0.116"
 
 if ([string]::IsNullOrWhiteSpace($TomcatPath)) {
-    $TomcatPath = $defaultTomcatPath
+    $TomcatPath = $tomcatCandidateA
+    $tryA = Join-Path ([System.IO.Path]::GetFullPath($TomcatPath)) "bin\startup.bat"
+    if (-not (Test-Path $tryA)) {
+        $TomcatPath = $tomcatCandidateB
+    }
 }
 
 $TomcatPath = [System.IO.Path]::GetFullPath($TomcatPath)
