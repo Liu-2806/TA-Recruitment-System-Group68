@@ -11,6 +11,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -23,6 +25,7 @@ import java.util.Map;
 public class JsonUserRepository implements UserRepository {
     public JsonUserRepository() {
         ensureStorage();
+        ensureDefaultAdmin();
         migrateExistingRecords(Role.TA);
         migrateExistingRecords(Role.MO);
         migrateExistingRecords(Role.ADMIN);
@@ -179,6 +182,32 @@ public class JsonUserRepository implements UserRepository {
         if (changed) {
             writeUsers(role, migrated);
         }
+    }
+
+    private static final DateTimeFormatter ADMIN_CREATED_AT_FORMAT =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    /**
+     * 当 admin 数据文件为空时，写入默认管理员（与原型种子数据一致），便于首次启动即可登录。
+     */
+    private void ensureDefaultAdmin() {
+        List<Map<String, Object>> admins = readUsers(Role.ADMIN);
+        if (!admins.isEmpty()) {
+            return;
+        }
+        Map<String, Object> admin = new LinkedHashMap<String, Object>();
+        admin.put("id", "ADMIN001");
+        admin.put("username", "admin");
+        admin.put("email", "admin@tarecruitment");
+        admin.put("fullName", "System Admin");
+        admin.put("displayName", "System Admin");
+        admin.put("role", Role.ADMIN.name());
+        admin.put("password", "Admin123!");
+        admin.put("active", Boolean.TRUE);
+        admin.put("createdAt", LocalDateTime.now().format(ADMIN_CREATED_AT_FORMAT));
+        List<Map<String, Object>> seed = new ArrayList<Map<String, Object>>();
+        seed.add(admin);
+        writeUsers(Role.ADMIN, seed);
     }
 
     private void migrateLegacyAdminPassword() {
