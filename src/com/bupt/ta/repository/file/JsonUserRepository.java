@@ -11,8 +11,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -23,15 +21,12 @@ import java.util.Map;
  * 基于 JSON 文件的用户仓储实现。
  */
 public class JsonUserRepository implements UserRepository {
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
     public JsonUserRepository() {
         ensureStorage();
         migrateExistingRecords(Role.TA);
         migrateExistingRecords(Role.MO);
         migrateExistingRecords(Role.ADMIN);
         migrateLegacyAdminPassword();
-        ensureSeedAdmin();
     }
 
     @Override
@@ -200,26 +195,6 @@ public class JsonUserRepository implements UserRepository {
         if (changed) {
             writeUsers(Role.ADMIN, admins);
         }
-    }
-
-    private void ensureSeedAdmin() {
-        List<Map<String, Object>> admins = readUsers(Role.ADMIN);
-        if (!admins.isEmpty()) {
-            return;
-        }
-
-        Map<String, Object> admin = new LinkedHashMap<String, Object>();
-        admin.put("id", "ADMIN001");
-        admin.put("username", "admin");
-        admin.put("email", "admin@tarecruitment");
-        admin.put("fullName", "System Admin");
-        admin.put("displayName", "System Admin");
-        admin.put("role", Role.ADMIN.name());
-        admin.put("password", "Admin123!");
-        admin.put("active", Boolean.TRUE);
-        admin.put("createdAt", DATE_TIME_FORMATTER.format(LocalDateTime.now()));
-        admins.add(normalizeRoleRecord(Role.ADMIN, admin));
-        writeUsers(Role.ADMIN, admins);
     }
 
     private List<Map<String, Object>> readUsers(Role role) {

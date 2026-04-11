@@ -12,6 +12,11 @@
   java.util.List jobs = jobsPage == null || jobsPage.getRecords() == null ? java.util.Collections.emptyList() : jobsPage.getRecords();
   Object queryObj = request.getAttribute("query");
   com.bupt.ta.dto.JobQuery query = queryObj instanceof com.bupt.ta.dto.JobQuery ? (com.bupt.ta.dto.JobQuery) queryObj : new com.bupt.ta.dto.JobQuery();
+  int currentPage = jobsPage == null ? 1 : jobsPage.getPage();
+  int pageSize = jobsPage == null ? 6 : jobsPage.getSize();
+  int total = jobsPage == null ? jobs.size() : (int) jobsPage.getTotal();
+  int totalPages = pageSize <= 0 ? 1 : Math.max(1, (int) Math.ceil(total / (double) pageSize));
+  String assetVersion = "20260410-mo-postings-sort-1";
 
   request.setAttribute("headerBrandHref", contextPath + "/mo/dashboard");
   request.setAttribute("showHeaderBack", Boolean.TRUE);
@@ -32,7 +37,7 @@
   <link rel="stylesheet" href="<%= contextPath %>/assets/css/base.css">
   <link rel="stylesheet" href="<%= contextPath %>/assets/css/layout.css">
   <link rel="stylesheet" href="<%= contextPath %>/assets/css/components.css">
-  <link rel="stylesheet" href="<%= contextPath %>/assets/css/pages/mo-postings.css">
+  <link rel="stylesheet" href="<%= contextPath %>/assets/css/pages/mo-postings.css?v=<%= assetVersion %>">
 </head>
 <body>
   <div class="mo-postings-shell">
@@ -66,12 +71,15 @@
         </div>
 
         <div class="mo-postings-filter__actions">
-          <select name="sortBy">
-            <option value="postingId" <%= query.getSortBy() == null || query.getSortBy().isBlank() || "postingId".equalsIgnoreCase(query.getSortBy()) ? "selected" : "" %>>Newest</option>
-            <option value="deadlineAsc" <%= "deadlineAsc".equalsIgnoreCase(query.getSortBy()) ? "selected" : "" %>>Upcoming Deadline</option>
-            <option value="applicationsDesc" <%= "applicationsDesc".equalsIgnoreCase(query.getSortBy()) ? "selected" : "" %>>Most Applications</option>
-            <option value="vacancies" <%= "vacancies".equalsIgnoreCase(query.getSortBy()) ? "selected" : "" %>>Most Vacancies</option>
-          </select>
+          <div class="mo-postings-filter__sort">
+            <select name="sortBy">
+              <option value="postingId" <%= query.getSortBy() == null || query.getSortBy().isBlank() || "postingId".equalsIgnoreCase(query.getSortBy()) ? "selected" : "" %>>Newest</option>
+              <option value="deadlineAsc" <%= "deadlineAsc".equalsIgnoreCase(query.getSortBy()) ? "selected" : "" %>>Upcoming Deadline</option>
+              <option value="applicationsDesc" <%= "applicationsDesc".equalsIgnoreCase(query.getSortBy()) ? "selected" : "" %>>Most Applications</option>
+              <option value="vacancies" <%= "vacancies".equalsIgnoreCase(query.getSortBy()) ? "selected" : "" %>>Most Vacancies</option>
+            </select>
+            <span class="mo-postings-filter__sort-caret" aria-hidden="true"></span>
+          </div>
           <button class="mo-postings-filter__apply" type="submit">Apply Filter</button>
           <a class="mo-postings-filter__reset" href="<%= contextPath %>/mo/jobs/my" aria-label="Reset filters">
             <svg viewBox="0 0 24 24" focusable="false">
@@ -166,15 +174,39 @@
         </div>
 
         <div class="mo-postings-table__footer">
-          <p>Total Job Postings: <%= jobsPage == null ? 0 : jobsPage.getTotal() %></p>
-          <button class="mo-postings-sync" type="button">
-            <span class="mo-postings-sync__icon" aria-hidden="true">
+          <%
+            String baseParams = "keyword=" + java.net.URLEncoder.encode(query.getKeyword() == null ? "" : query.getKeyword(), "UTF-8")
+                + "&status=" + java.net.URLEncoder.encode(query.getStatus() == null ? "" : query.getStatus(), "UTF-8")
+                + "&sortBy=" + java.net.URLEncoder.encode(query.getSortBy() == null ? "" : query.getSortBy(), "UTF-8")
+                + "&size=" + pageSize;
+            int startIndex = total == 0 ? 0 : ((currentPage - 1) * pageSize) + 1;
+            int endIndex = Math.min(total, currentPage * pageSize);
+          %>
+          <p>Showing <%= startIndex %>-<%= endIndex %> of <%= total %> job postings</p>
+          <div class="mo-pagination">
+            <a class="mo-pagination__nav <%= currentPage <= 1 ? "is-disabled" : "" %>"
+               href="<%= currentPage <= 1 ? "#" : (contextPath + "/mo/jobs/my?" + baseParams + "&page=" + (currentPage - 1)) %>"
+               aria-label="Previous page">
               <svg viewBox="0 0 24 24" focusable="false">
-                <path d="M12 6V3l4 4-4 4V8a4 4 0 1 0 3.46 6h2.1A6 6 0 1 1 12 6Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M14.5 6.5 9 12l5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
-            </span>
-            <span>Sync with Department HR</span>
-          </button>
+            </a>
+            <%
+              for (int pageNumber = 1; pageNumber <= totalPages; pageNumber++) {
+            %>
+            <a class="mo-pagination__page <%= pageNumber == currentPage ? "is-active" : "" %>"
+               href="<%= contextPath + "/mo/jobs/my?" + baseParams + "&page=" + pageNumber %>"><%= pageNumber %></a>
+            <%
+              }
+            %>
+            <a class="mo-pagination__nav <%= currentPage >= totalPages ? "is-disabled" : "" %>"
+               href="<%= currentPage >= totalPages ? "#" : (contextPath + "/mo/jobs/my?" + baseParams + "&page=" + (currentPage + 1)) %>"
+               aria-label="Next page">
+              <svg viewBox="0 0 24 24" focusable="false">
+                <path d="M9.5 6.5 15 12l-5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </div>
         </div>
       </section>
 

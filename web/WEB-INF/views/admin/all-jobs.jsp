@@ -6,6 +6,14 @@
   java.util.List jobs = jobsPage == null || jobsPage.getRecords() == null ? java.util.Collections.emptyList() : jobsPage.getRecords();
   Object queryObj = request.getAttribute("query");
   com.bupt.ta.dto.JobQuery query = queryObj instanceof com.bupt.ta.dto.JobQuery ? (com.bupt.ta.dto.JobQuery) queryObj : new com.bupt.ta.dto.JobQuery();
+  int currentPage = jobsPage == null ? 1 : jobsPage.getPage();
+  int pageSize = jobsPage == null ? 10 : jobsPage.getSize();
+  int total = jobsPage == null ? jobs.size() : (int) jobsPage.getTotal();
+  int totalPages = pageSize <= 0 ? 1 : Math.max(1, (int) Math.ceil(total / (double) pageSize));
+  String baseParams = "keyword=" + java.net.URLEncoder.encode(query.getKeyword() == null ? "" : query.getKeyword(), "UTF-8")
+      + "&status=" + java.net.URLEncoder.encode(query.getStatus() == null ? "" : query.getStatus(), "UTF-8")
+      + "&sortBy=" + java.net.URLEncoder.encode(query.getSortBy() == null ? "" : query.getSortBy(), "UTF-8")
+      + "&size=" + pageSize;
   request.setAttribute("headerBrandHref", contextPath + "/admin/dashboard");
   request.setAttribute("showHeaderBack", Boolean.TRUE);
   request.setAttribute("headerBackHref", contextPath + "/admin/dashboard");
@@ -208,13 +216,13 @@
                     <span class="admin-alljobs-status admin-alljobs-status--<%= statusCss %>"><%= status %></span>
                   </td>
                   <td class="admin-alljobs-table__right">
-                    <button class="admin-alljobs-action-more" type="button" aria-label="More">
+                    <a class="admin-alljobs-action-more" href="<%= contextPath %>/admin/mos/detail?moUserId=<%= String.valueOf(job.getOrDefault("moId", "")) %>" aria-label="View MO details">
                       <svg viewBox="0 0 24 24" focusable="false">
                         <circle cx="12" cy="5.5" r="1.5" fill="currentColor"/>
                         <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
                         <circle cx="12" cy="18.5" r="1.5" fill="currentColor"/>
                       </svg>
-                    </button>
+                    </a>
                   </td>
                 </tr>
                 <%
@@ -228,19 +236,22 @@
           <div class="admin-alljobs-table__footer">
             <p>Total Postings: <%= jobsPage == null ? 0 : jobsPage.getTotal() %></p>
             <div class="admin-alljobs-pagination">
-              <button type="button" class="admin-alljobs-pagination__nav" aria-label="Previous page">
+              <a class="admin-alljobs-pagination__nav <%= currentPage <= 1 ? "is-disabled" : "" %>"
+                 aria-label="Previous page"
+                 href="<%= currentPage <= 1 ? "#" : (contextPath + "/admin/jobs?" + baseParams + "&page=" + (currentPage - 1)) %>">
                 <svg viewBox="0 0 24 24" focusable="false">
                   <path d="M14.5 6.5 9 12l5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-              </button>
-              <button type="button" class="admin-alljobs-pagination__page is-active">1</button>
-              <button type="button" class="admin-alljobs-pagination__page">2</button>
-              <button type="button" class="admin-alljobs-pagination__page">3</button>
-              <button type="button" class="admin-alljobs-pagination__nav" aria-label="Next page">
+              </a>
+              <span class="admin-alljobs-pagination__page is-active"><%= currentPage %></span>
+              <span class="admin-alljobs-pagination__page"><%= totalPages %></span>
+              <a class="admin-alljobs-pagination__nav <%= currentPage >= totalPages ? "is-disabled" : "" %>"
+                 aria-label="Next page"
+                 href="<%= currentPage >= totalPages ? "#" : (contextPath + "/admin/jobs?" + baseParams + "&page=" + (currentPage + 1)) %>">
                 <svg viewBox="0 0 24 24" focusable="false">
                   <path d="M9.5 6.5 15 12l-5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-              </button>
+              </a>
             </div>
           </div>
         </section>

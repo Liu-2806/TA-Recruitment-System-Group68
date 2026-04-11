@@ -112,13 +112,6 @@ public class ApplicationServiceImpl implements ApplicationService {
         application.put("feedback", "");
         application.put("courseCode", job.get("courseCode"));
         application.put("moName", job.get("moName"));
-        application.put("historyLogs", buildHistoryLogs(
-            Map.of(
-                "time", application.get("appliedAt"),
-                "action", ApplicationStatus.SUBMITTED.name(),
-                "description", "Application submitted with supporting statement and resume."
-            )
-        ));
         recommendationService.buildJobMatchForTA(taUserId, jobId).forEach(application::put);
         application.put("skillMatchScore", application.get("score"));
         application.put("skillMatchExplanation", application.get("explanation"));
@@ -223,17 +216,10 @@ public class ApplicationServiceImpl implements ApplicationService {
         record.put("statusLabel", statusLabel(targetStatus.name()));
         String message = actionLabel + " submitted by TA. Reason: " + reason.trim();
         record.put("feedback", message);
-        record.put("historyLogs", appendHistoryLog(
-            record.get("historyLogs"),
-            Map.of(
-                "time", record.get("updatedAt"),
-                "action", targetStatus.name(),
-                "description", message
-            )
-        ));
         applicationDataRepository.save(record);
-        if (!acceptedAssignment) {
-            updatePostingApplicationCount(String.valueOf(record.get("postingId")), -1);
+        updatePostingApplicationCount(String.valueOf(record.get("postingId")), -1);
+        if (acceptedAssignment) {
+            taTimetableDataRepository.releaseAssignment(taUserId, applicationId);
         }
         return enrichApplicationRecord(new LinkedHashMap<>(record));
     }
@@ -248,14 +234,6 @@ public class ApplicationServiceImpl implements ApplicationService {
         record.put("feedback", comment == null ? "" : comment.trim());
         record.put("updatedAt", LocalDateTime.now().format(FORMATTER));
         record.put("statusLabel", statusLabel(newStatus.name()));
-        record.put("historyLogs", appendHistoryLog(
-            record.get("historyLogs"),
-            Map.of(
-                "time", record.get("updatedAt"),
-                "action", newStatus.name(),
-                "description", buildDecisionDescription(newStatus, comment)
-            )
-        ));
         applicationDataRepository.save(record);
     }
 
@@ -279,6 +257,14 @@ public class ApplicationServiceImpl implements ApplicationService {
             enriched.putIfAbsent("postingTitle", job.get("courseName"));
             enriched.put("courseCode", job.get("courseCode"));
             enriched.put("moName", job.get("moName"));
+            enriched.put("postingType", job.get("postingType"));
+            enriched.put("activityType", job.get("activityType"));
+            enriched.put("activityDate", job.get("activityDate"));
+            enriched.put("activityStartTime", job.get("activityStartTime"));
+            enriched.put("activityEndTime", job.get("activityEndTime"));
+            enriched.put("activityLocation", job.get("activityLocation"));
+            enriched.put("location", job.get("activityLocation"));
+            enriched.put("description", job.get("description"));
         }
         if (ta != null) {
             enriched.put("taProfile", ta);
@@ -287,13 +273,6 @@ public class ApplicationServiceImpl implements ApplicationService {
         String status = String.valueOf(enriched.getOrDefault("status", ApplicationStatus.SUBMITTED.name()));
         enriched.put("statusLabel", statusLabel(status));
         enriched.putIfAbsent("updatedAt", enriched.get("appliedAt"));
-        enriched.putIfAbsent("historyLogs", buildHistoryLogs(
-            Map.of(
-                "time", String.valueOf(enriched.getOrDefault("appliedAt", "")),
-                "action", status,
-                "description", defaultHistoryDescription(status, enriched)
-            )
-        ));
         return enriched;
     }
 
@@ -405,44 +384,6 @@ public class ApplicationServiceImpl implements ApplicationService {
         };
     }
 
-    private String defaultHistoryDescription(String status, Map<String, Object> record) {
-        return switch (normalize(status)) {
-            case "accepted" -> "Application accepted by the module organiser.";
-            case "rejected" -> "Application reviewed and declined.";
-            case "underreview" -> "Application is currently being reviewed by the module organiser.";
-            default -> "Application submitted with supporting statement and resume.";
-        };
-    }
-
-    private String buildDecisionDescription(ApplicationStatus status, String comment) {
-        String suffix = hasValue(comment) ? " Feedback: " + comment.trim() : "";
-        return switch (status) {
-            case ACCEPTED -> "Application accepted by the module organiser." + suffix;
-            case REJECTED -> "Application rejected by the module organiser." + suffix;
-            default -> "Application status updated to " + status.name() + "." + suffix;
-        };
-    }
-
-    private List<Map<String, Object>> buildHistoryLogs(Map<String, Object> initialRecord) {
-        List<Map<String, Object>> logs = new ArrayList<>();
-        logs.add(new LinkedHashMap<>(initialRecord));
-        return logs;
-    }
-
-    @SuppressWarnings("unchecked")
-    private List<Map<String, Object>> appendHistoryLog(Object existingLogs, Map<String, Object> newLog) {
-        List<Map<String, Object>> logs = new ArrayList<>();
-        if (existingLogs instanceof List<?> existingList) {
-            for (Object item : existingList) {
-                if (item instanceof Map<?, ?> mapItem) {
-                    logs.add(new LinkedHashMap<>((Map<String, Object>) mapItem));
-                }
-            }
-        }
-        logs.add(new LinkedHashMap<>(newLog));
-        return logs;
-    }
-
     private Map<String, Object> requireTa(String taUserId) {
         Map<String, Object> ta = taDataRepository.findByTaId(taUserId);
         if (ta == null) {
@@ -499,7 +440,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     private List<String> findScheduleConflicts(String taUserId, String jobId) {
-        List<Map<String, Object>> targetBlocks = taTimetableDataRepository.findPostingSchedule(jobId);
+        List<Map<String, Object>> targetBlocks = deriveTargetBlocks(jobId);
         if (targetBlocks.isEmpty()) {
             return new ArrayList<>();
         }
@@ -514,6 +455,30 @@ public class ApplicationServiceImpl implements ApplicationService {
             }
         }
         return conflicts;
+    }
+
+    private List<Map<String, Object>> deriveTargetBlocks(String jobId) {
+        Map<String, Object> job = postingDataRepository.findByPostingId(jobId);
+        if (job == null) {
+            return new ArrayList<>();
+        }
+
+        String postingType = normalize(String.valueOf(job.getOrDefault("postingType", "TA")));
+        if ("activity".equals(postingType)) {
+            List<Map<String, Object>> blocks = new ArrayList<>();
+            if (!hasValue(job.get("activityDate")) || !hasValue(job.get("activityStartTime")) || !hasValue(job.get("activityEndTime"))) {
+                return blocks;
+            }
+            Map<String, Object> block = new LinkedHashMap<>();
+            block.put("dayOfWeek", deriveDayOfWeek(job.get("activityDate")));
+            block.put("startTime", job.get("activityStartTime"));
+            block.put("endTime", job.get("activityEndTime"));
+            block.put("label", job.getOrDefault("courseName", "Scheduled activity"));
+            blocks.add(block);
+            return blocks;
+        }
+
+        return taTimetableDataRepository.findPostingSchedule(jobId);
     }
 
     private List<Map<String, Object>> extractExistingBlocks(Map<String, Object> timetable) {

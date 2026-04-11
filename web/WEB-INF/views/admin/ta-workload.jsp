@@ -6,6 +6,13 @@
   java.util.List rows = reportPage == null || reportPage.getRecords() == null ? java.util.Collections.emptyList() : reportPage.getRecords();
   Object queryObj = request.getAttribute("query");
   java.util.Map query = queryObj instanceof java.util.Map ? (java.util.Map) queryObj : java.util.Collections.emptyMap();
+  Object distributionObj = request.getAttribute("distributionSummary");
+  java.util.Map distributionSummary = distributionObj instanceof java.util.Map ? (java.util.Map) distributionObj : java.util.Collections.emptyMap();
+  java.util.List hourBuckets = distributionSummary.get("hourBuckets") instanceof java.util.List ? (java.util.List) distributionSummary.get("hourBuckets") : java.util.Collections.emptyList();
+  java.util.Map bucket0To4 = hourBuckets.size() > 0 && hourBuckets.get(0) instanceof java.util.Map ? (java.util.Map) hourBuckets.get(0) : java.util.Collections.emptyMap();
+  java.util.Map bucket4To8 = hourBuckets.size() > 1 && hourBuckets.get(1) instanceof java.util.Map ? (java.util.Map) hourBuckets.get(1) : java.util.Collections.emptyMap();
+  java.util.Map bucket8To12 = hourBuckets.size() > 2 && hourBuckets.get(2) instanceof java.util.Map ? (java.util.Map) hourBuckets.get(2) : java.util.Collections.emptyMap();
+  java.util.Map bucket12Plus = hourBuckets.size() > 3 && hourBuckets.get(3) instanceof java.util.Map ? (java.util.Map) hourBuckets.get(3) : java.util.Collections.emptyMap();
   request.setAttribute("headerBrandHref", contextPath + "/admin/dashboard");
   request.setAttribute("showHeaderBack", Boolean.TRUE);
   request.setAttribute("headerBackHref", contextPath + "/admin/dashboard");
@@ -126,11 +133,11 @@
           <div class="admin-ta-filter__field">
             <label for="taMajorFilter">Major Filter</label>
             <div class="admin-ta-filter__select">
-              <select id="taMajorFilter" name="term">
-                <option value="" <%= String.valueOf(query.getOrDefault("term", "")).isBlank() ? "selected" : "" %>>All Majors</option>
-                <option value="Software" <%= "Software".equalsIgnoreCase(String.valueOf(query.getOrDefault("term", ""))) ? "selected" : "" %>>Software</option>
-                <option value="Computer" <%= "Computer".equalsIgnoreCase(String.valueOf(query.getOrDefault("term", ""))) ? "selected" : "" %>>Computer</option>
-                <option value="Communication" <%= "Communication".equalsIgnoreCase(String.valueOf(query.getOrDefault("term", ""))) ? "selected" : "" %>>Communication</option>
+              <select id="taMajorFilter" name="major">
+                <option value="" <%= String.valueOf(query.getOrDefault("major", "")).isBlank() ? "selected" : "" %>>All Majors</option>
+                <option value="Software" <%= "Software".equalsIgnoreCase(String.valueOf(query.getOrDefault("major", ""))) ? "selected" : "" %>>Software</option>
+                <option value="Computer" <%= "Computer".equalsIgnoreCase(String.valueOf(query.getOrDefault("major", ""))) ? "selected" : "" %>>Computer</option>
+                <option value="Communication" <%= "Communication".equalsIgnoreCase(String.valueOf(query.getOrDefault("major", ""))) ? "selected" : "" %>>Communication</option>
               </select>
               <span class="admin-ta-filter__caret" aria-hidden="true">v</span>
             </div>
@@ -139,11 +146,11 @@
           <div class="admin-ta-filter__field">
             <label for="taStatusFilter">Workload Status</label>
             <div class="admin-ta-filter__select">
-              <select id="taStatusFilter" name="minHours">
-                <option value="" <%= String.valueOf(query.getOrDefault("minHours", "")).isBlank() ? "selected" : "" %>>All Status</option>
-                <option value="1" <%= "1".equals(String.valueOf(query.getOrDefault("minHours", ""))) ? "selected" : "" %>>Normal</option>
-                <option value="3" <%= "3".equals(String.valueOf(query.getOrDefault("minHours", ""))) ? "selected" : "" %>>High Alert</option>
-                <option value="0" <%= "0".equals(String.valueOf(query.getOrDefault("minHours", ""))) ? "selected" : "" %>>Not Applied</option>
+              <select id="taStatusFilter" name="status">
+                <option value="" <%= String.valueOf(query.getOrDefault("status", "")).isBlank() ? "selected" : "" %>>All Status</option>
+                <option value="NORMAL" <%= "NORMAL".equalsIgnoreCase(String.valueOf(query.getOrDefault("status", ""))) ? "selected" : "" %>>Normal</option>
+                <option value="HIGH_ALERT" <%= "HIGH_ALERT".equalsIgnoreCase(String.valueOf(query.getOrDefault("status", ""))) ? "selected" : "" %>>High Alert</option>
+                <option value="NOT_APPLIED" <%= "NOT_APPLIED".equalsIgnoreCase(String.valueOf(query.getOrDefault("status", ""))) ? "selected" : "" %>>Not Applied</option>
               </select>
               <span class="admin-ta-filter__caret" aria-hidden="true">v</span>
             </div>
@@ -200,7 +207,7 @@
                   <td><strong class="admin-ta-count"><%= appCount %></strong></td>
                   <td><strong class="admin-ta-hours <%= hours >= 12 ? "admin-ta-hours--alert" : "" %>"><%= hours %>h</strong></td>
                   <td><span class="admin-ta-status admin-ta-status--<%= statusCss %>"><%= statusText %></span></td>
-                  <td class="admin-ta-table__right"><button class="admin-ta-details-button" type="button">Details</button></td>
+                  <td class="admin-ta-table__right"><button class="admin-ta-details-button" type="button" data-ta-id="<%= String.valueOf(row.getOrDefault("taId", "")) %>">Details</button></td>
                 </tr>
                 <%
                     }
@@ -236,19 +243,19 @@
               <div class="admin-ta-chart__baseline"></div>
               <div class="admin-ta-chart__bars">
                 <div class="admin-ta-chart__group">
-                  <div class="admin-ta-chart__bar admin-ta-chart__bar--light" style="height: 24px;"></div>
+                    <div class="admin-ta-chart__bar admin-ta-chart__bar--light" style="height: <%= 18 + (Integer.parseInt(String.valueOf(bucket0To4.getOrDefault("count", 0))) * 16) %>px;"></div>
                   <span>0-4h</span>
                 </div>
                 <div class="admin-ta-chart__group">
-                  <div class="admin-ta-chart__bar admin-ta-chart__bar--medium" style="height: 56px;"></div>
+                    <div class="admin-ta-chart__bar admin-ta-chart__bar--medium" style="height: <%= 18 + (Integer.parseInt(String.valueOf(bucket4To8.getOrDefault("count", 0))) * 16) %>px;"></div>
                   <span>4-8h</span>
                 </div>
                 <div class="admin-ta-chart__group">
-                  <div class="admin-ta-chart__bar admin-ta-chart__bar--strong" style="height: 104px;"></div>
+                    <div class="admin-ta-chart__bar admin-ta-chart__bar--strong" style="height: <%= 18 + (Integer.parseInt(String.valueOf(bucket8To12.getOrDefault("count", 0))) * 16) %>px;"></div>
                   <span>8-12h</span>
                 </div>
                 <div class="admin-ta-chart__group">
-                  <div class="admin-ta-chart__bar admin-ta-chart__bar--warn" style="height: 38px;"></div>
+                    <div class="admin-ta-chart__bar admin-ta-chart__bar--warn" style="height: <%= 18 + (Integer.parseInt(String.valueOf(bucket12Plus.getOrDefault("count", 0))) * 16) %>px;"></div>
                   <span>12h+</span>
                 </div>
               </div>
@@ -257,27 +264,27 @@
             <div class="admin-ta-analysis-side">
               <article class="admin-ta-insight-card">
                 <span class="admin-ta-insight-card__eyebrow">Peak Workload</span>
-                <strong>Software Dept</strong>
-                <p>Most active TA assignments are concentrated in software-related courses this week.</p>
+                <strong><%= String.valueOf(distributionSummary.getOrDefault("peakWorkloadGroup", "N/A")) %></strong>
+                <p>The highest combined TA workload in the current filtered result set is concentrated in this major group.</p>
               </article>
 
               <article class="admin-ta-insight-card admin-ta-insight-card--alert">
                 <span class="admin-ta-insight-card__eyebrow">Critical Alerts</span>
-                <strong>2 Students</strong>
-                <p>Two TAs are near the workload ceiling and should be reviewed before assigning new tasks.</p>
+                <strong><%= String.valueOf(distributionSummary.getOrDefault("criticalAlertCount", 0)) %> Students</strong>
+                <p>These TAs are at or above the high-alert threshold and should be reviewed before new assignments are added.</p>
               </article>
             </div>
           </div>
         </section>
 
         <div class="admin-ta-export">
-          <button class="admin-ta-export__button" type="button">
+          <button class="admin-ta-export__button" type="button" onclick="window.print()">
             <span class="admin-ta-export__icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" focusable="false">
                 <path d="M12 5v9m0 0 3.5-3.5M12 14l-3.5-3.5M5.75 17.5v.75h12.5v-.75" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </span>
-            <span>Export Full Workload Report</span>
+            <span>Print / Export Report</span>
           </button>
         </div>
       </main>

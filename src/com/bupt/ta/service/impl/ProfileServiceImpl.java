@@ -8,25 +8,33 @@ import com.bupt.ta.service.ProfileService;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ProfileServiceImpl implements ProfileService {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private final TADataRepository taDataRepository;
-    private final SystemDataRepository systemDataRepository;
     private final UserRepository userRepository;
+    private final SystemDataRepository systemDataRepository;
 
     public ProfileServiceImpl(
         TADataRepository taDataRepository,
-        SystemDataRepository systemDataRepository,
-        UserRepository userRepository
+        UserRepository userRepository,
+        SystemDataRepository systemDataRepository
     ) {
         this.taDataRepository = taDataRepository;
-        this.systemDataRepository = systemDataRepository;
         this.userRepository = userRepository;
+        this.systemDataRepository = systemDataRepository;
+    }
+
+    @Override
+    public List<String> listAllSkillTags() {
+        return new ArrayList<>(systemDataRepository.listSkillTags());
     }
 
     @Override
@@ -59,13 +67,30 @@ public class ProfileServiceImpl implements ProfileService {
         if (hasValue(params.get("intro"))) {
             ta.put("intro", params.get("intro"));
         }
-        Object skillTags = params.get("skillTags");
-        if (skillTags instanceof String[] tags) {
-            ta.put("skills", List.of(tags));
-        } else if (skillTags == null) {
-            ta.put("skills", List.of());
+        if (params != null && params.containsKey("skillTags")) {
+            ta.put("skills", normalizeSkillSelection(params.get("skillTags")));
         }
         taDataRepository.save(ta);
+    }
+
+    /**
+     * Keep only tags that exist in skill-tags.json (exact string match).
+     */
+    private List<String> normalizeSkillSelection(Object rawSkillTags) {
+        Set<String> allowed = new HashSet<>(systemDataRepository.listSkillTags());
+        List<String> out = new ArrayList<>();
+        if (rawSkillTags instanceof List<?> list) {
+            for (Object item : list) {
+                if (item == null) {
+                    continue;
+                }
+                String tag = String.valueOf(item).trim();
+                if (!tag.isEmpty() && allowed.contains(tag)) {
+                    out.add(tag);
+                }
+            }
+        }
+        return out;
     }
 
     @Override
@@ -109,11 +134,6 @@ public class ProfileServiceImpl implements ProfileService {
         applyTextUpdate(mo, "description", params == null ? null : params.get("description"));
         mo.put("updatedAt", LocalDateTime.now().format(FORMATTER));
         userRepository.update(Role.MO, mo);
-    }
-
-    @Override
-    public List<String> listAllSkillTags() {
-        return systemDataRepository.listSkillTags();
     }
 
     private boolean hasValue(Object value) {

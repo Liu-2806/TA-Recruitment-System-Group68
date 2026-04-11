@@ -11,6 +11,12 @@
 | `skywalker11111` | `231226439` |
 | `NoveAmberic` | `231226495` |
 
+
+cd F:\softwareengineering\TA-Recruitment-System-Group68
+powershell -ExecutionPolicy Bypass -File .\scripts\run-web-app.ps1
+
+http://localhost:8080/TA-Recruitment-System-Group68/
+
 ## 项目背景与约束
 
 本项目是 EBU6304 课程的 TA Recruitment System 小组项目。当前仓库中的实现和后续开发必须遵守 handout 中的硬性要求：
@@ -585,3 +591,32 @@ javac -encoding UTF-8 -cp "lib/pdfbox-app-3.0.2.jar;lib/gson-2.11.0.jar;lib/java
 - `scripts/test-*.ps1`
 
 如果后续确实需要共享测试代码或测试脚本，应先确认是否属于正式交付范围，再决定是否调整忽略规则。
+## 2026-04 Runtime Update
+
+Current runtime conventions for the active web application:
+
+- Use `web/` as the Tomcat web root.
+- Do not use historical `src/main/webapp` paths for deployment.
+- Compile Java sources from `src/com/bupt/ta` into `WEB-INF/classes` before deploying to Tomcat.
+- Use `/dev/login-as?role=TA` and `/dev/login-as?role=MO` for demo routing after deployment.
+
+Current TA/input optimization status:
+
+- `index.jsp` now redirects to the real `/auth/login` route instead of a preview page.
+- The local Tomcat deployment scripts now stage `web/` and compiled classes together.
+- TA profile and resume flows now keep success/error feedback inside the main JSP flow.
+- TA application submit/withdraw flows now return to business pages with visible status feedback instead of raw error pages.
+
+## 2026-04 Match Experience Update
+
+The AI matching flow now keeps the existing core fields and also derives user-facing helper fields at runtime:
+
+- `scoreBand`
+- `strengthSummary`
+- `riskSummary`
+- `nextStepSuggestion`
+- `confidenceHint`
+- `methodLabel`
+- `methodHint`
+
+These helper fields are used only for JSP rendering and are not required as new stored JSON schema fields.

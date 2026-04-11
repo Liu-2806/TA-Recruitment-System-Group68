@@ -34,7 +34,7 @@ public class TAMyApplicationsServlet extends BaseServlet {
         query.setStatus(request.getParameter("status"));
         query.setSortBy(request.getParameter("sortBy"));
         query.setPage(parseIntOrDefault(request.getParameter("page"), 1));
-        query.setSize(parseIntOrDefault(request.getParameter("size"), 10));
+        query.setSize(parseIntOrDefault(request.getParameter("size"), 6));
         request.setAttribute("applicationsPage", applicationService.listApplicationsByTA(user.getId(), query));
         request.setAttribute("query", query);
         request.getRequestDispatcher("/WEB-INF/views/ta/applications.jsp").forward(request, response);

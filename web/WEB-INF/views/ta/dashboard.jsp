@@ -4,15 +4,13 @@
   request.setAttribute("headerBrandHref", contextPath + "/ta/dashboard");
   request.setAttribute("showHeaderBack", Boolean.FALSE);
   request.setAttribute("showHeaderUser", Boolean.TRUE);
-  Object notificationCountObj = request.getAttribute("notificationCount");
-  Integer notificationCount = notificationCountObj instanceof Integer ? (Integer) notificationCountObj : Integer.valueOf(0);
   Object profileSummaryObj = request.getAttribute("profileSummary");
   java.util.Map profileSummary = profileSummaryObj instanceof java.util.Map ? (java.util.Map) profileSummaryObj : null;
   String currentUserName = profileSummary == null ? "TA" : String.valueOf(profileSummary.getOrDefault("fullName", "TA"));
   request.setAttribute("currentUserName", currentUserName);
   request.setAttribute("currentUserRoleLabel", "TA Applicant");
   request.setAttribute("currentUserInitial", currentUserName == null || currentUserName.isBlank() ? "T" : currentUserName.substring(0, 1).toUpperCase());
-  request.setAttribute("notificationCount", notificationCount);
+  request.setAttribute("notificationCount", Integer.valueOf(0));
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -183,75 +181,9 @@
               <div class="ta-calendar__grid" id="taCalendarGrid" data-position-url="<%= contextPath %>/ta/jobs/detail?jobId=<%= String.valueOf(courseAssignment.getOrDefault("postingId", "")) %>"></div>
             </div>
 
-            <section class="ta-schedule-detail" id="taScheduleDetail" aria-live="polite">
-              <div class="ta-schedule-detail__header">
-                <div>
-                  <p class="ta-schedule-detail__eyebrow">Selected Task</p>
-                  <h3 id="taScheduleDetailTitle">Select a work day</h3>
-                </div>
-                <span class="ta-schedule-detail__badge" id="taScheduleDetailBadge">No selection</span>
-              </div>
-              <p class="ta-schedule-detail__meta" id="taScheduleDetailMeta">
-                Choose a highlighted day to inspect the arranged TA duty and jump to the related position detail page.
-              </p>
-              <p class="ta-schedule-detail__description" id="taScheduleDetailDescription">
-                Scheduled activity details for this week will appear here.
-              </p>
-              <div class="ta-schedule-detail__actions">
-              <a class="ta-schedule-detail__action" id="taScheduleDetailLink" href="<%= contextPath %>/ta/jobs/detail?jobId=<%= String.valueOf(courseAssignment.getOrDefault("postingId", "")) %>">Open Position Details</a>
-              </div>
-            </section>
           </section>
 
           <div class="ta-dashboard-panels">
-            <section class="ta-board-card">
-              <div class="ta-board-card__header">
-                <div class="ta-board-card__title-group">
-                  <span class="ta-board-card__icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" focusable="false">
-                      <path d="M12 5.75a4 4 0 0 0-4 4V12l-1.5 2.5h11L16 12V9.75a4 4 0 0 0-4-4Zm0 12.5a1.75 1.75 0 0 0 1.74-1.5h-3.48A1.75 1.75 0 0 0 12 18.25Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </span>
-                  <div>
-                    <p class="ta-board-card__eyebrow">Updates</p>
-                    <h2>Recent Notifications</h2>
-                  </div>
-                </div>
-                <span class="ta-board-card__meta"><%= notificationCount %> items</span>
-              </div>
-
-              <div class="ta-notification-list">
-                <%
-                  Object notificationsObj = request.getAttribute("notifications");
-                  java.util.List notifications = notificationsObj instanceof java.util.List ? (java.util.List) notificationsObj : java.util.Collections.emptyList();
-                  if (notifications.isEmpty()) {
-                %>
-                <article class="ta-notification-item">
-                  <div class="ta-notification-item__tag">System</div>
-                  <div class="ta-notification-item__content">
-                    <h3>No new updates</h3>
-                    <p>Your latest TA actions and system reminders will appear here.</p>
-                  </div>
-                </article>
-                <%
-                  } else {
-                    for (Object notificationObj : notifications) {
-                      java.util.Map notification = notificationObj instanceof java.util.Map ? (java.util.Map) notificationObj : java.util.Collections.emptyMap();
-                %>
-                <article class="ta-notification-item">
-                  <div class="ta-notification-item__tag"><%= String.valueOf(notification.getOrDefault("type", "Update")) %></div>
-                  <div class="ta-notification-item__content">
-                    <h3><%= String.valueOf(notification.getOrDefault("message", "")) %></h3>
-                  </div>
-                  <a class="ta-notification-item__link" href="<%= contextPath + String.valueOf(notification.getOrDefault("path", "/ta/dashboard")) %>">Open</a>
-                </article>
-                <%
-                    }
-                  }
-                %>
-              </div>
-            </section>
-
             <section class="ta-board-card">
               <div class="ta-board-card__header">
                 <div class="ta-board-card__title-group">
@@ -356,7 +288,7 @@
                     <h3><%= postingTitle %></h3>
                     <p>Submitted <%= appliedAt %></p>
                   </div>
-                  <a class="ta-history-item__link" href="<%= contextPath %>/ta/applications/my">View History</a>
+                  <a class="ta-history-item__link" href="<%= contextPath %>/ta/applications/my">Open Applications</a>
                 </article>
                 <%
                     }
@@ -392,9 +324,9 @@
             } catch (Exception ignored) {}
         %>
         {
-          dayIndex: <%= dayIndex %>,
+          date: "<%= String.valueOf(event.getOrDefault("date", "")).replace("\\", "\\\\").replace("\"", "\\\"") %>",
           type: "<%= String.valueOf(event.getOrDefault("type", "lab")) %>",
-          calendarLabel: "<%= (String.valueOf(event.getOrDefault("title", "")) + " " + String.valueOf(event.getOrDefault("startTime", ""))).replace("\\", "\\\\").replace("\"", "\\\"") %>",
+          calendarLabel: "<%= (String.valueOf(event.getOrDefault("title", "")) + " " + String.valueOf(event.getOrDefault("startTime", ""))).trim().replace("\\", "\\\\").replace("\"", "\\\"") %>",
           title: "<%= String.valueOf(event.getOrDefault("title", "")).replace("\\", "\\\\").replace("\"", "\\\"") %>",
           time: "<%= (String.valueOf(event.getOrDefault("startTime", "")) + " - " + String.valueOf(event.getOrDefault("endTime", ""))).replace("\\", "\\\\").replace("\"", "\\\"") %>",
           location: "<%= String.valueOf(event.getOrDefault("location", "")).replace("\\", "\\\\").replace("\"", "\\\"") %>",

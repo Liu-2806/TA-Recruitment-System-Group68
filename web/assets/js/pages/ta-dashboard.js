@@ -6,11 +6,6 @@
   const courseTitle = document.getElementById("taCourseTitle");
   const courseMeta = document.getElementById("taCourseMeta");
   const courseLink = document.getElementById("taCourseLink");
-  const detailTitle = document.getElementById("taScheduleDetailTitle");
-  const detailBadge = document.getElementById("taScheduleDetailBadge");
-  const detailMeta = document.getElementById("taScheduleDetailMeta");
-  const detailDescription = document.getElementById("taScheduleDetailDescription");
-  const detailLink = document.getElementById("taScheduleDetailLink");
 
   if (!calendarGrid || !weekLabel || !prevWeekButton || !nextWeekButton) {
     return;
@@ -21,116 +16,15 @@
   const today = startOfDay(new Date());
   const currentWeekStart = startOfWeek(today);
 
-  const weeklySchedule = {
-    "-1": {
-      course: {
-        title: "Software Engineering TA",
-        meta: "Tue 14:00 - 16:00 · Queens Building QB-302 · Weekly support session",
-        link: "#application-se3001"
-      },
-      activities: [
-        {
-          dayIndex: 0,
-          type: "lab",
-          calendarLabel: "Lab 10:00",
-          title: "SE3001 Lab Preparation",
-          time: "10:00 - 12:00",
-          location: "QB-305",
-          description: "Assist with debugging walkthroughs and answer student questions before the graded lab week.",
-          detailUrl: positionDetailsUrl
-        },
-        {
-          dayIndex: 2,
-          type: "checkoff",
-          calendarLabel: "Check-off 16:00",
-          title: "Prototype Check-off",
-          time: "16:00 - 17:30",
-          location: "Innovation Studio 2",
-          description: "Review student project milestones and confirm progress against the sprint acceptance checklist.",
-          detailUrl: positionDetailsUrl
-        }
-      ]
-    },
-    "0": {
-      course: {
-        title: "Software Engineering TA",
-        meta: "Tue 14:00 - 16:00 · Queens Building QB-302 · Weekly support session",
-        link: "#application-se3001"
-      },
-      activities: [
-        {
-          dayIndex: 1,
-          type: "lab",
-          calendarLabel: "Lab 10:00",
-          title: "SE3001 Lab Support",
-          time: "10:00 - 12:00",
-          location: "QB-302",
-          description: "Guide students through the weekly lab, answer Java implementation questions, and record common issues for the MO.",
-          detailUrl: positionDetailsUrl
-        },
-        {
-          dayIndex: 2,
-          type: "checkoff",
-          calendarLabel: "Check-off 16:00",
-          title: "Sprint Demo Check-off",
-          time: "16:00 - 17:00",
-          location: "Engineering Hub 1",
-          description: "Observe each group demo, verify acceptance criteria, and note blockers to follow up after the session.",
-          detailUrl: positionDetailsUrl
-        },
-        {
-          dayIndex: 4,
-          type: "exam",
-          calendarLabel: "Exam 09:00",
-          title: "Invigilation Duty",
-          time: "09:00 - 11:00",
-          location: "Exam Hall C",
-          description: "Support module invigilation, seating checks, and post-exam material handover for the assessment team.",
-          detailUrl: positionDetailsUrl
-        }
-      ]
-    },
-    "1": {
-      course: {
-        title: "Software Engineering TA",
-        meta: "Tue 14:00 - 16:00 · Queens Building QB-302 · Weekly support session",
-        link: "#application-se3001"
-      },
-      activities: [
-        {
-          dayIndex: 1,
-          type: "lab",
-          calendarLabel: "Lab 10:00",
-          title: "Architecture Review Lab",
-          time: "10:00 - 12:00",
-          location: "QB-302",
-          description: "Lead the architecture review activity and help students prepare for the upcoming design checkpoint.",
-          detailUrl: positionDetailsUrl
-        },
-        {
-          dayIndex: 3,
-          type: "checkoff",
-          calendarLabel: "Check-off 15:00",
-          title: "Code Quality Check-off",
-          time: "15:00 - 16:30",
-          location: "Engineering Hub 1",
-          description: "Assess repository structure, testing coverage, and merge-readiness before the next release rehearsal.",
-          detailUrl: positionDetailsUrl
-        }
-      ]
-    }
-  };
   const serverSchedule = window.taDashboardSchedule;
-  if (serverSchedule && Array.isArray(serverSchedule.activities)) {
-    weeklySchedule["0"] = {
-      course: {
-        title: serverSchedule.course && serverSchedule.course.title ? serverSchedule.course.title : "Software Engineering TA",
-        meta: serverSchedule.course && serverSchedule.course.meta ? serverSchedule.course.meta : "No fixed course session arranged for this week",
-        link: serverSchedule.course && serverSchedule.course.link ? serverSchedule.course.link : "#"
-      },
-      activities: serverSchedule.activities
-    };
-  }
+  const fallbackSchedule = {
+    course: {
+      title: "No course assignment",
+      meta: "No fixed course session arranged for this week",
+      link: "#"
+    },
+    activities: []
+  };
 
   const state = {
     weekOffset: 0,
@@ -173,14 +67,17 @@
   }
 
   function getWeekData(offset) {
-    return weeklySchedule[String(offset)] || {
-      course: {
-        title: "Software Engineering TA",
-        meta: "No fixed course session arranged for this week",
-        link: "#application-se3001"
-      },
-      activities: []
-    };
+    if (serverSchedule && Array.isArray(serverSchedule.activities)) {
+      return {
+        course: {
+          title: serverSchedule.course && serverSchedule.course.title ? serverSchedule.course.title : fallbackSchedule.course.title,
+          meta: serverSchedule.course && serverSchedule.course.meta ? serverSchedule.course.meta : fallbackSchedule.course.meta,
+          link: serverSchedule.course && serverSchedule.course.link ? serverSchedule.course.link : fallbackSchedule.course.link
+        },
+        activities: serverSchedule.activities
+      };
+    }
+    return fallbackSchedule;
   }
 
   function renderCourse(weekData) {
@@ -189,7 +86,7 @@
     }
     courseTitle.textContent = weekData.course.title;
     courseMeta.textContent = weekData.course.meta;
-    courseLink.href = weekData.course.link;
+    courseLink.href = weekData.course.link || "#";
   }
 
   function buildDayButton(date, tasksForDay) {
@@ -231,47 +128,20 @@
     return button;
   }
 
-  function renderDetail(selectedDate, tasksForDay) {
-    if (!detailTitle || !detailBadge || !detailMeta || !detailDescription || !detailLink) {
-      return;
-    }
-
-    if (!selectedDate || !tasksForDay || tasksForDay.length === 0) {
-      detailTitle.textContent = "Select a work day";
-      detailBadge.textContent = "No selection";
-      detailMeta.textContent = "Choose a highlighted day to inspect the arranged TA duty and jump to the related position detail page.";
-      detailDescription.textContent = "Scheduled activity details for this week will appear here.";
-      detailLink.href = positionDetailsUrl;
-      detailLink.textContent = "Open Position Details";
-      detailLink.classList.add("is-disabled");
-      detailLink.setAttribute("aria-disabled", "true");
-      return;
-    }
-
-    const firstTask = tasksForDay[0];
-    const dateLabel = selectedDate.toLocaleDateString("en-GB", {
-      weekday: "short",
-      day: "2-digit",
-      month: "short"
-    });
-
-    detailTitle.textContent = firstTask.title;
-    detailBadge.textContent = tasksForDay.length === 1 ? firstTask.calendarLabel : tasksForDay.length + " tasks";
-    detailMeta.textContent = dateLabel + " · " + firstTask.time + " · " + firstTask.location;
-    detailDescription.textContent = firstTask.description;
-    detailLink.href = firstTask.detailUrl;
-    detailLink.textContent = tasksForDay.length === 1 ? "Open Position Details" : "Open Related Position Details";
-    detailLink.classList.remove("is-disabled");
-    detailLink.removeAttribute("aria-disabled");
-  }
-
   function render() {
     const weekStart = addDays(currentWeekStart, state.weekOffset * 7);
+    const weekEnd = addDays(weekStart, 6);
     const weekData = getWeekData(state.weekOffset);
     const taskMap = new Map();
 
     weekData.activities.forEach(function (task) {
-      const taskDate = addDays(weekStart, task.dayIndex);
+      if (!task.date) {
+        return;
+      }
+      const taskDate = startOfDay(new Date(task.date + "T00:00:00"));
+      if (Number.isNaN(taskDate.getTime()) || taskDate < weekStart || taskDate > weekEnd) {
+        return;
+      }
       const key = isoKey(taskDate);
       if (!taskMap.has(key)) {
         taskMap.set(key, []);
@@ -279,9 +149,7 @@
       taskMap.get(key).push(task);
     });
 
-    weekLabel.textContent = state.weekOffset === 0 && serverSchedule && serverSchedule.currentWeekLabel
-      ? serverSchedule.currentWeekLabel
-      : formatRange(weekStart);
+    weekLabel.textContent = formatRange(weekStart);
     renderCourse(weekData);
 
     const preferredTodayKey = state.weekOffset === 0 ? isoKey(today) : null;
@@ -306,10 +174,6 @@
 
       calendarGrid.appendChild(dayButton);
     }
-
-    const selectedDate = state.selectedDateKey ? new Date(state.selectedDateKey + "T00:00:00") : null;
-    const selectedTasks = state.selectedDateKey ? taskMap.get(state.selectedDateKey) : null;
-    renderDetail(selectedDate, selectedTasks);
   }
 
   prevWeekButton.addEventListener("click", function () {

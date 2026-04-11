@@ -115,3 +115,12 @@ Git upload reminder:
 4. Copy .env.example to .env.local if LLM mode is needed.
 5. Import the project into the team IDE setup or run the compile check command above.
 6. Do not commit local API secrets or local build output.
+10. Local Tomcat deployment reminder
+
+- Active web root: `web/`
+- Java source root for deployment compile: `src/com/bupt/ta`
+- Compile output for Tomcat deployment: `WEB-INF/classes`
+- Real login entry after deployment: `/auth/login`
+- Demo shortcuts:
+  - `/dev/login-as?role=TA`
+  - `/dev/login-as?role=MO`
