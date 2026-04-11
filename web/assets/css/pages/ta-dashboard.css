@@ -196,6 +196,7 @@
   border-radius: 18px;
   padding: 12px;
   margin-bottom: 14px;
+  min-width: 0;
 }
 
 .ta-file-box__icon {
@@ -217,13 +218,18 @@
 
 .ta-file-box__meta {
   min-width: 0;
+  flex: 1;
 }
 
 .ta-file-box__name {
+  display: block;
   margin: 0;
   color: #334155;
   font-size: 12px;
   font-weight: 800;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .ta-file-box__note {

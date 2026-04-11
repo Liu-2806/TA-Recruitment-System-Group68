@@ -1,9 +1,11 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
   String contextPath = request.getContextPath();
-  request.setAttribute("headerBrandHref", contextPath + "/register-preview.jsp");
+  Object formDataObj = request.getAttribute("formData");
+  java.util.Map formData = formDataObj instanceof java.util.Map ? (java.util.Map) formDataObj : java.util.Collections.emptyMap();
+  request.setAttribute("headerBrandHref", contextPath + "/ta/register");
   request.setAttribute("showHeaderBack", Boolean.TRUE);
-  request.setAttribute("headerBackHref", contextPath + "/login-preview.jsp");
+  request.setAttribute("headerBackHref", contextPath + "/auth/login");
   request.setAttribute("headerBackLabel", "Back to Login");
   request.setAttribute("showHeaderUser", Boolean.FALSE);
 %>
@@ -31,7 +33,7 @@
         </div>
 
         <div class="auth-card__body register-card__body">
-          <form class="auth-form register-form" action="#" method="post">
+          <form class="auth-form register-form" action="<%= contextPath %>/ta/register" method="post">
             <div class="register-form__section">
               <div class="register-form__section-header">
                 <span class="register-form__section-icon" aria-hidden="true">
@@ -51,7 +53,7 @@
                         <path d="M12 12a3.75 3.75 0 1 0-3.75-3.75A3.75 3.75 0 0 0 12 12Zm0 1.5c-3.17 0-5.75 1.89-5.75 4.22V19h11.5v-.28c0-2.33-2.58-4.22-5.75-4.22Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
                       </svg>
                     </span>
-                    <input id="fullName" name="fullName" type="text" placeholder="Enter your full name" required>
+                    <input id="fullName" name="fullName" type="text" placeholder="Enter your full name" value="<%= String.valueOf(formData.getOrDefault("fullName", "")) %>" required>
                   </div>
                 </div>
 
@@ -59,7 +61,7 @@
                   <label class="auth-label" for="studentId">Student ID</label>
                   <div class="auth-input">
                     <span class="auth-input__icon auth-input__icon--text" aria-hidden="true">#</span>
-                    <input id="studentId" name="studentId" type="text" placeholder="e.g. 20240001" required>
+                    <input id="studentId" name="studentId" type="text" placeholder="e.g. 20240001" value="<%= String.valueOf(formData.getOrDefault("studentId", "")) %>" required>
                   </div>
                 </div>
 
@@ -71,7 +73,15 @@
                         <path d="M4.5 9.5 12 6l7.5 3.5L12 13Zm2.5 1.17V15.5c0 1.1 2.24 2 5 2s5-.9 5-2v-4.83" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
                       </svg>
                     </span>
-                    <input id="majorProgram" name="majorProgram" type="text" placeholder="e.g. Computer Science" required>
+                    <input id="majorProgram" name="majorProgram" type="text" placeholder="e.g. Computer Science" value="<%= String.valueOf(formData.getOrDefault("majorProgram", "")) %>" required>
+                  </div>
+                </div>
+
+                <div class="auth-form__group">
+                  <label class="auth-label" for="academicYear">Academic Year</label>
+                  <div class="auth-input">
+                    <span class="auth-input__icon auth-input__icon--text" aria-hidden="true">Y</span>
+                    <input id="academicYear" name="academicYear" type="text" placeholder="e.g. Year 3" value="<%= String.valueOf(formData.getOrDefault("academicYear", "")) %>">
                   </div>
                 </div>
 
@@ -83,7 +93,7 @@
                         <path d="M4.5 7.25h15a1.25 1.25 0 0 1 1.25 1.25v7A1.25 1.25 0 0 1 19.5 16.75h-15A1.25 1.25 0 0 1 3.25 15.5v-7A1.25 1.25 0 0 1 4.5 7.25Zm0 .75L12 12.75 19.5 8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
                       </svg>
                     </span>
-                    <input id="registerEmail" name="email" type="email" placeholder="student@university.edu" autocomplete="email" required>
+                    <input id="registerEmail" name="email" type="email" placeholder="student@university.edu" autocomplete="email" value="<%= String.valueOf(formData.getOrDefault("email", "")) %>" required>
                   </div>
                 </div>
 
@@ -114,7 +124,7 @@
             </div>
 
             <label class="agreement-box">
-              <input id="agreeTerms" name="agreeTerms" type="checkbox" required>
+              <input id="agreeTerms" name="agreeTerms" type="checkbox" <%= formData.get("agreeTerms") != null ? "checked" : "" %> required>
               <span class="agreement-box__check" aria-hidden="true"></span>
               <span class="agreement-box__text">
                 I have read and agree to the

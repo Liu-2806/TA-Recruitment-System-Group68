@@ -114,13 +114,19 @@
         "dayOfWeek": "MON",
         "startTime": "14:00",
         "endTime": "16:00",
-        "label": "Programming Lab Support"
+        "label": "Programming Lab Support",
+        "type": "lab",
+        "location": "CS Lab A",
+        "description": "Lead the weekly introductory programming lab and support students during hands-on exercises."
       },
       {
         "dayOfWeek": "THU",
         "startTime": "14:00",
         "endTime": "16:00",
-        "label": "Office Hours"
+        "label": "Office Hours",
+        "type": "checkoff",
+        "location": "Learning Hub 3",
+        "description": "Run open office hours, answer coursework questions, and follow up on student blockers."
       }
     ]
   },
@@ -133,13 +139,19 @@
         "dayOfWeek": "WED",
         "startTime": "14:00",
         "endTime": "17:00",
-        "label": "Electronics Lab Session"
+        "label": "Electronics Lab Session",
+        "type": "lab",
+        "location": "Electronics Lab 2",
+        "description": "Supervise the practical lab session and support equipment troubleshooting for student teams."
       },
       {
         "dayOfWeek": "FRI",
         "startTime": "10:00",
         "endTime": "12:00",
-        "label": "Report Review Session"
+        "label": "Exam Invigilation",
+        "type": "exam",
+        "location": "Central Exam Hall",
+        "description": "Assist with attendance checks, invigilation, and exam material handover for the module assessment."
       }
     ]
   }

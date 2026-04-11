@@ -40,22 +40,42 @@
           </c:if>
         </button>
 
-        <div class="ui-user-block">
-          <div class="ui-user-block__meta">
-            <p class="ui-user-block__name">${resolvedUserName}</p>
-            <p class="ui-user-block__role">${resolvedUserRole}</p>
+        <div class="ui-user-menu" data-user-menu>
+          <button class="ui-user-menu__trigger" type="button" aria-label="Account menu" aria-haspopup="menu" aria-expanded="false" data-user-menu-trigger>
+            <span class="ui-user-block">
+              <span class="ui-user-block__meta">
+                <span class="ui-user-block__name">${resolvedUserName}</span>
+                <span class="ui-user-block__role">${resolvedUserRole}</span>
+              </span>
+              <span class="ui-avatar" aria-hidden="true">
+                <c:choose>
+                  <c:when test="${not empty currentUserInitial}">
+                    ${currentUserInitial}
+                  </c:when>
+                  <c:otherwise>U</c:otherwise>
+                </c:choose>
+              </span>
+              <span class="ui-chevron" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <path d="M7 10.5 12 15l5-4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </span>
+          </button>
+
+          <div class="ui-user-menu__panel" role="menu" aria-label="Account actions" data-user-menu-panel hidden>
+            <a class="ui-user-menu__item" href="${pageContext.request.contextPath}/auth/logout" role="menuitem">
+              <span class="ui-user-menu__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <path d="M14 7.5V5.75A1.75 1.75 0 0 0 12.25 4h-5.5A1.75 1.75 0 0 0 5 5.75v12.5C5 19.22 5.78 20 6.75 20h5.5A1.75 1.75 0 0 0 14 18.25V16.5m-1.5-4.5h8m0 0-2.75-2.75M20.5 12l-2.75 2.75" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+              <span>Log out</span>
+            </a>
           </div>
-          <span class="ui-avatar" aria-hidden="true">
-            <c:choose>
-              <c:when test="${not empty currentUserInitial}">
-                ${currentUserInitial}
-              </c:when>
-              <c:otherwise>U</c:otherwise>
-            </c:choose>
-          </span>
-          <span class="ui-chevron" aria-hidden="true">v</span>
         </div>
       </c:if>
     </div>
   </div>
 </header>
+<jsp:include page="/WEB-INF/views/common/toast.jsp" />

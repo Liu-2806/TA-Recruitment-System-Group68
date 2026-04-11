@@ -27,8 +27,8 @@ public final class ServiceRegistry {
     private static final TADataRepository TA_DATA_REPOSITORY = new TADataRepository();
     private static final PostingDataRepository POSTING_DATA_REPOSITORY = new PostingDataRepository();
     private static final ApplicationDataRepository APPLICATION_DATA_REPOSITORY = new ApplicationDataRepository();
-    private static final SystemDataRepository SYSTEM_DATA_REPOSITORY = new SystemDataRepository();
     private static final TATimetableDataRepository TA_TIMETABLE_DATA_REPOSITORY = new TATimetableDataRepository();
+    private static final SystemDataRepository SYSTEM_DATA_REPOSITORY = new SystemDataRepository();
 
     private static final ResumeService RESUME_SERVICE = new ResumeServiceImpl(
         TA_DATA_REPOSITORY,
@@ -46,8 +46,8 @@ public final class ServiceRegistry {
 
     private static final ProfileService PROFILE_SERVICE = new ProfileServiceImpl(
         TA_DATA_REPOSITORY,
-        SYSTEM_DATA_REPOSITORY,
-        USER_REPOSITORY
+        USER_REPOSITORY,
+        SYSTEM_DATA_REPOSITORY
     );
 
     private static final JobService JOB_SERVICE = new JobServiceImpl(

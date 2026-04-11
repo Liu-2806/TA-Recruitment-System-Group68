@@ -50,10 +50,16 @@ public class AuthFilter implements Filter {
     }
 
     private boolean isPublicPath(String path) {
-        return path.startsWith("/auth/login")
+        return path == null
+                || path.isBlank()
+                || "/".equals(path)
+                || "/index.jsp".equals(path)
+                || path.startsWith("/auth/login")
                 || path.startsWith("/auth/logout")
+                || path.startsWith("/auth/role-select")
                 || path.startsWith("/dev/login-as")
                 || path.startsWith("/ta/register")
+                || path.startsWith("/legal")
                 || path.startsWith("/assets/")
                 || path.startsWith("/css/")
                 || path.startsWith("/js/")

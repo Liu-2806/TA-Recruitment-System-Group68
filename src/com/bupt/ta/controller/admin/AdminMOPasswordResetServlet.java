@@ -4,6 +4,7 @@ import com.bupt.ta.controller.common.BaseServlet;
 import com.bupt.ta.model.Role;
 import com.bupt.ta.model.User;
 import com.bupt.ta.service.UserService;
+import com.bupt.ta.util.FlashMessages;
 import com.bupt.ta.util.ServiceRegistry;
 
 import javax.servlet.ServletException;
@@ -35,6 +36,7 @@ public class AdminMOPasswordResetServlet extends BaseServlet {
         String newPassword = request.getParameter("newPassword");
         try {
             userService.resetPasswordByAdmin(moUserId, newPassword);
+            FlashMessages.success(request, "The MO password has been reset successfully.");
             response.sendRedirect(request.getContextPath() + "/admin/mos");
         } catch (Exception ex) {
             request.setAttribute("errorMessage", ex.getMessage());

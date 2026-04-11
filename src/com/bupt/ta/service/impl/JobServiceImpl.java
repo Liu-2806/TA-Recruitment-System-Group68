@@ -60,10 +60,7 @@ public class JobServiceImpl implements JobService {
                 }
             }
             if (safeQuery.getMajor() != null && !safeQuery.getMajor().isBlank()) {
-                String major = safeQuery.getMajor().toLowerCase(Locale.ROOT).trim();
-                String haystack = (String.valueOf(posting.get("courseName")) + " " + String.valueOf(posting.get("description")) + " " + requiredSkillsText)
-                    .toLowerCase(Locale.ROOT);
-                if (!haystack.contains(major)) {
+                if (!matchesMajorFilter(posting, safeQuery.getMajor().trim(), requiredSkillsText)) {
                     continue;
                 }
             }
@@ -100,6 +97,7 @@ public class JobServiceImpl implements JobService {
     @Override
     public Map<String, Object> createJob(String moUserId, Map<String, Object> params) {
         Map<String, Object> mo = requireMO(moUserId);
+        String postingType = normalizePostingType(firstNonBlank(params, "postingType"));
         String courseCode = requireText(firstNonBlank(params, "courseCode"), "Course code is required.");
         String courseName = requireText(firstNonBlank(params, "courseName", "title"), "Course name is required.");
         String deadline = normalizeDate(requireText(firstNonBlank(params, "deadline"), "Application deadline is required."));
@@ -129,8 +127,20 @@ public class JobServiceImpl implements JobService {
         posting.put("deadline", deadline);
         posting.put("description", description);
         posting.put("requiredSkills", requiredSkills);
+        posting.put("postingType", postingType);
         posting.put("estimatedWorkloadHours", estimatedWorkloadHours);
         posting.put("status", normalizePostingStatus(firstNonBlank(params, "status")));
+        if ("ACTIVITY".equals(postingType)) {
+            String activityDate = normalizeDate(requireText(firstNonBlank(params, "activityDate"), "Activity date is required."));
+            String activityStartTime = normalizeTime(requireText(firstNonBlank(params, "activityStartTime"), "Activity start time is required."));
+            String activityEndTime = normalizeTime(requireText(firstNonBlank(params, "activityEndTime"), "Activity end time is required."));
+            posting.put("activityType", normalizeActivityType(firstNonBlank(params, "activityType")));
+            posting.put("activityDate", activityDate);
+            posting.put("activityStartTime", activityStartTime);
+            posting.put("activityEndTime", activityEndTime);
+            posting.put("activityLocation", firstNonBlankText(firstNonBlank(params, "activityLocation"), "Assigned venue"));
+            posting.put("moduleType", "Activity");
+        }
         posting.put("createdAt", now);
         posting.put("updatedAt", now);
         postingDataRepository.save(posting);
@@ -346,9 +356,35 @@ public class JobServiceImpl implements JobService {
         return normalized;
     }
 
+    private String normalizePostingType(String postingType) {
+        if (postingType == null || postingType.isBlank()) {
+            return "TA";
+        }
+        String normalized = postingType.trim().toUpperCase(Locale.ROOT);
+        if (!"TA".equals(normalized) && !"ACTIVITY".equals(normalized)) {
+            throw new IllegalStateException("Unsupported posting type: " + postingType);
+        }
+        return normalized;
+    }
+
+    private String normalizeActivityType(String activityType) {
+        if (activityType == null || activityType.isBlank()) {
+            return "lab";
+        }
+        return activityType.trim().toLowerCase(Locale.ROOT);
+    }
+
     private String normalizeDate(String rawDate) {
         String candidate = rawDate.trim().replace('/', '-').replace('.', '-');
         return LocalDate.parse(candidate).toString();
+    }
+
+    private String normalizeTime(String rawTime) {
+        String value = rawTime == null ? "" : rawTime.trim();
+        if (!value.matches("^\\d{2}:\\d{2}$")) {
+            throw new IllegalStateException("Time must use HH:mm format.");
+        }
+        return value;
     }
 
     private String nextPostingId() {
@@ -421,5 +457,33 @@ public class JobServiceImpl implements JobService {
             }
         }
         return null;
+    }
+
+    /**
+     * If posting defines {@code targetMajor}, the filter must match one comma/semicolon/pipe-separated token (case-insensitive).
+     * Otherwise fall back to substring match on course name, description, and required skills.
+     */
+    private boolean matchesMajorFilter(Map<String, Object> posting, String majorFilterRaw, String requiredSkillsText) {
+        String majorNorm = majorFilterRaw.toLowerCase(Locale.ROOT).trim();
+        Object targetMajorObj = posting.get("targetMajor");
+        if (targetMajorObj != null) {
+            String targetStr = String.valueOf(targetMajorObj).trim();
+            if (!targetStr.isEmpty()) {
+                return targetMajorWhitelistContains(targetStr, majorNorm);
+            }
+        }
+        String haystack = (String.valueOf(posting.get("courseName")) + " " + String.valueOf(posting.get("description")) + " " + requiredSkillsText)
+            .toLowerCase(Locale.ROOT);
+        return haystack.contains(majorNorm);
+    }
+
+    private boolean targetMajorWhitelistContains(String targetMajorField, String majorFilterLower) {
+        for (String token : targetMajorField.split("[,;|]")) {
+            String t = token.trim().toLowerCase(Locale.ROOT);
+            if (!t.isEmpty() && t.equals(majorFilterLower)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

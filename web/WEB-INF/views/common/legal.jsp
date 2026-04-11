@@ -5,9 +5,9 @@
   String referer = request.getHeader("Referer");
   String backHref = (referer != null && !referer.trim().isEmpty())
     ? referer
-    : contextPath + "/register-preview.jsp";
+    : contextPath + "/ta/register";
 
-  request.setAttribute("headerBrandHref", contextPath + "/login-preview.jsp");
+  request.setAttribute("headerBrandHref", contextPath + "/auth/login");
   request.setAttribute("showHeaderBack", Boolean.TRUE);
   request.setAttribute("headerBackHref", backHref);
   request.setAttribute("headerBackLabel", "Back");
