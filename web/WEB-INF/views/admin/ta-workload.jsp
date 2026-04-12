@@ -193,12 +193,23 @@
                       String studentId = String.valueOf(row.getOrDefault("studentId", ""));
                       String major = String.valueOf(row.getOrDefault("majorProgram", row.getOrDefault("major", "")));
                       int appCount = 0;
-                      int accepted = 0;
-                      try { appCount = Integer.parseInt(String.valueOf(row.getOrDefault("applicationCount", "0"))); } catch (Exception ignored) {}
-                      try { accepted = Integer.parseInt(String.valueOf(row.getOrDefault("acceptedCount", "0"))); } catch (Exception ignored) {}
-                      int hours = appCount * 4;
-                      String statusText = hours >= 12 ? "High Alert" : (hours == 0 ? "Not Applied" : "Normal");
-                      String statusCss = hours >= 12 ? "alert" : (hours == 0 ? "idle" : "normal");
+                      int hours = 0;
+                      try { appCount = Integer.parseInt(String.valueOf(row.getOrDefault("activePositionCount", row.getOrDefault("applicationCount", "0")))); } catch (Exception ignored) {}
+                      try { hours = Integer.parseInt(String.valueOf(row.getOrDefault("totalWorkloadHours", "0"))); } catch (Exception ignored) {}
+
+                      String workloadStatus = String.valueOf(row.getOrDefault("workloadStatus", "")).trim().toUpperCase();
+                      String statusText;
+                      String statusCss;
+                      if ("HIGH_ALERT".equals(workloadStatus)) {
+                        statusText = "High Alert";
+                        statusCss = "alert";
+                      } else if ("NOT_APPLIED".equals(workloadStatus)) {
+                        statusText = "Not Applied";
+                        statusCss = "idle";
+                      } else {
+                        statusText = "Normal";
+                        statusCss = "normal";
+                      }
                 %>
                 <tr>
                   <td><strong class="admin-ta-name"><%= fullName %></strong></td>
