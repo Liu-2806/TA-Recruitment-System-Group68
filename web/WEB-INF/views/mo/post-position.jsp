@@ -10,6 +10,7 @@
   String errorMessage = String.valueOf(request.getAttribute("errorMessage") == null ? "" : request.getAttribute("errorMessage"));
   Object formDataObj = request.getAttribute("formData");
   java.util.Map formData = formDataObj instanceof java.util.Map ? (java.util.Map) formDataObj : java.util.Collections.emptyMap();
+  String normalizedActivityType = com.bupt.ta.util.ActivityTypeUtils.normalize(String.valueOf(formData.getOrDefault("activityType", "")));
   String assetVersion = "20260410-selectfix-3";
 
   request.setAttribute("headerBrandHref", contextPath + "/mo/dashboard");
@@ -160,9 +161,11 @@
                   <label for="activityType">Activity Type</label>
                   <div class="mo-post-input mo-post-input--select">
                     <select id="activityType" name="activityType">
-                      <option value="exam" <%= "exam".equalsIgnoreCase(String.valueOf(formData.getOrDefault("activityType", ""))) ? "selected" : "" %>>Invigilation</option>
-                      <option value="checkoff" <%= "checkoff".equalsIgnoreCase(String.valueOf(formData.getOrDefault("activityType", ""))) ? "selected" : "" %>>Lab Acceptance</option>
-                      <option value="lab" <%= (!formData.containsKey("activityType") || "lab".equalsIgnoreCase(String.valueOf(formData.getOrDefault("activityType", "")))) ? "selected" : "" %>>Lab Support</option>
+                      <option value="lab-support" <%= (!formData.containsKey("activityType") || "lab-support".equalsIgnoreCase(normalizedActivityType)) ? "selected" : "" %>>Lab Support</option>
+                      <option value="lab-assessment" <%= "lab-assessment".equalsIgnoreCase(normalizedActivityType) ? "selected" : "" %>>Lab Assessment</option>
+                      <option value="project-assessment" <%= "project-assessment".equalsIgnoreCase(normalizedActivityType) ? "selected" : "" %>>Project Assessment</option>
+                      <option value="invigilation" <%= "invigilation".equalsIgnoreCase(normalizedActivityType) ? "selected" : "" %>>Invigilation</option>
+                      <option value="others" <%= "others".equalsIgnoreCase(normalizedActivityType) ? "selected" : "" %>>Others</option>
                     </select>
                     <span class="mo-post-select__caret" aria-hidden="true"></span>
                   </div>

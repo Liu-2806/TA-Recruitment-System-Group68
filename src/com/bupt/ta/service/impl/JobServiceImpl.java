@@ -6,6 +6,7 @@ import com.bupt.ta.model.Role;
 import com.bupt.ta.repository.UserRepository;
 import com.bupt.ta.repository.file.PostingDataRepository;
 import com.bupt.ta.service.JobService;
+import com.bupt.ta.util.ActivityTypeUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -368,10 +369,7 @@ public class JobServiceImpl implements JobService {
     }
 
     private String normalizeActivityType(String activityType) {
-        if (activityType == null || activityType.isBlank()) {
-            return "lab";
-        }
-        return activityType.trim().toLowerCase(Locale.ROOT);
+        return ActivityTypeUtils.normalize(activityType);
     }
 
     private String normalizeDate(String rawDate) {

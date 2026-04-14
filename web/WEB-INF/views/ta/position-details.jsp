@@ -26,6 +26,13 @@
   java.util.List requiredSkills = job.get("requiredSkills") instanceof java.util.List ? (java.util.List) job.get("requiredSkills") : java.util.Collections.emptyList();
   java.util.List matchedSkills = matchAnalysis.get("matchedSkills") instanceof java.util.List ? (java.util.List) matchAnalysis.get("matchedSkills") : java.util.Collections.emptyList();
   java.util.List missingSkills = matchAnalysis.get("missingSkills") instanceof java.util.List ? (java.util.List) matchAnalysis.get("missingSkills") : java.util.Collections.emptyList();
+  String postingType = String.valueOf(job.getOrDefault("postingType", "TA"));
+  boolean activityPosting = "ACTIVITY".equalsIgnoreCase(postingType);
+  String activityTypeLabel = com.bupt.ta.util.ActivityTypeUtils.label(String.valueOf(job.getOrDefault("activityType", "")));
+  String activityDate = String.valueOf(job.getOrDefault("activityDate", ""));
+  String activityStartTime = String.valueOf(job.getOrDefault("activityStartTime", ""));
+  String activityEndTime = String.valueOf(job.getOrDefault("activityEndTime", ""));
+  String activityLocation = String.valueOf(job.getOrDefault("activityLocation", ""));
   String score = String.valueOf(matchAnalysis.getOrDefault("score", 0));
   String explanation = String.valueOf(matchAnalysis.getOrDefault("explanation", "Match analysis is unavailable."));
   String method = String.valueOf(matchAnalysis.getOrDefault("method", "UNAVAILABLE"));
@@ -82,6 +89,20 @@
             <p class="ta-details-summary__label">Deadline</p>
             <p class="ta-details-summary__value ta-details-summary__value--danger"><%= String.valueOf(job.getOrDefault("deadline", "")) %></p>
           </div>
+          <%
+            if (activityPosting) {
+          %>
+          <div class="ta-details-summary__item">
+            <p class="ta-details-summary__label">Activity Type</p>
+            <p class="ta-details-summary__value"><%= activityTypeLabel %></p>
+          </div>
+          <div class="ta-details-summary__item">
+            <p class="ta-details-summary__label">Activity Schedule</p>
+            <p class="ta-details-summary__value"><%= activityDate %> <%= activityStartTime %><%= activityEndTime == null || activityEndTime.isBlank() ? "" : " - " + activityEndTime %><%= activityLocation == null || activityLocation.isBlank() ? "" : " | " + activityLocation %></p>
+          </div>
+          <%
+            }
+          %>
         </div>
 
         <section class="ta-details-section">

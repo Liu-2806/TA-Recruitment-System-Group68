@@ -161,6 +161,7 @@
               String department = String.valueOf(appRow.getOrDefault("department", ""));
               String moduleType = String.valueOf(appRow.getOrDefault("moduleType", ""));
               String postingType = String.valueOf(appRow.getOrDefault("postingType", "TA"));
+              String activityTypeLabel = com.bupt.ta.util.ActivityTypeUtils.label(String.valueOf(appRow.getOrDefault("activityType", "")));
               String activityDate = String.valueOf(appRow.getOrDefault("activityDate", ""));
               String activityStartTime = String.valueOf(appRow.getOrDefault("activityStartTime", ""));
               String activityEndTime = String.valueOf(appRow.getOrDefault("activityEndTime", ""));
@@ -222,6 +223,17 @@
                 %>
               </p>
             </div>
+
+            <%
+              if ("ACTIVITY".equalsIgnoreCase(postingType)) {
+            %>
+            <div class="ta-position-info">
+              <p class="ta-position-info__label">Activity Type</p>
+              <p class="ta-position-info__value"><%= activityTypeLabel %></p>
+            </div>
+            <%
+              }
+            %>
 
             <div class="ta-position-skills">
               <p class="ta-position-skills__label">

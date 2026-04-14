@@ -102,8 +102,8 @@ public class TATimetableDataRepository extends JsonFileRepositorySupport {
         taSchedule.put("currentWeekLabel", "Week of " + LABEL_FORMATTER.format(weekStart) + " - " + LABEL_FORMATTER.format(weekStart.plusDays(6)));
         taSchedule.put("courseAssignment", createCourseAssignment("POST001", "SE3001", "Software Engineering TA", "Course TA", "TUE", "14:00", "16:00", "QB-302", "Weekly support session", "APP001"));
         taSchedule.put("activityEvents", List.of(
-            createActivityEvent("EVT001", "POST001", "APP001", "SE3001 Lab Support", "lab", weekStart.plusDays(1).toString(), "10:00", "12:00", "QB-302", "Guide students through the weekly lab and answer implementation questions."),
-            createActivityEvent("EVT002", "POST001", "APP001", "SE3001 Check-off", "checkoff", weekStart.plusDays(3).toString(), "16:00", "17:00", "QB-302", "Review sprint progress and check implementation milestones.")
+            createActivityEvent("EVT001", "POST001", "APP001", "SE3001 Lab Support", "lab-support", weekStart.plusDays(1).toString(), "10:00", "12:00", "QB-302", "Guide students through the weekly lab and answer implementation questions."),
+            createActivityEvent("EVT002", "POST001", "APP001", "SE3001 Check-off", "project-assessment", weekStart.plusDays(3).toString(), "16:00", "17:00", "QB-302", "Review sprint progress and check implementation milestones.")
         ));
         defaults.add(taSchedule);
 

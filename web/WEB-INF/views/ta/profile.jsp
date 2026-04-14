@@ -165,7 +165,6 @@
               <button class="ta-upload-box__upload" type="submit"><span>Upload Resume</span></button>
             </div>
 
-            <p class="ta-upload-box__hint">English labels are custom here, so the browser's default localised file button will not appear.</p>
           </form>
         </div>
       </section>
