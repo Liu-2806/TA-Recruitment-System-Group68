@@ -62,7 +62,11 @@ public class TADashboardServlet extends BaseServlet {
         profileSummary.put("majorProgram", taProfile.get("majorProgram"));
         request.setAttribute("profileSummary", profileSummary);
 
-        PageResult<Map<String, Object>> applicationsPage = applicationService.listApplicationsByTA(user.getId(), new ApplicationQuery());
+        // Dashboard needs every application for stats, timetable, and recent list — not the default list page size (10).
+        ApplicationQuery dashboardApplicationsQuery = new ApplicationQuery();
+        dashboardApplicationsQuery.setPage(1);
+        dashboardApplicationsQuery.setSize(Integer.MAX_VALUE);
+        PageResult<Map<String, Object>> applicationsPage = applicationService.listApplicationsByTA(user.getId(), dashboardApplicationsQuery);
         List<Map<String, Object>> allApplications = applicationsPage == null || applicationsPage.getRecords() == null
             ? new ArrayList<>()
             : new ArrayList<>(applicationsPage.getRecords());

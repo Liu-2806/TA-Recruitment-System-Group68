@@ -3,6 +3,9 @@
   const deadlineField = document.getElementById("deadlinePickerField");
   const postingTypeSelect = document.getElementById("postingType");
   const activityFields = document.getElementById("activityFields");
+  const activityFieldControls = activityFields
+    ? activityFields.querySelectorAll("input, select, textarea")
+    : [];
 
   if (deadlineInput && deadlineField) {
     deadlineField.addEventListener("click", function () {
@@ -19,7 +22,15 @@
     if (!postingTypeSelect || !activityFields) {
       return;
     }
-    activityFields.hidden = postingTypeSelect.value !== "ACTIVITY";
+
+    const isActivityPosting = postingTypeSelect.value === "ACTIVITY";
+
+    activityFields.hidden = !isActivityPosting;
+    activityFields.setAttribute("aria-hidden", String(!isActivityPosting));
+
+    activityFieldControls.forEach(function (control) {
+      control.disabled = !isActivityPosting;
+    });
   }
 
   if (postingTypeSelect && activityFields) {

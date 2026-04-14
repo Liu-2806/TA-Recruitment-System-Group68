@@ -647,3 +647,37 @@
     align-items: flex-start;
   }
 }
+
+.ta-form-field__label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.ta-form-hint {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0 0 10px;
+}
+
+.ta-skill-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ta-skill-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.ta-skill-chip input {
+  margin: 0;
+}
