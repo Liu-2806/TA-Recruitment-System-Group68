@@ -125,7 +125,6 @@
               <option value="" <%= query.getStatus() == null || query.getStatus().isBlank() ? "selected" : "" %>>All Statuses</option>
               <option value="OPEN" <%= "OPEN".equalsIgnoreCase(query.getStatus()) ? "selected" : "" %>>Open</option>
               <option value="CLOSED" <%= "CLOSED".equalsIgnoreCase(query.getStatus()) ? "selected" : "" %>>Closed</option>
-              <option value="DRAFT" <%= "DRAFT".equalsIgnoreCase(query.getStatus()) ? "selected" : "" %>>Draft</option>
             </select>
             <span class="admin-alljobs-filter__caret" aria-hidden="true">v</span>
           </div>
