@@ -98,7 +98,7 @@
     "moId": "MO001",
     "moName": "Prof. Wang",
     "vacancies": 3.0,
-    "applicationCount": 0,
+    "applicationCount": 0.0,
     "deadline": "2026-05-20",
     "description": "1",
     "requiredSkills": [
@@ -109,5 +109,30 @@
     "status": "OPEN",
     "createdAt": "2026-05-19 10:57:24",
     "updatedAt": "2026-05-19 10:57:24"
+  },
+  {
+    "postingId": "POST005",
+    "courseCode": "a111",
+    "courseName": "test",
+    "moId": "MO001",
+    "moName": "Prof. Wang",
+    "vacancies": 3,
+    "applicationCount": 0,
+    "deadline": "2026-05-29",
+    "description": "111",
+    "requiredSkills": [
+      "Java"
+    ],
+    "postingType": "ACTIVITY",
+    "estimatedWorkloadHours": 6,
+    "status": "OPEN",
+    "activityType": "lab-support",
+    "activityDate": "2026-05-22",
+    "activityStartTime": "11:32",
+    "activityEndTime": "11:46",
+    "activityLocation": "111",
+    "moduleType": "Activity",
+    "createdAt": "2026-05-19 11:30:42",
+    "updatedAt": "2026-05-19 11:30:42"
   }
 ]
