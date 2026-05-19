@@ -244,7 +244,6 @@
             </div>
 
             <div class="admin-ta-analysis-card__toggle">
-              <button type="button">Major-Based</button>
               <button class="is-active" type="button">Hour-Based</button>
             </div>
           </div>
