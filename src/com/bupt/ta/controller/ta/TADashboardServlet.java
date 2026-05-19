@@ -10,7 +10,7 @@ import com.bupt.ta.repository.file.TATimetableDataRepository;
 import com.bupt.ta.service.ApplicationService;
 import com.bupt.ta.service.JobService;
 import com.bupt.ta.service.ProfileService;
-import com.bupt.ta.service.RecommendationService;
+import com.bupt.ta.util.ActivityTypeUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -23,10 +23,12 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * TA 仪表盘 Servlet。
@@ -36,10 +38,10 @@ public class TADashboardServlet extends BaseServlet {
     private final ProfileService profileService = ServiceRegistry.profileService();
     private final ApplicationService applicationService = ServiceRegistry.applicationService();
     private final JobService jobService = ServiceRegistry.jobService();
-    private final RecommendationService recommendationService = ServiceRegistry.recommendationService();
     private final TATimetableDataRepository taTimetableDataRepository = ServiceRegistry.taTimetableDataRepository();
 
     private static final DateTimeFormatter APPLIED_AT_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter JOB_PUBLISHED_AT_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     /**
      * 展示 TA 仪表盘页面。
@@ -88,11 +90,14 @@ public class TADashboardServlet extends BaseServlet {
         resumeSummary.put("downloadUrl", hasResume ? (request.getContextPath() + "/ta/resume/download") : "");
         request.setAttribute("resumeSummary", resumeSummary);
 
-        PageResult<Map<String, Object>> jobsPage = jobService.searchOpenJobs(new JobQuery());
+        JobQuery dashboardJobsQuery = new JobQuery();
+        dashboardJobsQuery.setPage(1);
+        dashboardJobsQuery.setSize(Integer.MAX_VALUE);
+        PageResult<Map<String, Object>> jobsPage = jobService.searchOpenJobs(dashboardJobsQuery);
         List<Map<String, Object>> jobs = jobsPage == null || jobsPage.getRecords() == null
             ? new ArrayList<>()
             : new ArrayList<>(jobsPage.getRecords());
-        request.setAttribute("recommendedJobs", topN(rankRecommendedJobs(user.getId(), jobs), 3));
+        request.setAttribute("positionList", latestUnappliedJobs(jobs, allApplications, 3));
 
         request.setAttribute("recentApplications", topN(sortRecentApplications(allApplications), 3));
 
@@ -140,36 +145,40 @@ public class TADashboardServlet extends BaseServlet {
         return accepted;
     }
 
-    private List<Map<String, Object>> rankRecommendedJobs(String taUserId, List<Map<String, Object>> jobs) {
+    private List<Map<String, Object>> latestUnappliedJobs(List<Map<String, Object>> jobs,
+                                                          List<Map<String, Object>> applications,
+                                                          int limit) {
         if (jobs == null || jobs.isEmpty()) {
             return new ArrayList<>();
         }
 
-        List<Map<String, Object>> enriched = new ArrayList<>();
+        Set<String> appliedPostingIds = new HashSet<>();
+        if (applications != null) {
+            for (Map<String, Object> application : applications) {
+                String postingId = valueOf(application == null ? null : application.get("postingId"));
+                if (postingId != null && !postingId.isBlank()) {
+                    appliedPostingIds.add(postingId);
+                }
+            }
+        }
+
+        List<Map<String, Object>> filtered = new ArrayList<>();
         for (Map<String, Object> job : jobs) {
             if (job == null) {
                 continue;
             }
-            Map<String, Object> copy = new LinkedHashMap<>(job);
             String postingId = valueOf(job.get("postingId"));
-            if (postingId != null && !postingId.isBlank()) {
-                try {
-                    Map<String, Object> match = recommendationService.buildJobMatchForTA(taUserId, postingId);
-                    Object score = match == null ? null : match.get("score");
-                    if (score != null) {
-                        copy.put("matchScore", score);
-                    }
-                } catch (Exception ignored) {
-                    // If TA has no structured resume yet, keep a simple open-jobs fallback ordering.
-                }
+            if (postingId != null && appliedPostingIds.contains(postingId)) {
+                continue;
             }
-            enriched.add(copy);
+            filtered.add(new LinkedHashMap<>(job));
         }
 
-        enriched.sort(Comparator
-            .comparingInt((Map<String, Object> job) -> safeInt(job.get("matchScore")))
-            .reversed());
-        return enriched;
+        filtered.sort(Comparator
+            .comparing((Map<String, Object> job) -> parseJobPublishedAt(job), Comparator.nullsLast(Comparator.naturalOrder()))
+            .reversed()
+            .thenComparing(job -> valueOf(job.get("postingId")), Comparator.nullsLast(Comparator.reverseOrder())));
+        return topN(filtered, limit);
     }
 
     private List<Map<String, Object>> sortRecentApplications(List<Map<String, Object>> applications) {
@@ -194,17 +203,18 @@ public class TADashboardServlet extends BaseServlet {
         }
     }
 
-    private int safeInt(Object value) {
-        if (value == null) {
-            return 0;
+    private LocalDateTime parseJobPublishedAt(Map<String, Object> job) {
+        if (job == null) {
+            return null;
         }
-        if (value instanceof Number number) {
-            return number.intValue();
+        String rawValue = firstNonBlank(job, "createdAt", "postedAt", "publishedAt", "updatedAt");
+        if (rawValue == null || rawValue.isBlank()) {
+            return null;
         }
         try {
-            return Integer.parseInt(String.valueOf(value).trim());
+            return LocalDateTime.parse(rawValue.trim(), JOB_PUBLISHED_AT_FORMATTER);
         } catch (Exception ignored) {
-            return 0;
+            return null;
         }
     }
 
@@ -377,17 +387,16 @@ public class TADashboardServlet extends BaseServlet {
     private String eventTypeFromApplication(Map<String, Object> application) {
         String configuredType = valueOf(application.get("activityType"));
         if (configuredType != null && !configuredType.isBlank()) {
-            return configuredType.toLowerCase(Locale.ENGLISH);
+            return ActivityTypeUtils.normalize(configuredType);
         }
-        String title = valueOf(application.get("postingTitle"));
-        String normalized = title == null ? "" : title.toLowerCase(Locale.ENGLISH);
-        if (normalized.contains("exam") || normalized.contains("invig")) {
-            return "exam";
-        }
-        if (normalized.contains("check") || normalized.contains("review") || normalized.contains("acceptance")) {
-            return "checkoff";
-        }
-        return "lab";
+        return eventTypeFromText(
+            (valueOf(application.get("postingTitle")) == null ? "" : valueOf(application.get("postingTitle")) + " ")
+                + valueOf(application.get("description"))
+        );
+    }
+
+    private String eventTypeFromText(String text) {
+        return ActivityTypeUtils.inferFromText(text);
     }
 
     private String buildBlockDescription(Map<String, Object> application, Map<String, Object> block, LocalDate weekStart) {
@@ -421,4 +430,5 @@ public class TADashboardServlet extends BaseServlet {
             + ((endTime == null || endTime.isBlank()) ? "" : " and ending at " + endTime)
             + ".";
     }
+
 }

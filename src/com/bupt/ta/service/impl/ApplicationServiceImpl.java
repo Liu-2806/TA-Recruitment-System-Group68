@@ -9,6 +9,7 @@ import com.bupt.ta.repository.file.PostingDataRepository;
 import com.bupt.ta.repository.file.TADataRepository;
 import com.bupt.ta.repository.file.TATimetableDataRepository;
 import com.bupt.ta.service.ApplicationService;
+import com.bupt.ta.service.NotificationService;
 import com.bupt.ta.service.RecommendationService;
 
 import java.time.LocalDate;
@@ -30,6 +31,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final ApplicationDataRepository applicationDataRepository;
     private final RecommendationService recommendationService;
     private final TATimetableDataRepository taTimetableDataRepository;
+    private final NotificationService notificationService;
 
     public ApplicationServiceImpl(
         TADataRepository taDataRepository,
@@ -38,11 +40,23 @@ public class ApplicationServiceImpl implements ApplicationService {
         RecommendationService recommendationService,
         TATimetableDataRepository taTimetableDataRepository
     ) {
+        this(taDataRepository, postingDataRepository, applicationDataRepository, recommendationService, taTimetableDataRepository, null);
+    }
+
+    public ApplicationServiceImpl(
+        TADataRepository taDataRepository,
+        PostingDataRepository postingDataRepository,
+        ApplicationDataRepository applicationDataRepository,
+        RecommendationService recommendationService,
+        TATimetableDataRepository taTimetableDataRepository,
+        NotificationService notificationService
+    ) {
         this.taDataRepository = taDataRepository;
         this.postingDataRepository = postingDataRepository;
         this.applicationDataRepository = applicationDataRepository;
         this.recommendationService = recommendationService;
         this.taTimetableDataRepository = taTimetableDataRepository;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -122,6 +136,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         application.remove("method");
         applicationDataRepository.save(application);
         updatePostingApplicationCount(jobId, 1);
+        emitNewApplicationNotification(application, job, ta);
         return application;
     }
 
@@ -220,6 +235,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         updatePostingApplicationCount(String.valueOf(record.get("postingId")), -1);
         if (acceptedAssignment) {
             taTimetableDataRepository.releaseAssignment(taUserId, applicationId);
+            emitRevocationRequestNotification(record, reason.trim());
         }
         return enrichApplicationRecord(new LinkedHashMap<>(record));
     }
@@ -235,6 +251,33 @@ public class ApplicationServiceImpl implements ApplicationService {
         record.put("updatedAt", LocalDateTime.now().format(FORMATTER));
         record.put("statusLabel", statusLabel(newStatus.name()));
         applicationDataRepository.save(record);
+        emitStatusChangeNotification(record, newStatus, comment);
+    }
+
+    @Override
+    public Map<String, Object> respondToRevocationRequest(String applicationId, String moUserId, boolean approved, String comment) {
+        Map<String, Object> record = applicationDataRepository.findByApplicationId(applicationId);
+        if (record == null) {
+            throw new IllegalStateException("Application not found: " + applicationId);
+        }
+        Map<String, Object> job = requireJob(String.valueOf(record.get("postingId")));
+        if (!moUserId.equals(String.valueOf(job.get("moId")))) {
+            throw new IllegalStateException("You do not have permission to respond to this revocation request.");
+        }
+        String status = normalize(String.valueOf(record.get("status")));
+        if (!"revocationrequested".equals(status)) {
+            throw new IllegalStateException("This application has no pending revocation request.");
+        }
+        ApplicationStatus targetStatus = approved ? ApplicationStatus.WITHDRAWN : ApplicationStatus.ACCEPTED;
+        record.put("status", targetStatus.name());
+        record.put("statusLabel", statusLabel(targetStatus.name()));
+        record.put("updatedAt", LocalDateTime.now().format(FORMATTER));
+        String note = comment == null ? "" : comment.trim();
+        record.put("feedback", (approved ? "Revocation approved." : "Revocation declined.")
+            + (note.isEmpty() ? "" : " Note: " + note));
+        applicationDataRepository.save(record);
+        emitRevocationDecisionNotification(record, approved, comment);
+        return enrichApplicationRecord(new LinkedHashMap<>(record));
     }
 
     private List<Map<String, Object>> enrichApplicationsForTA(List<Map<String, Object>> source) {
@@ -587,5 +630,130 @@ public class ApplicationServiceImpl implements ApplicationService {
         }
         posting.put("applicationCount", Math.max(0, currentCount + delta));
         postingDataRepository.save(posting);
+    }
+
+    private void emitNewApplicationNotification(Map<String, Object> application, Map<String, Object> job, Map<String, Object> ta) {
+        if (notificationService == null || job == null) {
+            return;
+        }
+        String moId = String.valueOf(job.getOrDefault("moId", "")).trim();
+        if (moId.isEmpty()) {
+            return;
+        }
+        String courseLabel = describePosting(job);
+        String taName = ta == null ? "A new applicant" : String.valueOf(ta.getOrDefault("fullName", "A new applicant"));
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("recipientId", moId);
+        payload.put("recipientRole", "MO");
+        payload.put("type", "NEW_APPLICATION");
+        payload.put("title", "New application received");
+        payload.put("message", taName + " has applied for " + courseLabel + ".");
+        payload.put("relatedApplicationId", application.get("applicationId"));
+        payload.put("relatedPostingId", application.get("postingId"));
+        notificationService.create(payload);
+    }
+
+    private void emitStatusChangeNotification(Map<String, Object> application, ApplicationStatus newStatus, String comment) {
+        if (notificationService == null || application == null) {
+            return;
+        }
+        if (newStatus != ApplicationStatus.ACCEPTED && newStatus != ApplicationStatus.REJECTED) {
+            return;
+        }
+        String taId = String.valueOf(application.getOrDefault("taId", "")).trim();
+        if (taId.isEmpty()) {
+            return;
+        }
+        Map<String, Object> job = postingDataRepository.findByPostingId(String.valueOf(application.get("postingId")));
+        String courseLabel = describePosting(job);
+        boolean accepted = newStatus == ApplicationStatus.ACCEPTED;
+        StringBuilder message = new StringBuilder();
+        message.append("Your application for ").append(courseLabel).append(" has been ")
+            .append(accepted ? "accepted" : "rejected").append(".");
+        if (comment != null && !comment.trim().isEmpty()) {
+            message.append(" Reviewer note: ").append(comment.trim());
+        }
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("recipientId", taId);
+        payload.put("recipientRole", "TA");
+        payload.put("type", accepted ? "APPLICATION_ACCEPTED" : "APPLICATION_REJECTED");
+        payload.put("title", accepted ? "Application accepted" : "Application rejected");
+        payload.put("message", message.toString());
+        payload.put("relatedApplicationId", application.get("applicationId"));
+        payload.put("relatedPostingId", application.get("postingId"));
+        notificationService.create(payload);
+    }
+
+    private void emitRevocationRequestNotification(Map<String, Object> application, String reason) {
+        if (notificationService == null || application == null) {
+            return;
+        }
+        Map<String, Object> job = postingDataRepository.findByPostingId(String.valueOf(application.get("postingId")));
+        if (job == null) {
+            return;
+        }
+        String moId = String.valueOf(job.getOrDefault("moId", "")).trim();
+        if (moId.isEmpty()) {
+            return;
+        }
+        String courseLabel = describePosting(job);
+        String taName = String.valueOf(application.getOrDefault("taName", "A teaching assistant"));
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("recipientId", moId);
+        payload.put("recipientRole", "MO");
+        payload.put("type", "REVOCATION_REQUEST");
+        payload.put("title", "Revocation request");
+        payload.put("message", taName + " has requested to revoke their accepted role for " + courseLabel + ". Reason: " + reason);
+        payload.put("relatedApplicationId", application.get("applicationId"));
+        payload.put("relatedPostingId", application.get("postingId"));
+        payload.put("requiresAction", Boolean.TRUE);
+        payload.put("actionStatus", "PENDING");
+        notificationService.create(payload);
+    }
+
+    private void emitRevocationDecisionNotification(Map<String, Object> application, boolean approved, String comment) {
+        if (notificationService == null || application == null) {
+            return;
+        }
+        String taId = String.valueOf(application.getOrDefault("taId", "")).trim();
+        if (taId.isEmpty()) {
+            return;
+        }
+        Map<String, Object> job = postingDataRepository.findByPostingId(String.valueOf(application.get("postingId")));
+        String courseLabel = describePosting(job);
+        StringBuilder message = new StringBuilder();
+        message.append("Your revocation request for ").append(courseLabel).append(approved
+            ? " has been approved. The role has been released."
+            : " has been declined. You remain accepted for this position.");
+        if (comment != null && !comment.trim().isEmpty()) {
+            message.append(" Reviewer note: ").append(comment.trim());
+        }
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("recipientId", taId);
+        payload.put("recipientRole", "TA");
+        payload.put("type", approved ? "REVOCATION_APPROVED" : "REVOCATION_REJECTED");
+        payload.put("title", approved ? "Revocation approved" : "Revocation declined");
+        payload.put("message", message.toString());
+        payload.put("relatedApplicationId", application.get("applicationId"));
+        payload.put("relatedPostingId", application.get("postingId"));
+        notificationService.create(payload);
+    }
+
+    private String describePosting(Map<String, Object> job) {
+        if (job == null) {
+            return "the position";
+        }
+        String name = String.valueOf(job.getOrDefault("courseName", "")).trim();
+        String code = String.valueOf(job.getOrDefault("courseCode", "")).trim();
+        if (name.isEmpty() && code.isEmpty()) {
+            return "the position";
+        }
+        if (code.isEmpty()) {
+            return name;
+        }
+        if (name.isEmpty()) {
+            return code;
+        }
+        return name + " (" + code + ")";
     }
 }

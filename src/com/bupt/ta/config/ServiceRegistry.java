@@ -4,6 +4,7 @@ import com.bupt.ta.match.RecommendationServiceImpl;
 import com.bupt.ta.repository.UserRepository;
 import com.bupt.ta.repository.file.ApplicationDataRepository;
 import com.bupt.ta.repository.file.JsonUserRepository;
+import com.bupt.ta.repository.file.NotificationDataRepository;
 import com.bupt.ta.repository.file.PostingDataRepository;
 import com.bupt.ta.repository.file.SystemDataRepository;
 import com.bupt.ta.repository.file.TADataRepository;
@@ -13,12 +14,14 @@ import com.bupt.ta.resume.ResumeStructurer;
 import com.bupt.ta.service.AnalyticsService;
 import com.bupt.ta.service.ApplicationService;
 import com.bupt.ta.service.JobService;
+import com.bupt.ta.service.NotificationService;
 import com.bupt.ta.service.ProfileService;
 import com.bupt.ta.service.RecommendationService;
 import com.bupt.ta.service.ResumeService;
 import com.bupt.ta.service.impl.AnalyticsServiceImpl;
 import com.bupt.ta.service.impl.ApplicationServiceImpl;
 import com.bupt.ta.service.impl.JobServiceImpl;
+import com.bupt.ta.service.impl.NotificationServiceImpl;
 import com.bupt.ta.service.impl.ProfileServiceImpl;
 import com.bupt.ta.service.impl.ResumeServiceImpl;
 
@@ -29,6 +32,11 @@ public final class ServiceRegistry {
     private static final ApplicationDataRepository APPLICATION_DATA_REPOSITORY = new ApplicationDataRepository();
     private static final TATimetableDataRepository TA_TIMETABLE_DATA_REPOSITORY = new TATimetableDataRepository();
     private static final SystemDataRepository SYSTEM_DATA_REPOSITORY = new SystemDataRepository();
+    private static final NotificationDataRepository NOTIFICATION_DATA_REPOSITORY = new NotificationDataRepository();
+
+    private static final NotificationService NOTIFICATION_SERVICE = new NotificationServiceImpl(
+        NOTIFICATION_DATA_REPOSITORY
+    );
 
     private static final ResumeService RESUME_SERVICE = new ResumeServiceImpl(
         TA_DATA_REPOSITORY,
@@ -52,7 +60,9 @@ public final class ServiceRegistry {
 
     private static final JobService JOB_SERVICE = new JobServiceImpl(
         POSTING_DATA_REPOSITORY,
-        USER_REPOSITORY
+        USER_REPOSITORY,
+        APPLICATION_DATA_REPOSITORY,
+        NOTIFICATION_SERVICE
     );
 
     private static final AnalyticsService ANALYTICS_SERVICE = new AnalyticsServiceImpl(
@@ -64,7 +74,8 @@ public final class ServiceRegistry {
         POSTING_DATA_REPOSITORY,
         APPLICATION_DATA_REPOSITORY,
         RECOMMENDATION_SERVICE,
-        TA_TIMETABLE_DATA_REPOSITORY
+        TA_TIMETABLE_DATA_REPOSITORY,
+        NOTIFICATION_SERVICE
     );
 
     private ServiceRegistry() {
@@ -96,5 +107,9 @@ public final class ServiceRegistry {
 
     public static TATimetableDataRepository taTimetableDataRepository() {
         return TA_TIMETABLE_DATA_REPOSITORY;
+    }
+
+    public static NotificationService notificationService() {
+        return NOTIFICATION_SERVICE;
     }
 }

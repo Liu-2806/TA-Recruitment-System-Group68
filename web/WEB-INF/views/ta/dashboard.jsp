@@ -143,6 +143,10 @@
                   Object timetableObj = request.getAttribute("timetable");
                   java.util.Map timetable = timetableObj instanceof java.util.Map ? (java.util.Map) timetableObj : java.util.Collections.emptyMap();
                   java.util.Map courseAssignment = timetable.get("courseAssignment") instanceof java.util.Map ? (java.util.Map) timetable.get("courseAssignment") : java.util.Collections.emptyMap();
+                  String coursePostingId = String.valueOf(courseAssignment.getOrDefault("postingId", ""));
+                  String courseLinkHref = coursePostingId == null || coursePostingId.isBlank()
+                      ? (contextPath + "/ta/applications/my")
+                      : (contextPath + "/ta/jobs/detail?jobId=" + coursePostingId);
                 %>
                 <span class="ta-board-card__meta" id="taWeekLabel"><%= String.valueOf(timetable.getOrDefault("currentWeekLabel", "Week Schedule")) %></span>
                 <button class="ta-week-switch" type="button" id="taNextWeek" aria-label="Next week">
@@ -157,15 +161,17 @@
               <div class="ta-course-strip__content">
                 <span class="ta-course-strip__label" id="taCourseLabel"><%= String.valueOf(courseAssignment.getOrDefault("label", "Course TA")) %></span>
                 <strong id="taCourseTitle"><%= String.valueOf(courseAssignment.getOrDefault("courseName", "No course assignment")) %></strong>
-                <p id="taCourseMeta"><%= String.valueOf(courseAssignment.getOrDefault("dayOfWeek", "")) %> <%= String.valueOf(courseAssignment.getOrDefault("startTime", "")) %> - <%= String.valueOf(courseAssignment.getOrDefault("endTime", "")) %> · <%= String.valueOf(courseAssignment.getOrDefault("location", "")) %> · <%= String.valueOf(courseAssignment.getOrDefault("description", "")) %></p>
+                <p id="taCourseMeta"><%= String.valueOf(courseAssignment.getOrDefault("dayOfWeek", "")) %> <%= String.valueOf(courseAssignment.getOrDefault("startTime", "")) %> - <%= String.valueOf(courseAssignment.getOrDefault("endTime", "")) %> | <%= String.valueOf(courseAssignment.getOrDefault("location", "")) %> | <%= String.valueOf(courseAssignment.getOrDefault("description", "")) %></p>
               </div>
-              <a class="ta-course-strip__link" id="taCourseLink" href="<%= contextPath %>/ta/applications/my#application-<%= String.valueOf(courseAssignment.getOrDefault("relatedApplicationId", "")) %>">Related Application</a>
+              <a class="ta-course-strip__link" id="taCourseLink" href="<%= courseLinkHref %>">Related Application</a>
             </div>
 
             <div class="ta-calendar-legend">
-              <span class="ta-calendar-legend__item"><span class="ta-calendar-legend__dot ta-calendar-legend__dot--lab"></span>Lab Support</span>
-              <span class="ta-calendar-legend__item"><span class="ta-calendar-legend__dot ta-calendar-legend__dot--exam"></span>Invigilation</span>
-              <span class="ta-calendar-legend__item"><span class="ta-calendar-legend__dot ta-calendar-legend__dot--checkoff"></span>Project Check-off</span>
+              <span class="ta-calendar-legend__item"><span class="ta-calendar-legend__dot ta-calendar-legend__dot--lab-support"></span>Lab Support</span>
+              <span class="ta-calendar-legend__item"><span class="ta-calendar-legend__dot ta-calendar-legend__dot--lab-assessment"></span>Lab Assessment</span>
+              <span class="ta-calendar-legend__item"><span class="ta-calendar-legend__dot ta-calendar-legend__dot--project-assessment"></span>Project Assessment</span>
+              <span class="ta-calendar-legend__item"><span class="ta-calendar-legend__dot ta-calendar-legend__dot--invigilation"></span>Invigilation</span>
+              <span class="ta-calendar-legend__item"><span class="ta-calendar-legend__dot ta-calendar-legend__dot--others"></span>Others</span>
             </div>
 
             <div class="ta-calendar">
@@ -178,7 +184,7 @@
                 <div class="ta-calendar__weekday">Sat</div>
                 <div class="ta-calendar__weekday">Sun</div>
               </div>
-              <div class="ta-calendar__grid" id="taCalendarGrid" data-position-url="<%= contextPath %>/ta/jobs/detail?jobId=<%= String.valueOf(courseAssignment.getOrDefault("postingId", "")) %>"></div>
+              <div class="ta-calendar__grid" id="taCalendarGrid"></div>
             </div>
 
           </section>
@@ -194,24 +200,24 @@
                   </span>
                   <div>
                     <p class="ta-board-card__eyebrow">Positions</p>
-                    <h2>Recommended Open Roles</h2>
+                    <h2>Position List</h2>
                   </div>
                 </div>
-                <a class="ta-board-card__link" href="<%= contextPath %>/ta/jobs">Browse All</a>
+                <a class="ta-board-card__link" href="<%= contextPath %>/ta/jobs">Open All</a>
               </div>
 
               <div class="ta-quick-list">
                 <%
-                  Object jobsObj = request.getAttribute("recommendedJobs");
+                  Object jobsObj = request.getAttribute("positionList");
                   java.util.List jobs = jobsObj instanceof java.util.List ? (java.util.List) jobsObj : java.util.Collections.emptyList();
                   if (jobs.isEmpty()) {
                 %>
                 <article class="ta-quick-item">
                   <div class="ta-quick-item__meta">
-                    <h3>No open roles</h3>
+                    <h3>No available positions</h3>
                     <p>Please check back later.</p>
                   </div>
-                  <a class="ta-quick-item__action" href="<%= contextPath %>/ta/jobs">Browse All</a>
+                  <a class="ta-quick-item__action" href="<%= contextPath %>/ta/jobs">Open All</a>
                 </article>
                 <%
                   } else {
@@ -228,7 +234,7 @@
                 <article class="ta-quick-item">
                   <div class="ta-quick-item__meta">
                     <h3><%= courseName %></h3>
-                    <p><%= moName %> · Deadline <%= deadline %> · <%= requiredSkillsText %></p>
+                    <p><%= moName %> | Deadline <%= deadline %> | <%= requiredSkillsText %></p>
                   </div>
                   <a class="ta-quick-item__action" href="<%= contextPath %>/ta/jobs/detail?jobId=<%= postingId %>">View Details</a>
                 </article>
@@ -303,41 +309,37 @@
 
     <jsp:include page="/WEB-INF/views/common/footer.jsp" />
   </div>
+  <%
+    java.util.Map schedulePayload = new java.util.LinkedHashMap();
+    schedulePayload.put("currentWeekLabel", String.valueOf(timetable.getOrDefault("currentWeekLabel", "")));
+
+    java.util.Map coursePayload = new java.util.LinkedHashMap();
+    coursePayload.put("title", String.valueOf(courseAssignment.getOrDefault("courseName", "")));
+    coursePayload.put("meta",
+        String.valueOf(courseAssignment.getOrDefault("dayOfWeek", "")) + " "
+        + String.valueOf(courseAssignment.getOrDefault("startTime", "")) + " - "
+        + String.valueOf(courseAssignment.getOrDefault("endTime", "")) + " | "
+        + String.valueOf(courseAssignment.getOrDefault("location", "")) + " | "
+        + String.valueOf(courseAssignment.getOrDefault("description", "")));
+    coursePayload.put("link", courseLinkHref);
+    schedulePayload.put("course", coursePayload);
+
+    java.util.List activityEvents = timetable.get("activityEvents") instanceof java.util.List
+        ? (java.util.List) timetable.get("activityEvents")
+        : java.util.Collections.emptyList();
+    java.util.List activityPayload = new java.util.ArrayList();
+    for (Object eventObj : activityEvents) {
+      java.util.Map event = eventObj instanceof java.util.Map ? (java.util.Map) eventObj : java.util.Collections.emptyMap();
+      java.util.Map eventPayload = new java.util.LinkedHashMap(event);
+      eventPayload.put("detailUrl", contextPath + "/ta/jobs/detail?jobId=" + String.valueOf(event.getOrDefault("postingId", "")));
+      activityPayload.add(eventPayload);
+    }
+    schedulePayload.put("activities", activityPayload);
+
+    String scheduleJson = new com.google.gson.Gson().toJson(schedulePayload).replace("</", "<\\/");
+  %>
   <script>
-    window.taDashboardSchedule = {
-      currentWeekLabel: "<%= String.valueOf(timetable.getOrDefault("currentWeekLabel", "")).replace("\\", "\\\\").replace("\"", "\\\"") %>",
-      course: {
-        title: "<%= String.valueOf(courseAssignment.getOrDefault("courseName", "")).replace("\\", "\\\\").replace("\"", "\\\"") %>",
-        meta: "<%= (String.valueOf(courseAssignment.getOrDefault("dayOfWeek", "")) + " " + String.valueOf(courseAssignment.getOrDefault("startTime", "")) + " - " + String.valueOf(courseAssignment.getOrDefault("endTime", "")) + " · " + String.valueOf(courseAssignment.getOrDefault("location", "")) + " · " + String.valueOf(courseAssignment.getOrDefault("description", ""))).replace("\\", "\\\\").replace("\"", "\\\"") %>",
-        link: "<%= (contextPath + "/ta/applications/my#application-" + String.valueOf(courseAssignment.getOrDefault("relatedApplicationId", ""))).replace("\\", "\\\\").replace("\"", "\\\"") %>"
-      },
-      activities: [
-        <%
-          java.util.List activityEvents = timetable.get("activityEvents") instanceof java.util.List ? (java.util.List) timetable.get("activityEvents") : java.util.Collections.emptyList();
-          for (int i = 0; i < activityEvents.size(); i++) {
-            java.util.Map event = activityEvents.get(i) instanceof java.util.Map ? (java.util.Map) activityEvents.get(i) : java.util.Collections.emptyMap();
-            String eventDate = String.valueOf(event.getOrDefault("date", ""));
-            java.time.LocalDate weekStartDate = java.time.LocalDate.now().with(java.time.temporal.TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY));
-            int dayIndex = 0;
-            try {
-              dayIndex = (int) java.time.temporal.ChronoUnit.DAYS.between(weekStartDate, java.time.LocalDate.parse(eventDate));
-            } catch (Exception ignored) {}
-        %>
-        {
-          date: "<%= String.valueOf(event.getOrDefault("date", "")).replace("\\", "\\\\").replace("\"", "\\\"") %>",
-          type: "<%= String.valueOf(event.getOrDefault("type", "lab")) %>",
-          calendarLabel: "<%= (String.valueOf(event.getOrDefault("title", "")) + " " + String.valueOf(event.getOrDefault("startTime", ""))).trim().replace("\\", "\\\\").replace("\"", "\\\"") %>",
-          title: "<%= String.valueOf(event.getOrDefault("title", "")).replace("\\", "\\\\").replace("\"", "\\\"") %>",
-          time: "<%= (String.valueOf(event.getOrDefault("startTime", "")) + " - " + String.valueOf(event.getOrDefault("endTime", ""))).replace("\\", "\\\\").replace("\"", "\\\"") %>",
-          location: "<%= String.valueOf(event.getOrDefault("location", "")).replace("\\", "\\\\").replace("\"", "\\\"") %>",
-          description: "<%= String.valueOf(event.getOrDefault("description", "")).replace("\\", "\\\\").replace("\"", "\\\"") %>",
-          detailUrl: "<%= (contextPath + "/ta/jobs/detail?jobId=" + String.valueOf(event.getOrDefault("postingId", ""))).replace("\\", "\\\\").replace("\"", "\\\"") %>"
-        }<%= i + 1 < activityEvents.size() ? "," : "" %>
-        <%
-          }
-        %>
-      ]
-    };
+    window.taDashboardSchedule = <%= scheduleJson %>;
   </script>
   <script src="<%= contextPath %>/assets/js/pages/ta-dashboard.js"></script>
 </body>

@@ -21,7 +21,7 @@
         "postingId": "POST001",
         "applicationId": "APP001",
         "title": "SE3001 Lab Support",
-        "type": "lab",
+        "type": "lab-support",
         "date": "2026-03-24",
         "startTime": "10:00",
         "endTime": "12:00",
@@ -33,7 +33,7 @@
         "postingId": "POST001",
         "applicationId": "APP001",
         "title": "SE3001 Check-off",
-        "type": "checkoff",
+        "type": "project-assessment",
         "date": "2026-03-26",
         "startTime": "16:00",
         "endTime": "17:00",
@@ -115,7 +115,7 @@
         "startTime": "14:00",
         "endTime": "16:00",
         "label": "Programming Lab Support",
-        "type": "lab",
+        "type": "lab-support",
         "location": "CS Lab A",
         "description": "Lead the weekly introductory programming lab and support students during hands-on exercises."
       },
@@ -124,7 +124,7 @@
         "startTime": "14:00",
         "endTime": "16:00",
         "label": "Office Hours",
-        "type": "checkoff",
+        "type": "project-assessment",
         "location": "Learning Hub 3",
         "description": "Run open office hours, answer coursework questions, and follow up on student blockers."
       }
@@ -140,7 +140,7 @@
         "startTime": "14:00",
         "endTime": "17:00",
         "label": "Electronics Lab Session",
-        "type": "lab",
+        "type": "lab-support",
         "location": "Electronics Lab 2",
         "description": "Supervise the practical lab session and support equipment troubleshooting for student teams."
       },
@@ -149,7 +149,7 @@
         "startTime": "10:00",
         "endTime": "12:00",
         "label": "Exam Invigilation",
-        "type": "exam",
+        "type": "invigilation",
         "location": "Central Exam Hall",
         "description": "Assist with attendance checks, invigilation, and exam material handover for the module assessment."
       }
