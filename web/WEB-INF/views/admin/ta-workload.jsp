@@ -126,7 +126,7 @@
                   <path d="M10.75 17a6.25 6.25 0 1 0 0-12.5 6.25 6.25 0 0 0 0 12.5Zm8.75 2.5-4.25-4.25" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </span>
-              <input id="taKeyword" name="keyword" type="text" value="<%= String.valueOf(query.getOrDefault("keyword", "")) %>" placeholder="Enter name or ID...">
+              <input id="taKeyword" name="keyword" type="text" value="<%= query.get("keyword") == null ? "" : String.valueOf(query.get("keyword")) %>" placeholder="Enter name or ID...">
             </div>
           </div>
 
