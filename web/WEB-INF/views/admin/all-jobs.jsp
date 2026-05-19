@@ -141,7 +141,7 @@
           </div>
 
           <div class="admin-alljobs-filter__actions">
-            <button class="admin-alljobs-filter__button" type="submit">Filter</button>
+            <button class="admin-alljobs-filter__button" type="submit">Apply Filter</button>
             <a class="admin-alljobs-filter__reset" href="<%= contextPath %>/admin/jobs" aria-label="Reset filters">
               <svg viewBox="0 0 24 24" focusable="false">
                 <path d="M7 7.5V4.75m0 0H4.25M7 4.75 4.75 7M6.5 9.5a7 7 0 1 1-1.2 7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>

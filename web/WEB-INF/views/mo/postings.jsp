@@ -162,6 +162,11 @@
                         <path d="M12 12a3.75 3.75 0 1 0-3.75-3.75A3.75 3.75 0 0 0 12 12Zm0 1.5c-3.17 0-5.75 1.89-5.75 4.22V19h11.5v-.28c0-2.33-2.58-4.22-5.75-4.22Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
                       </svg>
                     </a>
+                    <a href="<%= contextPath %>/mo/jobs/edit?jobId=<%= postingId %>" aria-label="Edit posting">
+                      <svg viewBox="0 0 24 24" focusable="false">
+                        <path d="M4 16.5V20h3.5L17.81 9.69l-3.5-3.5L4 16.5Zm15.71-9.96a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </a>
                   </div>
                 </td>
               </tr>

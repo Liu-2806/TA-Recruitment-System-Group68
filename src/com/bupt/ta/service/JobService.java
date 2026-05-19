@@ -36,6 +36,16 @@ public interface JobService {
     Map<String, Object> createJob(String moUserId, Map<String, Object> params);
 
     /**
+     * 更新岗位（MO 侧）。修改后，该岗位下所有非终态申请会被自动撤回。
+     *
+     * @param moUserId  MO 用户 ID（用于权限校验）
+     * @param postingId 岗位 ID
+     * @param params    新的岗位参数
+     * @return 更新后的岗位详情
+     */
+    Map<String, Object> updateJob(String moUserId, String postingId, Map<String, Object> params);
+
+    /**
      * 查询 MO 自己发布的岗位。
      *
      * @param moUserId MO 用户 ID

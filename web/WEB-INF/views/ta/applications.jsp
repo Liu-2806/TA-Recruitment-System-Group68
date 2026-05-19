@@ -83,7 +83,11 @@
 
       <section class="ta-applications-toolbar">
         <div class="ta-applications-toolbar__header">
-          <span class="ta-applications-toolbar__icon" aria-hidden="true">Filter</span>
+          <span class="ta-applications-toolbar__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path d="M4.75 6.25h14.5L14 12v5.25l-4 1.5V12Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
           <h2>Search &amp; Filter</h2>
         </div>
 
@@ -91,6 +95,11 @@
           <div class="ta-toolbar-field ta-toolbar-field--wide">
             <label for="applicationKeywords">Keywords</label>
             <div class="ta-toolbar-input">
+              <span class="ta-toolbar-input__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <path d="M10.75 17a6.25 6.25 0 1 0 0-12.5 6.25 6.25 0 0 0 0 12.5Zm8.75 2.5-4.25-4.25" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
               <input id="applicationKeywords" name="keyword" type="text" placeholder="Position, MO, course code..." value="<%= query.getKeyword() == null ? "" : query.getKeyword() %>">
             </div>
           </div>
@@ -125,7 +134,11 @@
 
           <div class="ta-toolbar-actions">
             <button class="ta-toolbar-actions__apply" type="submit">Apply Filter</button>
-            <a class="ta-toolbar-actions__reset" href="<%= contextPath %>/ta/applications/my" aria-label="Reset filters">Reset</a>
+            <a class="ta-toolbar-actions__reset" href="<%= contextPath %>/ta/applications/my" aria-label="Reset filters">
+              <svg viewBox="0 0 24 24" focusable="false">
+                <path d="M7 7.5V4.75m0 0H4.25M7 4.75 4.75 7M6.5 9.5a7 7 0 1 1-1.2 7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
           </div>
         </form>
       </section>
@@ -271,17 +284,39 @@
             <div class="ta-application-card__action-group ta-application-card__action-group--right">
               <%
                 if (canWithdraw) {
-                  String withdrawLabel = "accepted".equals(statusRaw) ? "Request Revocation" : "Withdraw";
+                  boolean acceptedAssignment = "accepted".equals(statusRaw);
+                  String withdrawLabel = acceptedAssignment ? "Request Revocation" : "Withdraw";
+                  String modalId = "withdraw-modal-" + applicationId;
+                  String modalTitle = acceptedAssignment ? "Request revocation" : "Withdraw application";
+                  String modalIntro = acceptedAssignment
+                      ? "You have already been accepted for this position. Submitting a revocation request notifies the module organizer, who must approve it before the role is released."
+                      : "This will withdraw your application immediately. You can reapply later if the position is still open.";
+                  String reasonLabel = acceptedAssignment ? "Reason for revocation" : "Reason for withdrawal";
+                  String submitLabel = acceptedAssignment ? "Send revocation request" : "Withdraw application";
+                  String submitClass = acceptedAssignment ? "app-modal__button app-modal__button--primary" : "app-modal__button app-modal__button--danger";
               %>
-              <details class="ta-withdraw-panel">
-                <summary class="ta-application-card__primary ta-application-card__primary--ghost"><%= withdrawLabel %></summary>
-                <form action="<%= contextPath %>/ta/applications/withdraw" method="post" class="ta-withdraw-panel__form">
-                  <input type="hidden" name="applicationId" value="<%= applicationId %>">
-                  <label for="reason-<%= applicationId %>"><%= "accepted".equals(statusRaw) ? "Reason for revocation request" : "Reason for withdrawal" %></label>
-                  <textarea id="reason-<%= applicationId %>" name="reason" rows="3" required placeholder="Briefly explain why you need to update this application."></textarea>
-                  <button type="submit" class="ta-application-card__primary ta-application-card__primary--ghost"><%= withdrawLabel %></button>
-                </form>
-              </details>
+              <button type="button" class="ta-application-card__primary ta-application-card__primary--ghost" data-modal-open="<%= modalId %>"><%= withdrawLabel %></button>
+
+              <div class="app-modal" id="<%= modalId %>" role="dialog" aria-modal="true" aria-labelledby="<%= modalId %>-title">
+                <div class="app-modal__dialog">
+                  <form action="<%= contextPath %>/ta/applications/withdraw" method="post">
+                    <input type="hidden" name="applicationId" value="<%= applicationId %>">
+                    <div class="app-modal__header">
+                      <h3 class="app-modal__title" id="<%= modalId %>-title"><%= modalTitle %></h3>
+                      <button type="button" class="app-modal__close" data-modal-close aria-label="Close">×</button>
+                    </div>
+                    <div class="app-modal__body">
+                      <p><%= modalIntro %></p>
+                      <label for="reason-<%= applicationId %>"><%= reasonLabel %></label>
+                      <textarea id="reason-<%= applicationId %>" name="reason" rows="4" required data-autofocus placeholder="Briefly explain your reason."></textarea>
+                    </div>
+                    <div class="app-modal__footer">
+                      <button type="button" class="app-modal__button app-modal__button--ghost" data-modal-close>Cancel</button>
+                      <button type="submit" class="<%= submitClass %>"><%= submitLabel %></button>
+                    </div>
+                  </form>
+                </div>
+              </div>
               <%
                 }
               %>

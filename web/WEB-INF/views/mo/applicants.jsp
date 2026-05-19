@@ -12,7 +12,7 @@
   int pageSize = applicationsPage == null ? 6 : applicationsPage.getSize();
   int total = applicationsPage == null ? applications.size() : (int) applicationsPage.getTotal();
   int totalPages = pageSize <= 0 ? 1 : Math.max(1, (int) Math.ceil(total / (double) pageSize));
-  String assetVersion = "20260410-mo-applicants-sort-1";
+  String assetVersion = "20260518-mo-applicants-filter-unify";
   Object currentUserObj = request.getSession(false) == null ? null : request.getSession(false).getAttribute("currentUser");
   com.bupt.ta.model.User currentUser = currentUserObj instanceof com.bupt.ta.model.User ? (com.bupt.ta.model.User) currentUserObj : null;
   String currentUserName = currentUser == null || currentUser.getDisplayName() == null || currentUser.getDisplayName().trim().isEmpty()
@@ -57,6 +57,11 @@
         <form class="mo-applicants-toolbar__actions" action="<%= contextPath %>/mo/jobs/applicants" method="get" id="moApplicantsFilterForm">
           <input type="hidden" name="jobId" value="<%= String.valueOf(job.getOrDefault("postingId", "")) %>">
           <div class="mo-applicants-search">
+            <span class="mo-applicants-search__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false">
+                <path d="M10.75 17a6.25 6.25 0 1 0 0-12.5 6.25 6.25 0 0 0 0 12.5Zm8.75 2.5-4.25-4.25" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
             <label class="sr-only" for="moApplicantsKeyword">Search applicants by name or keyword</label>
             <input id="moApplicantsKeyword" type="search" name="keyword" placeholder="Search name..." autocomplete="off" value="<%= query.getKeyword() == null ? "" : query.getKeyword() %>">
           </div>
@@ -69,8 +74,12 @@
             </select>
             <span class="mo-applicants-sort__caret" aria-hidden="true"></span>
           </div>
-          <button class="mo-applicants-broadcast" type="submit" title="Search and sort this applicant list"><span>Apply filters</span></button>
-          <a class="mo-applicants-filter-reset" href="<%= contextPath %>/mo/jobs/applicants?jobId=<%= String.valueOf(job.getOrDefault("postingId", "")) %>">Reset</a>
+          <button class="mo-applicants-broadcast" type="submit" title="Search and sort this applicant list"><span>Apply Filter</span></button>
+          <a class="mo-applicants-filter-reset" href="<%= contextPath %>/mo/jobs/applicants?jobId=<%= String.valueOf(job.getOrDefault("postingId", "")) %>" aria-label="Reset filters">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path d="M7 7.5V4.75m0 0H4.25M7 4.75 4.75 7M6.5 9.5a7 7 0 1 1-1.2 7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
         </form>
       </section>
 

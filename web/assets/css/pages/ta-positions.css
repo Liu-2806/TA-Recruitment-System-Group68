@@ -54,31 +54,31 @@
 
 .ta-filter-panel {
   background: #ffffff;
-  border: 1px solid #e9eef5;
-  border-radius: 18px;
-  box-shadow: 0 12px 28px rgba(148, 163, 184, 0.08);
-  padding: 18px 20px 20px;
-  margin-bottom: 18px;
+  border: 1px solid #eef2f7;
+  border-radius: 22px;
+  box-shadow: 0 16px 32px rgba(148, 163, 184, 0.08);
+  padding: 22px 24px 24px;
+  margin-bottom: 22px;
 }
 
 .ta-filter-panel__header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 14px;
+  gap: 10px;
+  margin-bottom: 18px;
 }
 
 .ta-filter-panel__header h2 {
   margin: 0;
-  color: #334155;
-  font-size: 15px;
-  font-weight: 800;
+  color: #1e293b;
+  font-size: 18px;
+  font-weight: 900;
   letter-spacing: -0.01em;
 }
 
 .ta-filter-panel__icon {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   color: #2563eb;
   display: inline-flex;
   align-items: center;
@@ -86,14 +86,14 @@
 }
 
 .ta-filter-panel__icon svg {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
 }
 
 .ta-filter-grid {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(180px, 1.4fr) minmax(150px, 1fr) auto;
-  gap: 12px;
+  gap: 14px;
   align-items: end;
 }
 
@@ -105,9 +105,9 @@
 
 .ta-filter-field label {
   color: #64748b;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
@@ -118,37 +118,38 @@
 
 .ta-filter-input__icon {
   position: absolute;
-  left: 12px;
+  left: 14px;
   top: 50%;
   transform: translateY(-50%);
-  width: 16px;
-  height: 16px;
-  color: #b0bccb;
+  width: 18px;
+  height: 18px;
+  color: #94a3b8;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  pointer-events: none;
 }
 
 .ta-filter-input__icon svg {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
 }
 
 .ta-filter-input input,
 .ta-filter-select select {
   width: 100%;
-  height: 44px;
-  border-radius: 14px;
-  border: 1px solid #e7edf6;
+  height: 46px;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
   background: #ffffff;
-  color: #334155;
-  font-size: 14px;
+  color: #475569;
+  font-size: 15px;
   font-weight: 600;
   outline: none;
 }
 
 .ta-filter-input input {
-  padding: 0 14px 0 38px;
+  padding: 0 14px 0 44px;
 }
 
 .ta-filter-input--plain input {
@@ -158,11 +159,14 @@
 .ta-filter-select select {
   padding: 0 38px 0 14px;
   appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
 }
 
 .ta-filter-input input:focus,
 .ta-filter-select select:focus {
-  border-color: #6b98f2;
+  border-color: #60a5fa;
   box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
 }
 
@@ -183,20 +187,21 @@
 }
 
 .ta-filter-actions__apply {
-  min-width: 136px;
-  height: 44px;
+  min-width: 176px;
+  height: 48px;
   border: 0;
-  border-radius: 14px;
+  border-radius: 16px;
   background: #2563eb;
   color: #ffffff;
   font-size: 15px;
   font-weight: 800;
-  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 14px 28px rgba(37, 99, 235, 0.18);
+  cursor: pointer;
 }
 
 .ta-filter-actions__reset {
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   border: 1px solid #eef2f7;
   border-radius: 14px;
   background: #f8fafc;
@@ -204,11 +209,19 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.ta-filter-actions__reset:hover {
+  color: #2563eb;
+  border-color: #dbeafe;
+  background: #eff6ff;
 }
 
 .ta-filter-actions__reset svg {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
 }
 
 .ta-listings {
@@ -410,27 +423,32 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
 }
 
 .ta-pagination__page,
 .ta-pagination__nav {
-  min-width: 34px;
-  height: 34px;
-  border: 0;
-  border-radius: 10px;
+  min-width: 40px;
+  height: 40px;
+  border: 1px solid #e5edf7;
+  border-radius: 12px;
   background: #ffffff;
-  color: #64748b;
+  color: #475467;
   font-size: 14px;
   font-weight: 800;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  text-decoration: none;
+  padding: 0 10px;
+  box-sizing: border-box;
 }
 
 .ta-pagination__page.is-active {
-  background: #2563eb;
-  color: #ffffff;
-  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.18);
+  border-color: #dbeafe;
+  background: #eff6ff;
+  color: #2563eb;
 }
 
 .ta-pagination__nav.is-disabled {
@@ -439,8 +457,8 @@
 }
 
 .ta-pagination__nav svg {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
 }
 
 .ta-pagination__dots {
