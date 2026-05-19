@@ -56,7 +56,6 @@
               <option value="" <%= query.getStatus() == null || query.getStatus().isBlank() ? "selected" : "" %>>All Statuses</option>
               <option value="OPEN" <%= "OPEN".equalsIgnoreCase(query.getStatus()) ? "selected" : "" %>>Open</option>
               <option value="CLOSED" <%= "CLOSED".equalsIgnoreCase(query.getStatus()) ? "selected" : "" %>>Closed</option>
-              <option value="DRAFT" <%= "DRAFT".equalsIgnoreCase(query.getStatus()) ? "selected" : "" %>>Draft</option>
             </select>
           </div>
 
@@ -121,12 +120,7 @@
                     try { vacancies = Integer.parseInt(String.valueOf(job.getOrDefault("vacancies", "0"))); } catch (Exception ignored) {}
                     try { applications = Integer.parseInt(String.valueOf(job.getOrDefault("applicationCount", "0"))); } catch (Exception ignored) {}
                     String status = String.valueOf(job.getOrDefault("status", "OPEN")).toUpperCase();
-                    String statusCss = "open";
-                    if ("CLOSED".equals(status)) {
-                      statusCss = "closed";
-                    } else if ("DRAFT".equals(status)) {
-                      statusCss = "pending";
-                    }
+                    String statusCss = "CLOSED".equals(status) ? "closed" : "open";
                     String avatar = courseName.isBlank() ? "J" : courseName.substring(0, 1).toUpperCase();
               %>
               <tr>
