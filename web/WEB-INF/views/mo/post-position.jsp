@@ -10,12 +10,23 @@
   String errorMessage = String.valueOf(request.getAttribute("errorMessage") == null ? "" : request.getAttribute("errorMessage"));
   Object formDataObj = request.getAttribute("formData");
   java.util.Map formData = formDataObj instanceof java.util.Map ? (java.util.Map) formDataObj : java.util.Collections.emptyMap();
-  String assetVersion = "20260410-selectfix-3";
+  String normalizedActivityType = com.bupt.ta.util.ActivityTypeUtils.normalize(String.valueOf(formData.getOrDefault("activityType", "")));
+  String assetVersion = "20260518-mo-post-position-edit";
+  boolean editMode = Boolean.TRUE.equals(request.getAttribute("editMode"));
+  String editPostingId = String.valueOf(request.getAttribute("editPostingId") == null ? "" : request.getAttribute("editPostingId"));
+  String pageTitle = editMode ? "Edit Position" : "Post New Position";
+  String cardTitle = editMode ? "Edit Position Details" : "Position Details";
+  String submitLabel = editMode ? "Save Changes" : "Post Position";
+  String formAction = editMode
+      ? contextPath + "/mo/jobs/edit?jobId=" + java.net.URLEncoder.encode(editPostingId, "UTF-8")
+      : contextPath + "/mo/jobs/create";
+  String backHref = editMode ? contextPath + "/mo/jobs/my" : contextPath + "/mo/dashboard";
+  String backLabel = editMode ? "Back to My Postings" : "Back to Dashboard";
 
   request.setAttribute("headerBrandHref", contextPath + "/mo/dashboard");
   request.setAttribute("showHeaderBack", Boolean.TRUE);
-  request.setAttribute("headerBackHref", contextPath + "/mo/dashboard");
-  request.setAttribute("headerBackLabel", "Back to Dashboard");
+  request.setAttribute("headerBackHref", backHref);
+  request.setAttribute("headerBackLabel", backLabel);
   request.setAttribute("showHeaderUser", Boolean.TRUE);
   request.setAttribute("currentUserName", currentUserName);
   request.setAttribute("currentUserRoleLabel", "Module Organizer");
@@ -27,7 +38,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Post New Position | TA Recruitment System</title>
+  <title><%= pageTitle %> | TA Recruitment System</title>
   <link rel="stylesheet" href="<%= contextPath %>/assets/css/base.css">
   <link rel="stylesheet" href="<%= contextPath %>/assets/css/layout.css">
   <link rel="stylesheet" href="<%= contextPath %>/assets/css/components.css">
@@ -98,11 +109,23 @@
                 <path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </span>
-            <h2>Position Details</h2>
+            <h2><%= cardTitle %></h2>
           </div>
           <span class="mo-post-card__badge">* Required Fields</span>
         </div>
-        <form class="mo-post-form" action="<%= contextPath %>/mo/jobs/create" method="post">
+        <% if (!errorMessage.isEmpty()) { %>
+        <div class="mo-post-alert mo-post-alert--error">
+          <span class="mo-post-alert__icon" aria-hidden="true">!</span>
+          <p><%= errorMessage %></p>
+        </div>
+        <% } %>
+        <% if (editMode) { %>
+        <div class="mo-post-alert mo-post-alert--warning">
+          <span class="mo-post-alert__icon" aria-hidden="true">!</span>
+          <p><strong>Heads up:</strong> Saving changes will automatically withdraw every active application for this position. Applicants will need to reapply.</p>
+        </div>
+        <% } %>
+        <form class="mo-post-form" action="<%= formAction %>" method="post"<%= editMode ? " onsubmit=\"return confirm('Saving changes will withdraw all current applications for this position. Continue?');\"" : "" %>>
           <div class="mo-post-grid">
             <div class="mo-post-field">
               <label for="postingType">* Position Type</label>
@@ -160,9 +183,11 @@
                   <label for="activityType">Activity Type</label>
                   <div class="mo-post-input mo-post-input--select">
                     <select id="activityType" name="activityType">
-                      <option value="exam" <%= "exam".equalsIgnoreCase(String.valueOf(formData.getOrDefault("activityType", ""))) ? "selected" : "" %>>Invigilation</option>
-                      <option value="checkoff" <%= "checkoff".equalsIgnoreCase(String.valueOf(formData.getOrDefault("activityType", ""))) ? "selected" : "" %>>Lab Acceptance</option>
-                      <option value="lab" <%= (!formData.containsKey("activityType") || "lab".equalsIgnoreCase(String.valueOf(formData.getOrDefault("activityType", "")))) ? "selected" : "" %>>Lab Support</option>
+                      <option value="lab-support" <%= (!formData.containsKey("activityType") || "lab-support".equalsIgnoreCase(normalizedActivityType)) ? "selected" : "" %>>Lab Support</option>
+                      <option value="lab-assessment" <%= "lab-assessment".equalsIgnoreCase(normalizedActivityType) ? "selected" : "" %>>Lab Assessment</option>
+                      <option value="project-assessment" <%= "project-assessment".equalsIgnoreCase(normalizedActivityType) ? "selected" : "" %>>Project Assessment</option>
+                      <option value="invigilation" <%= "invigilation".equalsIgnoreCase(normalizedActivityType) ? "selected" : "" %>>Invigilation</option>
+                      <option value="others" <%= "others".equalsIgnoreCase(normalizedActivityType) ? "selected" : "" %>>Others</option>
                     </select>
                     <span class="mo-post-select__caret" aria-hidden="true"></span>
                   </div>
@@ -236,10 +261,10 @@
                   <path d="m4.75 12 14.5-6.5-4.75 13-3-5.25L4.75 12Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </span>
-              <span>Post Position</span>
+              <span><%= submitLabel %></span>
             </button>
 
-            <a class="mo-post-actions__cancel" href="<%= contextPath %>/mo/dashboard">
+            <a class="mo-post-actions__cancel" href="<%= backHref %>">
               <span class="mo-post-actions__icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" focusable="false">
                   <path d="m7 7 10 10M17 7 7 17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
@@ -257,7 +282,9 @@
             <path d="M12 8.5v4.5m0 3h.01M12 20a8 8 0 1 0-8-8 8 8 0 0 0 8 8Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </span>
-        <p><strong>Pro Tip:</strong> Once a position is posted, it will be visible to all eligible students immediately. You can track applicant progress from your dashboard.</p>
+        <p><strong>Pro Tip:</strong> <%= editMode
+            ? "Updates take effect immediately. Existing applicants will be notified to reapply once the new criteria match their profile."
+            : "Once a position is posted, it will be visible to all eligible students immediately. You can track applicant progress from your dashboard." %></p>
       </div>
     </main>
 

@@ -1,0 +1,148 @@
+.app-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  padding: 20px;
+}
+
+.app-modal.is-open {
+  display: flex;
+}
+
+.app-modal__dialog {
+  background: #ffffff;
+  width: 100%;
+  max-width: 480px;
+  border-radius: 18px;
+  box-shadow: 0 24px 64px rgba(15, 23, 42, 0.25);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-modal__header {
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.app-modal__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: 0.02em;
+}
+
+.app-modal__close {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 0;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-modal__close:hover {
+  background: #e2e8f0;
+}
+
+.app-modal__body {
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.app-modal__body p {
+  margin: 0;
+  color: #475569;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.app-modal__body label {
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.app-modal__body textarea {
+  width: 100%;
+  min-height: 110px;
+  border: 1px solid #dbe3ef;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #334155;
+  padding: 12px 14px;
+  font: inherit;
+  resize: vertical;
+}
+
+.app-modal__body textarea:focus {
+  outline: none;
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
+}
+
+.app-modal__footer {
+  padding: 16px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  border-top: 1px solid #eef2f7;
+  background: #f8fafc;
+}
+
+.app-modal__button {
+  min-height: 40px;
+  padding: 0 18px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  border: 0;
+}
+
+.app-modal__button--ghost {
+  background: transparent;
+  color: #475569;
+  border: 1px solid #cbd5f5;
+}
+
+.app-modal__button--primary {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.app-modal__button--danger {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+.app-modal__button--success {
+  background: #16a34a;
+  color: #ffffff;
+}
+
+.app-modal__button:hover {
+  filter: brightness(0.95);
+}

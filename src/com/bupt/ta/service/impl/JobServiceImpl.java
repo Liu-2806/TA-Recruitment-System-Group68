@@ -4,8 +4,11 @@ import com.bupt.ta.dto.JobQuery;
 import com.bupt.ta.dto.PageResult;
 import com.bupt.ta.model.Role;
 import com.bupt.ta.repository.UserRepository;
+import com.bupt.ta.repository.file.ApplicationDataRepository;
 import com.bupt.ta.repository.file.PostingDataRepository;
 import com.bupt.ta.service.JobService;
+import com.bupt.ta.service.NotificationService;
+import com.bupt.ta.util.ActivityTypeUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,10 +27,27 @@ public class JobServiceImpl implements JobService {
 
     private final PostingDataRepository postingDataRepository;
     private final UserRepository userRepository;
+    private final ApplicationDataRepository applicationDataRepository;
+    private final NotificationService notificationService;
 
     public JobServiceImpl(PostingDataRepository postingDataRepository, UserRepository userRepository) {
+        this(postingDataRepository, userRepository, null, null);
+    }
+
+    public JobServiceImpl(PostingDataRepository postingDataRepository,
+                          UserRepository userRepository,
+                          ApplicationDataRepository applicationDataRepository) {
+        this(postingDataRepository, userRepository, applicationDataRepository, null);
+    }
+
+    public JobServiceImpl(PostingDataRepository postingDataRepository,
+                          UserRepository userRepository,
+                          ApplicationDataRepository applicationDataRepository,
+                          NotificationService notificationService) {
         this.postingDataRepository = postingDataRepository;
         this.userRepository = userRepository;
+        this.applicationDataRepository = applicationDataRepository;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -97,6 +117,72 @@ public class JobServiceImpl implements JobService {
     @Override
     public Map<String, Object> createJob(String moUserId, Map<String, Object> params) {
         Map<String, Object> mo = requireMO(moUserId);
+        Map<String, Object> posting = buildPostingFromParams(params);
+
+        String now = LocalDateTime.now().format(FORMATTER);
+        Map<String, Object> record = new LinkedHashMap<>();
+        record.put("postingId", nextPostingId());
+        record.put("courseCode", posting.get("courseCode"));
+        record.put("courseName", posting.get("courseName"));
+        record.put("moId", moUserId);
+        record.put("moName", firstNonBlank(mo, "fullName", "displayName", "moId"));
+        record.put("vacancies", posting.get("vacancies"));
+        record.put("applicationCount", 0);
+        record.put("deadline", posting.get("deadline"));
+        record.put("description", posting.get("description"));
+        record.put("requiredSkills", posting.get("requiredSkills"));
+        record.put("postingType", posting.get("postingType"));
+        record.put("estimatedWorkloadHours", posting.get("estimatedWorkloadHours"));
+        record.put("status", posting.get("status"));
+        copyActivityFields(posting, record);
+        record.put("createdAt", now);
+        record.put("updatedAt", now);
+        postingDataRepository.save(record);
+        return record;
+    }
+
+    @Override
+    public Map<String, Object> updateJob(String moUserId, String postingId, Map<String, Object> params) {
+        if (postingId == null || postingId.isBlank()) {
+            throw new IllegalStateException("Posting ID is required.");
+        }
+        requireMO(moUserId);
+        Map<String, Object> existing = postingDataRepository.findByPostingId(postingId);
+        if (existing == null) {
+            throw new IllegalStateException("Job posting not found: " + postingId);
+        }
+        if (!moUserId.equals(String.valueOf(existing.get("moId")))) {
+            throw new IllegalStateException("You can only edit your own job postings.");
+        }
+        Map<String, Object> updated = buildPostingFromParams(params);
+
+        Map<String, Object> record = new LinkedHashMap<>(existing);
+        record.put("courseCode", updated.get("courseCode"));
+        record.put("courseName", updated.get("courseName"));
+        record.put("vacancies", updated.get("vacancies"));
+        record.put("deadline", updated.get("deadline"));
+        record.put("description", updated.get("description"));
+        record.put("requiredSkills", updated.get("requiredSkills"));
+        record.put("postingType", updated.get("postingType"));
+        record.put("estimatedWorkloadHours", updated.get("estimatedWorkloadHours"));
+        record.put("status", updated.get("status"));
+        if ("ACTIVITY".equals(updated.get("postingType"))) {
+            copyActivityFields(updated, record);
+        } else {
+            record.remove("activityType");
+            record.remove("activityDate");
+            record.remove("activityStartTime");
+            record.remove("activityEndTime");
+            record.remove("activityLocation");
+        }
+        record.put("updatedAt", LocalDateTime.now().format(FORMATTER));
+
+        postingDataRepository.save(record);
+        withdrawApplicationsForPostingUpdate(postingId);
+        return record;
+    }
+
+    private Map<String, Object> buildPostingFromParams(Map<String, Object> params) {
         String postingType = normalizePostingType(firstNonBlank(params, "postingType"));
         String courseCode = requireText(firstNonBlank(params, "courseCode"), "Course code is required.");
         String courseName = requireText(firstNonBlank(params, "courseName", "title"), "Course name is required.");
@@ -115,15 +201,10 @@ public class JobServiceImpl implements JobService {
             throw new IllegalStateException("At least one required skill must be provided.");
         }
 
-        String now = LocalDateTime.now().format(FORMATTER);
         Map<String, Object> posting = new LinkedHashMap<>();
-        posting.put("postingId", nextPostingId());
         posting.put("courseCode", courseCode);
         posting.put("courseName", courseName);
-        posting.put("moId", moUserId);
-        posting.put("moName", firstNonBlank(mo, "fullName", "displayName", "moId"));
         posting.put("vacancies", vacancies);
-        posting.put("applicationCount", 0);
         posting.put("deadline", deadline);
         posting.put("description", description);
         posting.put("requiredSkills", requiredSkills);
@@ -141,10 +222,66 @@ public class JobServiceImpl implements JobService {
             posting.put("activityLocation", firstNonBlankText(firstNonBlank(params, "activityLocation"), "Assigned venue"));
             posting.put("moduleType", "Activity");
         }
-        posting.put("createdAt", now);
-        posting.put("updatedAt", now);
-        postingDataRepository.save(posting);
         return posting;
+    }
+
+    private void copyActivityFields(Map<String, Object> source, Map<String, Object> target) {
+        if (!"ACTIVITY".equals(source.get("postingType"))) {
+            return;
+        }
+        target.put("activityType", source.get("activityType"));
+        target.put("activityDate", source.get("activityDate"));
+        target.put("activityStartTime", source.get("activityStartTime"));
+        target.put("activityEndTime", source.get("activityEndTime"));
+        target.put("activityLocation", source.get("activityLocation"));
+        target.put("moduleType", source.get("moduleType"));
+    }
+
+    private void withdrawApplicationsForPostingUpdate(String postingId) {
+        if (applicationDataRepository == null) {
+            return;
+        }
+        String now = LocalDateTime.now().format(FORMATTER);
+        String reason = "Posting was edited by MO; application automatically withdrawn.";
+        Map<String, Object> posting = postingDataRepository.findByPostingId(postingId);
+        String courseName = posting == null ? "" : String.valueOf(posting.getOrDefault("courseName", ""));
+        String courseCode = posting == null ? "" : String.valueOf(posting.getOrDefault("courseCode", ""));
+        for (Map<String, Object> application : applicationDataRepository.findByPostingId(postingId)) {
+            String status = String.valueOf(application.getOrDefault("status", "")).trim().toUpperCase(Locale.ROOT);
+            if ("WITHDRAWN".equals(status) || "REJECTED".equals(status)) {
+                continue;
+            }
+            Map<String, Object> record = new LinkedHashMap<>(application);
+            record.put("status", "WITHDRAWN");
+            record.put("statusLabel", "Withdrawn");
+            record.put("withdrawalReason", reason);
+            record.put("updatedAt", now);
+            applicationDataRepository.save(record);
+            emitPostingEditedNotification(record, courseName, courseCode);
+        }
+    }
+
+    private void emitPostingEditedNotification(Map<String, Object> application, String courseName, String courseCode) {
+        if (notificationService == null) {
+            return;
+        }
+        String taId = String.valueOf(application.getOrDefault("taId", "")).trim();
+        if (taId.isEmpty()) {
+            return;
+        }
+        String courseLabel = courseName == null || courseName.isBlank() ? "the position" : courseName;
+        if (courseCode != null && !courseCode.isBlank()) {
+            courseLabel = courseLabel + " (" + courseCode + ")";
+        }
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("recipientId", taId);
+        payload.put("recipientRole", "TA");
+        payload.put("type", "APPLICATION_AUTO_WITHDRAWN");
+        payload.put("title", "Application withdrawn");
+        payload.put("message", "Your application for " + courseLabel + " was automatically withdrawn because the module organizer updated the posting. Please review the new requirements and reapply if you remain eligible.");
+        payload.put("relatedApplicationId", application.get("applicationId"));
+        payload.put("relatedPostingId", application.get("postingId"));
+        notificationService.create(payload);
     }
 
     @Override
@@ -155,13 +292,14 @@ public class JobServiceImpl implements JobService {
             if (!moUserId.equals(String.valueOf(posting.get("moId")))) {
                 continue;
             }
-            if (!matchesStatus(posting, safeQuery.getStatus())) {
+            Map<String, Object> enriched = enrichPostingForDisplay(posting);
+            if (!matchesStatus(enriched, safeQuery.getStatus())) {
                 continue;
             }
-            if (!matchesKeyword(posting, safeQuery.getKeyword())) {
+            if (!matchesKeyword(enriched, safeQuery.getKeyword())) {
                 continue;
             }
-            records.add(new LinkedHashMap<>(posting));
+            records.add(enriched);
         }
         sortJobs(records, safeQuery.getSortBy());
 
@@ -181,13 +319,14 @@ public class JobServiceImpl implements JobService {
             if (!matchesMoFilter(posting, safeQuery)) {
                 continue;
             }
-            if (!matchesStatus(posting, safeQuery.getStatus())) {
+            Map<String, Object> enriched = enrichPostingForDisplay(posting);
+            if (!matchesStatus(enriched, safeQuery.getStatus())) {
                 continue;
             }
-            if (!matchesKeyword(posting, safeQuery.getKeyword())) {
+            if (!matchesKeyword(enriched, safeQuery.getKeyword())) {
                 continue;
             }
-            records.add(new LinkedHashMap<>(posting));
+            records.add(enriched);
         }
         sortJobs(records, safeQuery.getSortBy());
 
@@ -197,6 +336,43 @@ public class JobServiceImpl implements JobService {
         result.setSize(safeQuery.getSize());
         result.setTotal(records.size());
         return result;
+    }
+
+    private Map<String, Object> enrichPostingForDisplay(Map<String, Object> posting) {
+        Map<String, Object> enriched = new LinkedHashMap<>(posting);
+        int vacancies = safeInt(enriched.get("vacancies"));
+        enriched.put("vacancies", vacancies);
+        int liveApplicationCount = countLiveApplications(String.valueOf(enriched.get("postingId")));
+        enriched.put("applicationCount", liveApplicationCount);
+        String rawStatus = String.valueOf(enriched.getOrDefault("status", "OPEN"));
+        enriched.put("status", deriveEffectiveStatus(rawStatus, enriched.get("deadline")));
+        return enriched;
+    }
+
+    private int countLiveApplications(String postingId) {
+        if (applicationDataRepository == null || postingId == null || postingId.isBlank()) {
+            return 0;
+        }
+        int count = 0;
+        for (Map<String, Object> application : applicationDataRepository.findByPostingId(postingId)) {
+            String status = String.valueOf(application.getOrDefault("status", "")).trim().toUpperCase(Locale.ROOT);
+            if ("WITHDRAWN".equals(status)) {
+                continue;
+            }
+            count++;
+        }
+        return count;
+    }
+
+    private String deriveEffectiveStatus(String currentStatus, Object deadlineValue) {
+        String normalized = currentStatus == null ? "OPEN" : currentStatus.trim().toUpperCase(Locale.ROOT);
+        if ("DRAFT".equals(normalized) || "CLOSED".equals(normalized)) {
+            return normalized;
+        }
+        if (isExpired(deadlineValue)) {
+            return "CLOSED";
+        }
+        return "OPEN";
     }
 
     private boolean matchesMoFilter(Map<String, Object> posting, JobQuery query) {
@@ -368,10 +544,7 @@ public class JobServiceImpl implements JobService {
     }
 
     private String normalizeActivityType(String activityType) {
-        if (activityType == null || activityType.isBlank()) {
-            return "lab";
-        }
-        return activityType.trim().toLowerCase(Locale.ROOT);
+        return ActivityTypeUtils.normalize(activityType);
     }
 
     private String normalizeDate(String rawDate) {

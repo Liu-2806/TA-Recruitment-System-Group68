@@ -68,4 +68,15 @@ public interface ApplicationService {
      * @param comment       备注
      */
     void updateStatusByMO(String applicationId, String moUserId, ApplicationStatus newStatus, String comment);
+
+    /**
+     * MO 对 TA 撤销请求做出响应（同意/拒绝）。
+     *
+     * @param applicationId 申请 ID
+     * @param moUserId      MO 用户 ID
+     * @param approved      是否同意撤销
+     * @param comment       回复说明
+     * @return 处理后的申请记录
+     */
+    Map<String, Object> respondToRevocationRequest(String applicationId, String moUserId, boolean approved, String comment);
 }

@@ -1,4 +1,7 @@
 :root {
+  --font-ui: "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Helvetica Neue", Arial, sans-serif;
+  --font-display: "DengXian", "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei UI", sans-serif;
+  --font-mono: "Cascadia Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
   --color-bg: #f8fafc;
   --color-surface: #ffffff;
   --color-surface-muted: #f8fafc;
@@ -41,8 +44,11 @@ body {
   margin: 0;
   background: var(--color-bg);
   color: var(--color-text);
-  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  line-height: 1.5;
+  font-family: var(--font-ui);
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 a {
@@ -55,6 +61,7 @@ input,
 textarea,
 select {
   font: inherit;
+  font-family: var(--font-ui);
 }
 
 button {
@@ -64,6 +71,56 @@ button {
 img {
   max-width: 100%;
   display: block;
+}
+
+:where(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-display);
+  line-height: 1.18;
+}
+
+:where(.app-brand__text,
+.app-brand__mark,
+.app-header__title,
+.ui-user-block__name,
+.app-toast__title,
+.auth-card__title,
+.legal-section__title,
+.ta-profile-card__name,
+.ta-stat-box__value,
+.ta-dashboard-overview__title) {
+  font-family: var(--font-display);
+}
+
+:where(.app-header__eyebrow,
+.app-sidebar__group-title,
+.ui-user-block__role,
+.ui-link-button,
+.ui-chip,
+.ta-card__eyebrow,
+.ta-board-card__eyebrow,
+.ta-course-strip__label,
+.ta-stat-box__label,
+.ta-dashboard-overview__eyebrow,
+.ta-schedule-detail__eyebrow,
+.ta-panel__eyebrow,
+.legal-card__eyebrow,
+.admin-topbar__eyebrow,
+.admin-section__eyebrow,
+.admin-workload-heading__eyebrow,
+.admin-ta-insight-card__eyebrow,
+.admin-ta-modal__eyebrow,
+.mo-post-field__label-row span,
+.mo-postings-filter__label,
+.ta-position-info__label,
+.ta-position-skills__label,
+.ta-application-info__label,
+.ta-form-field__label,
+.role-card__label) {
+  font-family: var(--font-ui);
+}
+
+:where(code, pre, kbd, samp) {
+  font-family: var(--font-mono);
 }
 
 .sr-only {
