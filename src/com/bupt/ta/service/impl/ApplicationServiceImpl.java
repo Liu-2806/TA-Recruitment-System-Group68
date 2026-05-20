@@ -131,6 +131,8 @@ public class ApplicationServiceImpl implements ApplicationService {
         application.put("skillMatchExplanation", application.get("explanation"));
         application.put("matchMethod", application.get("method"));
         application.put("statusLabel", statusLabel(String.valueOf(application.get("status"))));
+        appendHistoryLog(application, application.get("appliedAt"), ApplicationStatus.SUBMITTED.name(),
+            "Application submitted with supporting statement and current resume.");
         application.remove("score");
         application.remove("explanation");
         application.remove("method");
@@ -217,25 +219,24 @@ public class ApplicationServiceImpl implements ApplicationService {
         boolean acceptedAssignment = "accepted".equals(status);
 
         ApplicationStatus targetStatus;
-        String actionLabel;
         if (acceptedAssignment) {
             targetStatus = ApplicationStatus.REVOCATION_REQUESTED;
-            actionLabel = "Revocation request";
         } else {
             targetStatus = ApplicationStatus.WITHDRAWN;
-            actionLabel = "Withdrawal request";
         }
 
         record.put("status", targetStatus.name());
         record.put("updatedAt", LocalDateTime.now().format(FORMATTER));
         record.put("statusLabel", statusLabel(targetStatus.name()));
-        String message = actionLabel + " submitted by TA. Reason: " + reason.trim();
+        String message = (acceptedAssignment ? "Revocation request" : "Application withdrawal")
+            + " submitted by TA. Reason: " + reason.trim();
         record.put("feedback", message);
+        appendHistoryLog(record, record.get("updatedAt"), targetStatus.name(), message);
         applicationDataRepository.save(record);
-        updatePostingApplicationCount(String.valueOf(record.get("postingId")), -1);
         if (acceptedAssignment) {
-            taTimetableDataRepository.releaseAssignment(taUserId, applicationId);
             emitRevocationRequestNotification(record, reason.trim());
+        } else {
+            updatePostingApplicationCount(String.valueOf(record.get("postingId")), -1);
         }
         return enrichApplicationRecord(new LinkedHashMap<>(record));
     }
@@ -250,6 +251,9 @@ public class ApplicationServiceImpl implements ApplicationService {
         record.put("feedback", comment == null ? "" : comment.trim());
         record.put("updatedAt", LocalDateTime.now().format(FORMATTER));
         record.put("statusLabel", statusLabel(newStatus.name()));
+        appendHistoryLog(record, record.get("updatedAt"), newStatus.name(),
+            "MO updated this application to " + statusLabel(newStatus.name())
+                + (comment == null || comment.trim().isEmpty() ? "." : ". Reviewer note: " + comment.trim()));
         applicationDataRepository.save(record);
         emitStatusChangeNotification(record, newStatus, comment);
     }
@@ -275,7 +279,14 @@ public class ApplicationServiceImpl implements ApplicationService {
         String note = comment == null ? "" : comment.trim();
         record.put("feedback", (approved ? "Revocation approved." : "Revocation declined.")
             + (note.isEmpty() ? "" : " Note: " + note));
+        appendHistoryLog(record, record.get("updatedAt"), approved ? "REVOCATION_APPROVED" : "REVOCATION_DECLINED",
+            (approved ? "MO approved the revocation request." : "MO declined the revocation request.")
+                + (note.isEmpty() ? "" : " Reviewer note: " + note));
         applicationDataRepository.save(record);
+        if (approved) {
+            updatePostingApplicationCount(String.valueOf(record.get("postingId")), -1);
+            taTimetableDataRepository.releaseAssignment(String.valueOf(record.get("taId")), applicationId);
+        }
         emitRevocationDecisionNotification(record, approved, comment);
         return enrichApplicationRecord(new LinkedHashMap<>(record));
     }
@@ -316,7 +327,90 @@ public class ApplicationServiceImpl implements ApplicationService {
         String status = String.valueOf(enriched.getOrDefault("status", ApplicationStatus.SUBMITTED.name()));
         enriched.put("statusLabel", statusLabel(status));
         enriched.putIfAbsent("updatedAt", enriched.get("appliedAt"));
+        if (!hasHistoryLogs(enriched.get("historyLogs"))) {
+            enriched.put("historyLogs", buildDerivedHistoryLogs(enriched));
+        }
         return enriched;
+    }
+
+    private boolean hasHistoryLogs(Object rawLogs) {
+        return rawLogs instanceof List<?> logs && !logs.isEmpty();
+    }
+
+    private List<Map<String, Object>> buildDerivedHistoryLogs(Map<String, Object> record) {
+        List<Map<String, Object>> logs = new ArrayList<>();
+        if (record == null) {
+            return logs;
+        }
+
+        String appliedAt = stringValue(record.get("appliedAt"));
+        if (hasValue(appliedAt)) {
+            Map<String, Object> submittedLog = new LinkedHashMap<>();
+            submittedLog.put("time", appliedAt);
+            submittedLog.put("action", ApplicationStatus.SUBMITTED.name());
+            submittedLog.put("description", "Application submitted with supporting statement and resume.");
+            logs.add(submittedLog);
+        }
+
+        String status = String.valueOf(record.getOrDefault("status", ApplicationStatus.SUBMITTED.name()));
+        String normalizedStatus = normalize(status);
+        String updatedAt = stringValue(record.get("updatedAt"));
+        boolean statusChanged = !ApplicationStatus.SUBMITTED.name().equalsIgnoreCase(status);
+        boolean updatedAfterSubmit = hasValue(updatedAt) && !updatedAt.equals(appliedAt);
+        if (statusChanged || updatedAfterSubmit) {
+            Map<String, Object> statusLog = new LinkedHashMap<>();
+            statusLog.put("time", hasValue(updatedAt) ? updatedAt : appliedAt);
+            statusLog.put("action", status);
+            String feedback = stringValue(record.get("feedback"));
+            String description = "Application status is now " + statusLabel(status) + ".";
+            if (hasValue(feedback)) {
+                description += " " + feedback;
+            }
+            if ("revocationrequested".equals(normalizedStatus)) {
+                description = hasValue(feedback)
+                    ? feedback
+                    : "Revocation request submitted by TA and awaiting MO decision.";
+            }
+            statusLog.put("description", description);
+            logs.add(statusLog);
+        }
+        return logs;
+    }
+
+    private void appendHistoryLog(Map<String, Object> record, Object time, String action, String description) {
+        if (record == null) {
+            return;
+        }
+        List<Map<String, Object>> logs = normalizeHistoryLogs(record.get("historyLogs"));
+        if (logs.isEmpty() && (action == null || !ApplicationStatus.SUBMITTED.name().equalsIgnoreCase(action))) {
+            String appliedAt = stringValue(record.get("appliedAt"));
+            if (hasValue(appliedAt)) {
+                Map<String, Object> submittedLog = new LinkedHashMap<>();
+                submittedLog.put("time", appliedAt);
+                submittedLog.put("action", ApplicationStatus.SUBMITTED.name());
+                submittedLog.put("description", "Application submitted with supporting statement and resume.");
+                logs.add(submittedLog);
+            }
+        }
+        Map<String, Object> log = new LinkedHashMap<>();
+        log.put("time", stringValue(time));
+        log.put("action", action == null ? "" : action.trim());
+        log.put("description", description == null ? "" : description.trim());
+        logs.add(log);
+        record.put("historyLogs", logs);
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Map<String, Object>> normalizeHistoryLogs(Object rawLogs) {
+        List<Map<String, Object>> logs = new ArrayList<>();
+        if (rawLogs instanceof List<?> rawList) {
+            for (Object item : rawList) {
+                if (item instanceof Map<?, ?> map) {
+                    logs.add(new LinkedHashMap<>((Map<String, Object>) map));
+                }
+            }
+        }
+        return logs;
     }
 
     private List<Map<String, Object>> applyApplicationFilters(List<Map<String, Object>> records, ApplicationQuery query) {
@@ -407,6 +501,10 @@ public class ApplicationServiceImpl implements ApplicationService {
         return value == null ? "" : value.trim().toLowerCase(Locale.ROOT).replace(" ", "").replace("_", "");
     }
 
+    private String stringValue(Object value) {
+        return value == null ? "" : String.valueOf(value).trim();
+    }
+
     private int statusPriority(String status) {
         return switch (normalize(status)) {
             case "accepted" -> 0;
@@ -446,7 +544,10 @@ public class ApplicationServiceImpl implements ApplicationService {
     private Map<String, Object> findExistingApplication(String taUserId, String jobId) {
         for (Map<String, Object> record : applicationDataRepository.findByTaId(taUserId)) {
             if (jobId.equals(String.valueOf(record.get("postingId")))) {
-                return record;
+                String status = normalize(String.valueOf(record.get("status")));
+                if (!"withdrawn".equals(status)) {
+                    return record;
+                }
             }
         }
         return null;
