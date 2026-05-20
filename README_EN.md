@@ -41,11 +41,36 @@ Recommended local environment:
 - Operating system: Windows
 - Shell: Windows PowerShell
 - Java: JDK 17 or a compatible Java Development Kit
-- Web server: Apache Tomcat 9
+- Web server: Apache Tomcat 9 (not included in this repository; install separately)
 - Current helper scripts target Apache Tomcat `9.0.116`
 - Build tool: no Maven or Gradle is required
 
 The project keeps required JAR files in the repository, so it can be compiled and run with the provided scripts.
+
+### Apache Tomcat (required, not bundled)
+
+Download and install [Apache Tomcat 9](https://tomcat.apache.org/download-90.cgi) yourself. Version `9.0.116` matches what the helper scripts expect, but any Tomcat 9.x install should work if you pass `-TomcatPath`.
+
+If you do not pass `-TomcatPath`, `scripts/run-web-app.ps1` looks for Tomcat in the **parent folder of the repository root** (one level above the folder that contains `scripts/`, `web/`, and `data/`). It tries these paths in order:
+
+```text
+../apache-tomcat-9.0.116-windows-x64/apache-tomcat-9.0.116
+../apache-tomcat-9.0.116-windows-x64/apache-tomcat-9.0.116-windows-x64/apache-tomcat-9.0.116
+```
+
+Example layout when using the default lookup (repository folder name may vary):
+
+```text
+some-parent-folder/
+├── TA-Recruitment-System-Group68/    ← repository root (run scripts from here)
+│   ├── scripts/
+│   ├── web/
+│   └── data/
+└── apache-tomcat-9.0.116-windows-x64/
+    └── apache-tomcat-9.0.116/        ← Tomcat home (must contain bin/startup.bat)
+```
+
+If Tomcat is installed elsewhere, pass its home directory explicitly when running the app (see [Running the Web Application](#running-the-web-application)).
 
 ## Packages and Local Dependencies
 
@@ -91,10 +116,18 @@ These settings are only needed for LLM-assisted matching. If they are not provid
 
 ## Running the Web Application
 
+Prerequisites: JDK, required JARs under `lib/` and `web/WEB-INF/lib/`, and a local Tomcat 9 install (see [Apache Tomcat (required, not bundled)](#apache-tomcat-required-not-bundled)).
+
 From the repository root, run:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\run-web-app.ps1
+```
+
+If Tomcat is not in the default parent-folder location, specify your Tomcat home directory:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\run-web-app.ps1 -TomcatPath "C:\path\to\apache-tomcat-9.0.116"
 ```
 
 Then open:
@@ -103,12 +136,11 @@ Then open:
 http://localhost:8080/TA-Recruitment-System-Group68/
 ```
 
-The run script compiles Java source files into `web/WEB-INF/classes`, deploys the `web/` folder into Tomcat, sets the data directory, and starts Tomcat unless `-SkipStart` is provided.
+The run script compiles Java source files into `web/WEB-INF/classes`, copies `web/` into Tomcat's `webapps/TA-Recruitment-System-Group68/`, sets `TA_DATA_DIR` to the project `data/` folder, and starts Tomcat unless `-SkipStart` is provided. If Tomcat cannot be found, the script exits with an error—use `-TomcatPath` pointing at the folder that contains `bin/startup.bat`.
 
-Optional script parameters:
+Other optional script parameters:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\run-web-app.ps1 -TomcatPath "C:\path\to\apache-tomcat-9.0.116"
 powershell -ExecutionPolicy Bypass -File .\scripts\run-web-app.ps1 -JavaHome "C:\path\to\jdk"
 powershell -ExecutionPolicy Bypass -File .\scripts\run-web-app.ps1 -SkipStart
 ```
