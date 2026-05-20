@@ -230,8 +230,3 @@ Suggested manual acceptance tests:
 - Admin can log in, view dashboard metrics, create/manage MO accounts, inspect all jobs, and view TA workload data.
 - Invalid or incomplete inputs show validation or error feedback instead of corrupting JSON data.
 
-## Notes for Final Submission
-
-According to the EBU6304 handout, the final software ZIP should include source code, test programs, code documentation, a user manual with key screenshots, and a README file with setup, configuration, and running instructions.
-
-This `README_EN.md` is intended to satisfy the README requirement for the software package. The final project report, demonstration video, and user manual are separate deliverables.
