@@ -24,7 +24,7 @@ The project addresses the TA recruitment workflow described in the EBU6304 hando
 - Admin users can view system-level dashboards, manage MO accounts, review all positions, and monitor TA workload.
 - The matching component combines local rule-based matching with optional LLM-assisted interpretation, so AI output is explainable and not required for normal local operation.
 
-## Handout Compliance
+## Project Constraints
 
 This project follows the mandatory technical restrictions in the group project handout:
 
@@ -32,7 +32,7 @@ This project follows the mandatory technical restrictions in the group project h
 - All persistent input and output data is stored in text-based files, mainly JSON.
 - No database is used.
 - The code is organised into modular controller, service, repository, resume-processing, matching, and utility layers.
-- AI-assisted features are optional and supported with local fallback logic.
+- AI-assisted features are optional and supported with LLM API call.
 
 ## Environment
 
