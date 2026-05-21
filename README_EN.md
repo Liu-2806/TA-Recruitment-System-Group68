@@ -1,4 +1,8 @@
 <p align="center">
+  <a href="README.md">中文</a> · <a href="README_EN.md">English</a>
+</p>
+
+<p align="center">
   <img src="docs/images/hero-banner.svg" alt="TA Recruitment System — Hero Banner" width="1000">
 </p>
 
