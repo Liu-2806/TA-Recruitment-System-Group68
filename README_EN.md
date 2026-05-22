@@ -198,6 +198,16 @@ Suggested manual acceptance tests:
 - Admin can log in, view dashboard metrics, create/manage MO accounts, inspect all jobs, and view TA workload data.
 - Invalid or incomplete inputs show validation or error feedback instead of corrupting JSON data.
 
+Formal test programs for the software submission are provided under `test-programs/`. Run them with:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\test-programs\run-all-tests.ps1
+```
+
+The test runner compiles the Java source, copies `data/` into `.acceptance-test-data/`, and verifies authentication, TA workflow, MO workflow, Admin workflow, suitability analysis, resume access, and JSON persistence without modifying the normal demonstration data.
+
+The live acceptance testing task guide is available at `docs/testing/acceptance-testing-tasks.md`.
+
 ## Notes for Final Submission
 
 According to the EBU6304 handout, the final software ZIP should include source code, test programs, code documentation, a user manual with key screenshots, and a README file with setup, configuration, and running instructions.

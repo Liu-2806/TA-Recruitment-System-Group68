@@ -5,6 +5,7 @@ tmp/
 *.class
 .phase1-console/
 .codex-phase1-test/
+.acceptance-test-data/
 work-log.md
 /.idea/
 *.iml
