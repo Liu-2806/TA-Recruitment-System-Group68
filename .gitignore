@@ -13,4 +13,5 @@ src/test/
 scripts/test-*.ps1
 src/test/
 .vscode/
-
+.claude/
+/scripts/generate_report.js

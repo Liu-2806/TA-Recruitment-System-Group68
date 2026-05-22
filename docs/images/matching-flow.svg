@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 580" width="1000" height="580">
+  <defs>
+    <linearGradient id="mBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/><stop offset="100%" stop-color="#f1f5f9"/>
+    </linearGradient>
+    <linearGradient id="mLLM" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7c3aed"/><stop offset="100%" stop-color="#6d28d9"/>
+    </linearGradient>
+    <linearGradient id="mLocal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#059669"/><stop offset="100%" stop-color="#047857"/>
+    </linearGradient>
+    <linearGradient id="mResult" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2563eb"/><stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <filter id="mShadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.08"/>
+    </filter>
+    <marker id="mArrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#64748b"/>
+    </marker>
+    <marker id="mArrowGreen" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#059669"/>
+    </marker>
+    <marker id="mArrowPurple" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#7c3aed"/>
+    </marker>
+    <marker id="mArrowBlue" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#2563eb"/>
+    </marker>
+  </defs>
+
+  <rect width="1000" height="580" rx="16" fill="url(#mBg)"/>
+
+  <!-- Title -->
+  <text x="500" y="36" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="18" font-weight="700" fill="#0f172a">
+    AI Intelligent Matching — Dual-Engine Architecture
+  </text>
+
+  <!-- Input: Structured Resume -->
+  <rect x="60" y="60" width="200" height="70" rx="10" fill="white" stroke="#e2e8f0" stroke-width="1" filter="url(#mShadow)"/>
+  <rect x="60" y="60" width="200" height="4" rx="2" fill="#06b6d4"/>
+  <text x="160" y="85" text-anchor="middle" font-size="14">📄</text>
+  <text x="160" y="103" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="11" font-weight="700" fill="#0f172a">结构化简历</text>
+  <text x="160" y="118" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="9" fill="#64748b">skills · education · experience</text>
+
+  <!-- Input: Job Posting -->
+  <rect x="300" y="60" width="200" height="70" rx="10" fill="white" stroke="#e2e8f0" stroke-width="1" filter="url(#mShadow)"/>
+  <rect x="300" y="60" width="200" height="4" rx="2" fill="#d97706"/>
+  <text x="400" y="85" text-anchor="middle" font-size="14">📋</text>
+  <text x="400" y="103" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="11" font-weight="700" fill="#0f172a">岗位要求</text>
+  <text x="400" y="118" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="9" fill="#64748b">requiredSkills · description</text>
+
+  <!-- Arrows to Service -->
+  <line x1="260" y1="110" x2="440" y2="155" stroke="#64748b" stroke-width="1.5" marker-end="url(#mArrow)"/>
+  <line x1="500" y1="130" x2="500" y2="155" stroke="#64748b" stroke-width="1.5" marker-end="url(#mArrow)"/>
+
+  <!-- RecommendationServiceImpl -->
+  <rect x="340" y="158" width="320" height="60" rx="10" fill="white" stroke="#3b82f6" stroke-width="2" filter="url(#mShadow)"/>
+  <rect x="340" y="158" width="320" height="4" rx="2" fill="#3b82f6"/>
+  <text x="500" y="183" text-anchor="middle" font-size="14">⚙️</text>
+  <text x="500" y="202" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="12" font-weight="700" fill="#2563eb">RecommendationServiceImpl</text>
+  <text x="500" y="216" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="9" fill="#64748b">检查 LLM 配置完整性 → 选择匹配引擎</text>
+
+  <!-- Decision diamond -->
+  <polygon points="500,230 540,250 500,270 460,250" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="500" y="254" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="9" font-weight="700" fill="#2563eb">LLM?</text>
+
+  <!-- LLM path (left) -->
+  <text x="440" y="248" font-family="'Segoe UI', sans-serif" font-size="9" fill="#7c3aed">完整 ✓</text>
+  <line x1="460" y1="250" x2="250" y2="320" stroke="#7c3aed" stroke-width="2" marker-end="url(#mArrowPurple)"/>
+
+  <!-- Local path (right) -->
+  <text x="555" y="248" font-family="'Segoe UI', sans-serif" font-size="9" fill="#059669">未配置</text>
+  <line x1="540" y1="250" x2="750" y2="320" stroke="#059669" stroke-width="2" marker-end="url(#mArrowGreen)"/>
+
+  <!-- LLM Matcher Box -->
+  <rect x="80" y="320" width="340" height="120" rx="12" fill="white" stroke="#8b5cf6" stroke-width="2" filter="url(#mShadow)"/>
+  <rect x="80" y="320" width="340" height="4" rx="2" fill="url(#mLLM)"/>
+  <text x="250" y="348" text-anchor="middle" font-size="16">🤖</text>
+  <text x="250" y="370" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="13" font-weight="700" fill="#6d28d9">OpenAiCompatibleMatcher</text>
+
+  <rect x="100" y="380" width="300" height="20" rx="4" fill="#faf5ff"/>
+  <text x="250" y="394" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="9" fill="#7c3aed">五维评分: 技能·学历·经历·职责·缺口</text>
+
+  <rect x="100" y="404" width="300" height="20" rx="4" fill="#faf5ff"/>
+  <text x="250" y="418" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="9" fill="#7c3aed">可解释性约束: 不臆测·不读原始PDF</text>
+
+  <rect x="100" y="428" width="300" height="20" rx="4" fill="#faf5ff"/>
+  <text x="250" y="442" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="9" fill="#7c3aed">输出: score + explanation + skills</text>
+
+  <!-- Local Rule Matcher Box -->
+  <rect x="580" y="320" width="340" height="120" rx="12" fill="white" stroke="#059669" stroke-width="2" filter="url(#mShadow)"/>
+  <rect x="580" y="320" width="340" height="4" rx="2" fill="url(#mLocal)"/>
+  <text x="750" y="348" text-anchor="middle" font-size="16">📐</text>
+  <text x="750" y="370" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="13" font-weight="700" fill="#047857">LocalRuleMatcher</text>
+
+  <rect x="600" y="380" width="300" height="20" rx="4" fill="#ecfdf5"/>
+  <text x="750" y="394" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="9" fill="#047857">baseScore=30 + skillScore=55×ratio</text>
+
+  <rect x="600" y="404" width="300" height="20" rx="4" fill="#ecfdf5"/>
+  <text x="750" y="418" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="9" fill="#047857">teachingBonus=10 + courseBonus=5</text>
+
+  <rect x="600" y="428" width="300" height="20" rx="4" fill="#ecfdf5"/>
+  <text x="750" y="442" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="9" fill="#047857">技能别名匹配: QA↔Testing, Lab↔Lab Support</text>
+
+  <!-- LLM Success arrow -->
+  <line x1="250" y1="440" x2="440" y2="485" stroke="#7c3aed" stroke-width="2" marker-end="url(#mArrowPurple)"/>
+  <text x="310" y="470" font-family="'Segoe UI', sans-serif" font-size="9" fill="#7c3aed">成功 ✓</text>
+
+  <!-- LLM Fail arrow (fallback) -->
+  <line x1="420" y1="400" x2="580" y2="380" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#mArrow)"/>
+  <text x="500" y="385" font-family="'Segoe UI', sans-serif" font-size="9" fill="#dc2626">API 失败 → Fallback</text>
+
+  <!-- Local arrow -->
+  <line x1="750" y1="440" x2="560" y2="485" stroke="#059669" stroke-width="2" marker-end="url(#mArrowGreen)"/>
+
+  <!-- Unified Result -->
+  <rect x="340" y="488" width="320" height="70" rx="12" fill="white" stroke="#2563eb" stroke-width="2" filter="url(#mShadow)"/>
+  <rect x="340" y="488" width="320" height="4" rx="2" fill="url(#mResult)"/>
+  <text x="500" y="514" text-anchor="middle" font-size="14">✨</text>
+  <text x="500" y="534" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="12" font-weight="700" fill="#1e40af">统一 MatchResult 输出</text>
+  <text x="500" y="550" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="9" fill="#64748b">score (0-100) · explanation · matchedSkills · missingSkills · method</text>
+</svg>
