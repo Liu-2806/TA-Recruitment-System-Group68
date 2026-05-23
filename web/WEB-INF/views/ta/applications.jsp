@@ -280,6 +280,38 @@
             </div>
           </div>
 
+          <%
+            java.util.List historyLogs = appRow.get("historyLogs") instanceof java.util.List
+                ? (java.util.List) appRow.get("historyLogs")
+                : java.util.Collections.emptyList();
+            if (!historyLogs.isEmpty()) {
+          %>
+          <div class="ta-application-timeline" aria-label="Application history for <%= applicationId %>">
+            <p class="ta-application-timeline__title">Application history</p>
+            <ol class="ta-application-timeline__steps">
+              <%
+                for (Object logObj : historyLogs) {
+                  java.util.Map log = logObj instanceof java.util.Map ? (java.util.Map) logObj : java.util.Collections.emptyMap();
+                  String logTime = String.valueOf(log.getOrDefault("time", ""));
+                  String logAction = String.valueOf(log.getOrDefault("action", "Update"));
+                  String logDescription = String.valueOf(log.getOrDefault("description", ""));
+              %>
+              <li>
+                <span class="ta-application-timeline__time"><%= logTime %></span>
+                <div>
+                  <strong><%= logAction.replace('_', ' ') %></strong>
+                  <p><%= logDescription %></p>
+                </div>
+              </li>
+              <%
+                }
+              %>
+            </ol>
+          </div>
+          <%
+            }
+          %>
+
           <div class="ta-application-card__actions ta-application-card__actions--right">
             <div class="ta-application-card__action-group ta-application-card__action-group--right">
               <%

@@ -646,6 +646,18 @@ Phase 4 ── AI + Notification Integration ──→ Dual-engine matching + Re
 | **3** | PDF Pipeline Validation | SampleResumePdfGenerator | Structured extraction accuracy |
 | **4** | Browser E2E Tests | Dev login shortcuts + seed data | Full-path UI validation |
 
+### Formal Test Programs
+
+Formal test programs for the software submission are provided under `test-programs/`. Run them with:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\test-programs\run-all-tests.ps1
+```
+
+The runner compiles the Java source, copies `data/` into `.acceptance-test-data/`, and verifies authentication, TA workflow, MO workflow, Admin workflow, suitability analysis, resume access, and JSON persistence without modifying the normal demonstration data.
+
+The live acceptance testing task guide is available at `docs/testing/acceptance-testing-tasks.md`.
+
 ### Verified Critical Paths
 
 - ✅ Resume pipeline: PDF → PDFBox text extraction → structured fields → JSON persistence
