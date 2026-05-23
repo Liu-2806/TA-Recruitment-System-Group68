@@ -431,6 +431,63 @@
   font-weight: 700;
 }
 
+.ta-application-timeline {
+  margin: 0 0 18px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid #e7edf6;
+}
+
+.ta-application-timeline__title {
+  margin: 0 0 12px;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.ta-application-timeline__steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ta-application-timeline__steps li {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+
+.ta-application-timeline__time {
+  color: #94a3b8;
+  font-size: 12px;
+  line-height: 1.5;
+  font-weight: 800;
+}
+
+.ta-application-timeline__steps strong {
+  display: block;
+  color: #1e293b;
+  font-size: 13px;
+  line-height: 1.4;
+  font-weight: 900;
+  text-transform: capitalize;
+}
+
+.ta-application-timeline__steps p {
+  margin: 4px 0 0;
+  color: #475569;
+  font-size: 13px;
+  line-height: 1.55;
+  font-weight: 600;
+}
+
 .ta-application-card__actions {
   display: flex;
   align-items: center;
@@ -701,5 +758,10 @@
   .ta-history-card__steps li {
     grid-template-columns: 1fr;
     gap: 6px;
+  }
+
+  .ta-application-timeline__steps li {
+    grid-template-columns: 1fr;
+    gap: 4px;
   }
 }

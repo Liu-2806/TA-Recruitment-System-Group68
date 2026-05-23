@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360" width="1200" height="360">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="40%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#1e3a5f"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <linearGradient id="accent2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="softGlow">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="360" fill="url(#bg)"/>
+  <rect width="1200" height="360" fill="url(#grid)"/>
+
+  <!-- Decorative circles -->
+  <circle cx="1000" cy="60" r="180" fill="rgba(59,130,246,0.06)" filter="url(#softGlow)"/>
+  <circle cx="150" cy="320" r="140" fill="rgba(139,92,246,0.05)" filter="url(#softGlow)"/>
+  <circle cx="600" cy="180" r="250" fill="rgba(6,182,212,0.03)"/>
+
+  <!-- Top accent line -->
+  <rect x="60" y="40" width="80" height="3" rx="1.5" fill="url(#accent)"/>
+
+  <!-- Logo Icon - Graduation Cap + Code Brackets -->
+  <g transform="translate(60, 70)" filter="url(#glow)">
+    <!-- Cap shape -->
+    <polygon points="40,0 80,18 40,36 0,18" fill="url(#accent)" opacity="0.9"/>
+    <rect x="36" y="18" width="8" height="30" fill="url(#accent)" opacity="0.7"/>
+    <rect x="32" y="44" width="16" height="4" rx="2" fill="url(#accent)" opacity="0.6"/>
+    <!-- Tassel -->
+    <circle cx="80" cy="18" r="3" fill="#f59e0b"/>
+    <line x1="80" y1="18" x2="80" y2="32" stroke="#f59e0b" stroke-width="1.5"/>
+    <rect x="78" y="30" width="4" height="6" rx="1" fill="#f59e0b"/>
+  </g>
+
+  <!-- Main Title -->
+  <text x="170" y="105" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="42" font-weight="700" fill="white" letter-spacing="-0.5">
+    TA Recruitment System
+  </text>
+
+  <!-- Subtitle -->
+  <text x="170" y="138" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="400" fill="rgba(255,255,255,0.55)" letter-spacing="0.5">
+    BUPT International School  ·  Group 68  ·  EBU6304 Software Engineering
+  </text>
+
+  <!-- Tagline -->
+  <text x="170" y="170" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="300" fill="rgba(255,255,255,0.4)" letter-spacing="0.3">
+    覆盖助教招聘全流程的智能 Web 系统 — 从岗位发布到 AI 辅助决策的完整闭环
+  </text>
+
+  <!-- Feature Cards Row -->
+  <!-- Card 1: TA -->
+  <g transform="translate(60, 210)">
+    <rect width="240" height="110" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <circle cx="28" cy="28" r="16" fill="rgba(34,197,94,0.15)"/>
+    <text x="28" y="33" text-anchor="middle" font-size="16">🎓</text>
+    <text x="56" y="33" font-family="'Segoe UI', sans-serif" font-size="13" font-weight="600" fill="rgba(255,255,255,0.85)">TA 申请者</text>
+    <text x="20" y="58" font-family="'Segoe UI', sans-serif" font-size="11" fill="rgba(255,255,255,0.4)">简历上传 · AI 匹配预览</text>
+    <text x="20" y="75" font-family="'Segoe UI', sans-serif" font-size="11" fill="rgba(255,255,255,0.4)">岗位筛选 · 申请追踪</text>
+    <text x="20" y="92" font-family="'Segoe UI', sans-serif" font-size="11" fill="rgba(255,255,255,0.4)">撤销请求 · 通知系统</text>
+  </g>
+
+  <!-- Card 2: MO -->
+  <g transform="translate(330, 210)">
+    <rect width="240" height="110" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <circle cx="28" cy="28" r="16" fill="rgba(59,130,246,0.15)"/>
+    <text x="28" y="33" text-anchor="middle" font-size="16">📋</text>
+    <text x="56" y="33" font-family="'Segoe UI', sans-serif" font-size="13" font-weight="600" fill="rgba(255,255,255,0.85)">MO 课程组织者</text>
+    <text x="20" y="58" font-family="'Segoe UI', sans-serif" font-size="11" fill="rgba(255,255,255,0.4)">岗位管理 · 级联撤回</text>
+    <text x="20" y="75" font-family="'Segoe UI', sans-serif" font-size="11" fill="rgba(255,255,255,0.4)">AI 辅助审核 · 审核队列</text>
+    <text x="20" y="92" font-family="'Segoe UI', sans-serif" font-size="11" fill="rgba(255,255,255,0.4)">简历下载 · 撤销审批</text>
+  </g>
+
+  <!-- Card 3: Admin -->
+  <g transform="translate(600, 210)">
+    <rect width="240" height="110" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <circle cx="28" cy="28" r="16" fill="rgba(168,85,247,0.15)"/>
+    <text x="28" y="33" text-anchor="middle" font-size="16">⚙️</text>
+    <text x="56" y="33" font-family="'Segoe UI', sans-serif" font-size="13" font-weight="600" fill="rgba(255,255,255,0.85)">Admin 管理员</text>
+    <text x="20" y="58" font-family="'Segoe UI', sans-serif" font-size="11" fill="rgba(255,255,255,0.4)">全局监控 · MO 管理</text>
+    <text x="20" y="75" font-family="'Segoe UI', sans-serif" font-size="11" fill="rgba(255,255,255,0.4)">工作量分析 · 负载预警</text>
+    <text x="20" y="92" font-family="'Segoe UI', sans-serif" font-size="11" fill="rgba(255,255,255,0.4)">密码重置 · 系统概览</text>
+  </g>
+
+  <!-- Card 4: AI -->
+  <g transform="translate(870, 210)">
+    <rect width="270" height="110" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(139,92,246,0.2)" stroke-width="1"/>
+    <circle cx="28" cy="28" r="16" fill="rgba(139,92,246,0.15)"/>
+    <text x="28" y="33" text-anchor="middle" font-size="16">🤖</text>
+    <text x="56" y="33" font-family="'Segoe UI', sans-serif" font-size="13" font-weight="600" fill="rgba(255,255,255,0.85)">AI 智能匹配</text>
+    <text x="20" y="58" font-family="'Segoe UI', sans-serif" font-size="11" fill="rgba(255,255,255,0.4)">双引擎: LLM + 本地规则</text>
+    <text x="20" y="75" font-family="'Segoe UI', sans-serif" font-size="11" fill="rgba(255,255,255,0.4)">五维评分 · 可解释决策</text>
+    <text x="20" y="92" font-family="'Segoe UI', sans-serif" font-size="11" fill="rgba(255,255,255,0.4)">自动降级 · 零单点故障</text>
+    <!-- Glow effect on AI card -->
+    <rect width="270" height="110" rx="12" fill="none" stroke="rgba(139,92,246,0.1)" stroke-width="2" filter="url(#softGlow)"/>
+  </g>
+</svg>
